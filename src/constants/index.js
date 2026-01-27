@@ -1,5 +1,6 @@
 import { Moon, Sun, Star, Cloud, Heart, Zap, Anchor, Feather } from 'lucide-react';
 
+
 export const THEME = {
   primary: '#D4AF37',   // Gold
   secondary: '#E6E6FA', // Lavender
