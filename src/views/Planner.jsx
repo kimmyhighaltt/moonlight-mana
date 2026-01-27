@@ -1,6 +1,6 @@
 import React from 'react';
-import { Moon, Calendar as CalendarIcon, ChevronLeft, ChevronRight, X, Waves } from 'lucide-react';
-import { THEME } from '../constants/index';
+import { Moon, Calendar as CalendarIcon, ChevronLeft, ChevronRight, X, Waves, ShoppingBag, ExternalLink } from 'lucide-react';
+import { THEME, SACRED_TOOLS } from '../constants/index'; // Added SACRED_TOOLS
 import { getMoonPhase } from '../utils/lunarLogic';
 import { Logo, GraphGrid, StatusHeader, BottomNav } from '../components/UIComponents';
 
@@ -8,7 +8,9 @@ const Planner = ({
   currentTime, hemisphere, toggleHemisphere, selectedCalendarDay, setSelectedCalendarDay, setView 
 }) => {
   
-  // NEW: Dynamic Spiritual Focus based on Moon Phase
+  // Prepare Carousel Items (Double them for infinite scroll loop)
+  const carouselItems = [...SACRED_TOOLS, ...SACRED_TOOLS];
+
   const PHASE_QUOTES = {
     'New Moon': "A time of darkness and new beginnings. Set your intentions clearly.",
     'Waxing Crescent': "Energy is building. Take the first step towards your goals.",
@@ -91,15 +93,12 @@ const Planner = ({
     return [...blanks, ...daysArray];
   };
 
-  // Pre-calculate data for the selected day
   let tides = null;
   let phaseQuote = "";
-  
   if (selectedCalendarDay) {
       tides = getTideTimes(selectedCalendarDay);
       const thisDate = new Date(year, currentTime.getMonth(), selectedCalendarDay);
       const moon = getMoonPhase(thisDate);
-      // Fallback to a generic quote if phase not found
       phaseQuote = PHASE_QUOTES[moon.label] || "Connect with the lunar energy today.";
   }
 
@@ -129,7 +128,7 @@ const Planner = ({
         </div>
       </div>
 
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-2 md:px-4 mb-20">
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-2 md:px-4 mb-10">
         <div className="grid grid-cols-7 mb-4 text-center">
             {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(d => (
                 <span key={d} className="text-[10px] font-black text-white/50 tracking-widest">{d}</span>
@@ -140,6 +139,40 @@ const Planner = ({
         </div>
       </div>
 
+      {/* NEW: SACRED TOOLS CAROUSEL */}
+      <section className="relative z-10 w-full mt-10 mb-10 overflow-hidden">
+        <div className="max-w-2xl mx-auto flex items-center justify-between mb-6 px-6">
+            <div className="flex items-center gap-3">
+                <ShoppingBag size={14} className="text-white/40" />
+                <h3 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-60 text-white">Recommended for Rituals</h3>
+            </div>
+        </div>
+        
+        <div className="flex w-full overflow-hidden mask-fade">
+            <div className="flex gap-4 md:gap-6 animate-marquee hover:pause pl-4">
+                {carouselItems.map((tool, index) => (
+                    <a 
+                        key={`${tool.id}-${index}`} 
+                        href={tool.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex-shrink-0 w-56 md:w-64 bg-white/5 border border-white/10 rounded-[24px] md:rounded-[32px] overflow-hidden hover:bg-white/10 transition-colors group"
+                    >
+                        <div className="h-28 md:h-32 bg-cover bg-center opacity-80 group-hover:opacity-100 transition-all" style={{ backgroundImage: `url(${tool.img})` }} />
+                        <div className="p-4 md:p-5 flex flex-col gap-2">
+                            <div className="flex justify-between items-start">
+                                <h4 className="text-sm font-bold text-white leading-tight">{tool.name}</h4>
+                                <ExternalLink size={12} className="opacity-40 text-white mt-1" />
+                            </div>
+                            <span className="text-[10px] font-black mt-1" style={{ color: THEME.primary }}>{tool.price}</span>
+                        </div>
+                    </a>
+                ))}
+            </div>
+        </div>
+      </section>
+
+      {/* CALENDAR POPUP */}
       {selectedCalendarDay && (
         <div className="fixed bottom-32 left-4 right-4 md:left-auto md:right-10 md:w-80 bg-white text-slate-900 border-4 border-slate-100 p-6 rounded-[32px] shadow-2xl z-40 animate-slide-up">
             <button 
@@ -176,15 +209,21 @@ const Planner = ({
                 </div>
             </div>
 
-            {/* DYNAMIC QUOTE */}
-            <p className="text-sm text-slate-600 leading-relaxed italic">
-                "{phaseQuote}"
-            </p>
+            <p className="text-sm text-slate-600 leading-relaxed italic">"{phaseQuote}"</p>
         </div>
       )}
 
       <BottomNav view="planner" setView={setView} />
-      <style>{`.animate-slide-up { animation: slideUp 0.5s ease-out; } @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`}</style>
+      
+      {/* UPDATED STYLES FOR ANIMATIONS */}
+      <style>{`
+        .animate-slide-up { animation: slideUp 0.5s ease-out; }
+        .animate-marquee { animation: scroll 30s linear infinite; }
+        .mask-fade { mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent); }
+        .hover\\:pause:hover { animation-play-state: paused; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      `}</style>
     </div>
   );
 };
