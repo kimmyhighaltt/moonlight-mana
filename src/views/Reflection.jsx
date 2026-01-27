@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon, CheckCircle2, Sparkles, Plus, Info } from 'lucide-react';
+import { Sun, Moon, CheckCircle2, Plus, Info } from 'lucide-react';
 import { THEME } from '../constants/index';
 import { Logo, GraphGrid, StatusHeader, BottomNav } from '../components/UIComponents';
 
@@ -23,40 +23,25 @@ const Reflection = ({
     <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden font-sans animate-fade-in pb-32" style={{ backgroundColor: THEME.bg, color: THEME.secondary }}>
       <GraphGrid />
       
-      {/* RESPONSIVE HEADER - Stacks on mobile, Spreads on desktop */}
       <div className="relative z-20 w-full flex flex-col md:flex-row md:justify-between items-center md:items-start p-6 md:p-10 gap-6">
         <StatusHeader isOnline={isOnline} onBack={onBack} />
-        
-        {/* Mobile Logo */}
-        <div className="md:hidden">
-            <Logo size="text-3xl" subtitle="REFLECTION" />
-        </div>
-
-        {/* Date/Time - Centered on mobile, Right on desktop */}
+        <div className="md:hidden"><Logo size="text-3xl" subtitle="REFLECTION" /></div>
         <div className="text-center md:text-right text-white">
           <div className="text-3xl md:text-4xl font-light tracking-tighter">{ts}</div>
           <div className="text-[11px] uppercase opacity-60 tracking-widest font-black">{ds}</div>
         </div>
       </div>
 
-      {/* Desktop Logo (Hidden on mobile) */}
-      <div className="hidden md:flex w-full justify-center mb-12 relative z-10">
-        <Logo size="text-4xl" subtitle="DAILY TAROT REFLECTION" />
-      </div>
-
+      <div className="hidden md:flex w-full justify-center mb-12 relative z-10"><Logo size="text-4xl" subtitle="DAILY TAROT REFLECTION" /></div>
       <div className="w-full h-[1px] mb-8 relative z-10 bg-gold/10 hidden md:block" />
       
-      {/* META INFO GRID - 2 columns on mobile, 4 on desktop */}
       <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mb-10 items-end px-6 md:px-14">
         {[{ l: 'DATE:', v: ds }, { l: 'TIME:', v: ts }, { l: 'ZONE:', v: hemisphere.toUpperCase() }].map((item, idx) => (
           <div key={idx} className="flex flex-col gap-2">
             <span className="text-[9px] md:text-[10px] font-black tracking-widest opacity-60 text-white uppercase">{item.l}</span>
-            <div className="p-4 border border-white/10 bg-white/5 rounded-2xl text-[10px] md:text-xs text-white flex items-center shadow-inner">
-              {item.v}
-            </div>
+            <div className="p-4 border border-white/10 bg-white/5 rounded-2xl text-[10px] md:text-xs text-white flex items-center shadow-inner">{item.v}</div>
           </div>
         ))}
-        {/* Moon Phase Badge */}
         <div className="flex justify-end col-span-1 md:col-span-1">
           <div className="bg-[#34495E] border border-white/10 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-xl w-full justify-center md:w-auto">
             <Moon size={18} color={THEME.primary} className={hemisphere === 'Northern' ? 'rotate-180' : ''} />
@@ -68,10 +53,7 @@ const Reflection = ({
         </div>
       </div>
 
-      {/* MAIN CONTENT AREA - Stacks vertical on mobile */}
       <div className="relative z-10 flex flex-col lg:flex-row gap-10 items-start mb-16 px-6 md:px-14">
-        
-        {/* Time Sidebar - Hidden on Mobile to save space */}
         <div className="hidden lg:flex flex-col items-center pr-10 border-r border-white/5 h-[500px] overflow-y-auto custom-scrollbar">
           <span className="text-[10px] mb-6 font-black tracking-widest text-white opacity-40">HR</span>
           {[...Array(24)].map((_, i) => (
@@ -79,18 +61,18 @@ const Reflection = ({
           ))}
         </div>
         
-        {/* Tarot Card Area */}
+        {/* CARD AREA */}
         <div className="w-full lg:flex-1 flex flex-col items-center justify-center py-2">
           <div className="relative w-[280px] h-[450px] md:w-[350px] md:h-[560px] cursor-pointer perspective-1000 group p-2" onClick={handleCardPull}>
             <div className={`relative w-full h-full transition-all duration-1000 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-              {/* Back of Card */}
-              <div className="absolute inset-0 backface-hidden rounded-[32px] border-2 border-white/10 bg-white shadow-2xl flex items-center justify-center p-8">
+              {/* BACK OF CARD: Forced BG White & Text Dark */}
+              <div className="absolute inset-0 backface-hidden rounded-[32px] border-4 border-white bg-white shadow-2xl flex items-center justify-center p-8 hover:scale-[1.02] transition-all">
                 <div className="flex flex-col items-center">
-                  <Sun size={100} color="#000" strokeWidth={0.5} className="opacity-10 mb-8 animate-pulse" />
-                  <span className="text-[12px] tracking-[0.5em] text-black/20 font-black uppercase">Tap</span>
+                  <Sun size={100} className="text-slate-900 opacity-20 mb-8 animate-pulse" strokeWidth={1} />
+                  <span className="text-[12px] tracking-[0.5em] text-slate-900 font-black uppercase">Tap to Pull</span>
                 </div>
               </div>
-              {/* Front of Card */}
+              
               <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-[32px] bg-zinc-900 border-[4px] overflow-hidden flex flex-col shadow-[0_0_80px_rgba(212,175,55,0.3)]" style={{ borderColor: THEME.primary }}>
                 <div className="flex-1 bg-cover bg-center" style={{ backgroundImage: `url("${selectedCard.img}")` }} />
                 <div className="p-6 text-center bg-zinc-950 border-t border-white/10">
@@ -101,7 +83,6 @@ const Reflection = ({
           </div>
         </div>
 
-        {/* Rituals List - Full width on mobile, Sidebar on desktop */}
         <div className="w-full lg:w-80 flex flex-col gap-6">
           <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-80 border-b border-white/10 pb-4 text-white">Sacred Rituals:</h3>
           <div className="space-y-4">
@@ -123,19 +104,13 @@ const Reflection = ({
         </div>
       </div>
 
-      {/* Reflection Inputs - Stack vertically on mobile */}
       <section className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 px-6 md:px-14">
         {['firstImpressions', 'theMessage', 'actionStep'].map((id) => (
           <div key={id} className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h5 className="text-[10px] font-black tracking-[0.3em] text-white uppercase">{id.replace(/([A-Z])/g, ' $1')}</h5>
             </div>
-            <textarea 
-              value={reflection[id]} 
-              onChange={(e) => setReflection({...reflection, [id]: e.target.value})} 
-              className="w-full p-6 rounded-[24px] bg-white/5 border border-dashed border-white/10 text-sm focus:outline-none focus:border-gold transition-all resize-none h-40 text-white placeholder:opacity-20" 
-              placeholder="Type here..." 
-            />
+            <textarea value={reflection[id]} onChange={(e) => setReflection({...reflection, [id]: e.target.value})} className="w-full p-6 rounded-[24px] bg-white/5 border border-dashed border-white/10 text-sm focus:outline-none focus:border-gold transition-all resize-none h-40 text-white placeholder:opacity-20" placeholder="Type here..." />
           </div>
         ))}
       </section>
@@ -143,14 +118,8 @@ const Reflection = ({
       <div className="relative z-10 flex justify-center w-full mb-10">
         <button onClick={() => setView('tracker')} className="px-16 py-6 rounded-full font-black uppercase tracking-widest text-[12px] shadow-2xl transition-all bg-white/5 border border-white/10 text-white hover:bg-white/10">Continue</button>
       </div>
-
       <BottomNav view="reflection" setView={setView} />
-      <style>{`
-        .perspective-1000 { perspective: 1000px; } 
-        .transform-style-3d { transform-style: preserve-3d; } 
-        .backface-hidden { backface-visibility: hidden; } 
-        .rotate-y-180 { transform: rotateY(180deg); } 
-      `}</style>
+      <style>{`.perspective-1000 { perspective: 1000px; } .transform-style-3d { transform-style: preserve-3d; } .backface-hidden { backface-visibility: hidden; } .rotate-y-180 { transform: rotateY(180deg); }`}</style>
     </div>
   );
 };
