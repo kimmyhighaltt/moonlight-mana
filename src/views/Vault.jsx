@@ -7,14 +7,13 @@ import ShareButton from '../components/ShareButton';
 const VaultEntryCard = ({ entry }) => {
   const cardRef = useRef(null);
 
-  // FIX: Added 'bg-white' and 'text-slate-900' to ensure white card appearance
   return (
-    <div className="flex flex-col gap-6 group">
+    <div className="flex flex-col gap-6 group w-full max-w-lg mx-auto"> {/* Added max-w-lg to prevent giant cards */}
       <div 
         ref={cardRef}
-        className="relative bg-white text-slate-900 rounded-[40px] shadow-xl p-6 md:p-10 flex flex-col items-center transition-all hover:scale-[1.02] cursor-default min-h-[500px] border-b-8 border-gold/10"
+        className="relative bg-white text-slate-900 rounded-[32px] md:rounded-[40px] shadow-xl p-6 md:p-8 flex flex-col items-center transition-all hover:scale-[1.02] cursor-default min-h-[450px] border-b-8 border-gold/10"
       >
-        <div className="w-full flex justify-between items-start mb-8">
+        <div className="w-full flex justify-between items-start mb-6">
           <div className="flex items-center gap-4">
             <div className="flex flex-col text-left">
                 <span className="text-lg font-black tracking-widest text-slate-900">{entry.date}</span>
@@ -33,7 +32,7 @@ const VaultEntryCard = ({ entry }) => {
           </div>
         </div>
 
-        <div className="w-full aspect-[1/1.5] rounded-[32px] bg-zinc-100 overflow-hidden relative mb-8 shadow-lg border-4 border-slate-50">
+        <div className="w-full aspect-[1/1.5] rounded-[24px] bg-zinc-100 overflow-hidden relative mb-6 shadow-lg border-4 border-slate-50">
           {entry.img ? (
             <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url("${entry.img}")` }} />
           ) : (
@@ -44,7 +43,7 @@ const VaultEntryCard = ({ entry }) => {
           </div>
         </div>
         
-        <div className="w-full grid grid-cols-2 gap-4 mb-8">
+        <div className="w-full grid grid-cols-2 gap-4 mb-6">
           {['Body', 'Soul', 'Mind', 'Heart'].map(l => {
             const v = entry.pillars?.[l.toLowerCase()] || entry.mana;
             return (
@@ -73,25 +72,26 @@ const VaultEntryCard = ({ entry }) => {
 
 const Vault = ({ searchTerm, setSearchTerm, filterHighMana, setFilterHighMana, filteredEntries, setView, isOnline }) => {
   return (
-    <div className="min-h-screen w-full flex flex-col p-6 md:p-16 pb-40 relative overflow-x-hidden font-sans animate-fade-in" style={{ backgroundColor: THEME.bg, color: THEME.secondary }}>
+    <div className="min-h-screen w-full flex flex-col p-6 md:p-10 lg:p-16 pb-40 relative overflow-x-hidden font-sans animate-fade-in" style={{ backgroundColor: THEME.bg, color: THEME.secondary }}>
       <GraphGrid />
-      <div className="w-full flex justify-between items-start mb-10">
+      <div className="w-full flex justify-between items-start mb-8">
           <StatusHeader isOnline={isOnline} />
       </div>
       
-      <div className="w-full flex justify-center mb-10 relative z-10"><Logo size="text-4xl md:text-6xl" subtitle="THE SACRED ARCHIVE" /></div>
+      <div className="w-full flex justify-center mb-8 relative z-10"><Logo size="text-4xl md:text-5xl lg:text-6xl" subtitle="THE SACRED ARCHIVE" /></div>
       
-      <div className="relative z-10 w-full max-w-6xl mx-auto mb-10 space-y-4 px-2">
+      <div className="relative z-10 w-full max-w-5xl mx-auto mb-10 space-y-4 px-2">
           <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative group">
                   <Search className="absolute left-6 top-1/2 -translate-y-1/2 opacity-30 text-white" size={20} />
-                  <input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-16 pr-8 py-4 rounded-[24px] bg-white/5 border border-white/10 text-white focus:outline-none focus:border-gold transition-all backdrop-blur-md" />
+                  <input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-16 pr-8 py-4 rounded-[24px] bg-white/10 border border-white/20 text-white focus:outline-none focus:border-gold transition-all backdrop-blur-md placeholder:text-white/30" />
               </div>
-              <button onClick={() => setFilterHighMana(!filterHighMana)} className={`px-6 py-4 rounded-[24px] text-[10px] font-black uppercase tracking-[0.3em] border transition-all ${filterHighMana ? 'bg-gold border-gold text-slate-900' : 'bg-white/5 border-white/10 text-white/40'}`} style={{ backgroundColor: filterHighMana ? THEME.primary : '' }}>High Mana</button>
+              <button onClick={() => setFilterHighMana(!filterHighMana)} className={`px-6 py-4 rounded-[24px] text-[10px] font-black uppercase tracking-[0.3em] border transition-all ${filterHighMana ? 'bg-gold border-gold text-slate-900' : 'bg-white/10 border-white/20 text-white/60'}`} style={{ backgroundColor: filterHighMana ? THEME.primary : '' }}>High Mana</button>
           </div>
       </div>
 
-      <div className="relative z-10 w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-2 mb-20">
+      {/* FIX: Improved Grid for Tablets (md:grid-cols-2) */}
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 px-2 mb-20">
           {filteredEntries.map(entry => (
              <VaultEntryCard key={entry.id} entry={entry} />
           ))}
