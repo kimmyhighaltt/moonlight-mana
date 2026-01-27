@@ -8,9 +8,10 @@ const VaultEntryCard = ({ entry }) => {
   const cardRef = useRef(null);
 
   return (
-    <div className="flex flex-col gap-6 group w-full max-w-lg mx-auto"> {/* Added max-w-lg to prevent giant cards */}
+    <div className="flex flex-col gap-6 group w-full max-w-lg mx-auto"> 
       <div 
         ref={cardRef}
+        // Ensure BG is WHITE (Solid)
         className="relative bg-white text-slate-900 rounded-[32px] md:rounded-[40px] shadow-xl p-6 md:p-8 flex flex-col items-center transition-all hover:scale-[1.02] cursor-default min-h-[450px] border-b-8 border-gold/10"
       >
         <div className="w-full flex justify-between items-start mb-6">
@@ -83,14 +84,29 @@ const Vault = ({ searchTerm, setSearchTerm, filterHighMana, setFilterHighMana, f
       <div className="relative z-10 w-full max-w-5xl mx-auto mb-10 space-y-4 px-2">
           <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative group">
-                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 opacity-30 text-white" size={20} />
-                  <input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-16 pr-8 py-4 rounded-[24px] bg-white/10 border border-white/20 text-white focus:outline-none focus:border-gold transition-all backdrop-blur-md placeholder:text-white/30" />
+                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 opacity-30 text-slate-400" size={20} />
+                  
+                  {/* FIX: Changed bg-white/10 to bg-white (Solid) and text to slate-900 */}
+                  <input 
+                    type="text" 
+                    placeholder="Search..." 
+                    value={searchTerm} 
+                    onChange={(e) => setSearchTerm(e.target.value)} 
+                    className="w-full pl-16 pr-8 py-4 rounded-[24px] bg-white border-2 border-transparent text-slate-900 focus:outline-none focus:border-gold transition-all shadow-lg placeholder:text-slate-400" 
+                  />
               </div>
-              <button onClick={() => setFilterHighMana(!filterHighMana)} className={`px-6 py-4 rounded-[24px] text-[10px] font-black uppercase tracking-[0.3em] border transition-all ${filterHighMana ? 'bg-gold border-gold text-slate-900' : 'bg-white/10 border-white/20 text-white/60'}`} style={{ backgroundColor: filterHighMana ? THEME.primary : '' }}>High Mana</button>
+              
+              {/* FIX: Inactive button is now Solid White (bg-white) instead of glass */}
+              <button 
+                onClick={() => setFilterHighMana(!filterHighMana)} 
+                className={`px-6 py-4 rounded-[24px] text-[10px] font-black uppercase tracking-[0.3em] border-2 transition-all shadow-lg ${filterHighMana ? 'bg-gold border-gold text-slate-900' : 'bg-white border-white text-slate-500 hover:text-slate-900'}`} 
+                style={{ backgroundColor: filterHighMana ? THEME.primary : '' }}
+              >
+                High Mana
+              </button>
           </div>
       </div>
 
-      {/* FIX: Improved Grid for Tablets (md:grid-cols-2) */}
       <div className="relative z-10 w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 px-2 mb-20">
           {filteredEntries.map(entry => (
              <VaultEntryCard key={entry.id} entry={entry} />

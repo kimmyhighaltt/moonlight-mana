@@ -34,12 +34,12 @@ const Tracker = ({
   const getTagStyle = (tag) => {
     const state = activeTags[tag];
     if (state === 'charge') {
-        return 'bg-emerald-500/20 border-emerald-500 text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)] scale-110';
+        return 'bg-emerald-500 text-emerald-900 font-bold border-emerald-400 shadow-lg scale-105'; // Solid Green
     }
     if (state === 'drain') {
-        return 'bg-rose-500/20 border-rose-500 text-rose-400 shadow-[0_0_30px_rgba(244,63,94,0.3)] scale-110';
+        return 'bg-rose-500 text-white font-bold border-rose-600 shadow-lg scale-105'; // Solid Red
     }
-    return 'bg-slate-800/50 border-white/10 text-white/40 hover:border-white/20 hover:text-white/70';
+    return 'bg-slate-200 border-white/50 text-slate-600 hover:bg-white'; // Solid Grey (Default)
   };
 
   return (
@@ -68,7 +68,7 @@ const Tracker = ({
         <Logo size="text-4xl md:text-5xl lg:text-6xl" subtitle="DAILY MANA TRACKER" />
       </div>
       
-      {/* SLIDERS SECTION - Tablet Optimized */}
+      {/* SLIDERS SECTION */}
       <div className="relative z-10 w-full max-w-5xl mx-auto flex justify-between gap-2 md:gap-4 lg:gap-8 mb-20 px-2 md:px-8">
           {Object.keys(PILLAR_INFO).map((key) => {
               const info = PILLAR_INFO[key];
@@ -79,21 +79,23 @@ const Tracker = ({
                           <span className="text-[8px] md:text-[10px] font-bold text-yellow-600/70 uppercase tracking-[0.2em] md:tracking-[0.4em]">{info.sub}</span>
                       </div>
                       
-                      {/* FIX: Slimmer width on tablets (w-20) and Brighter Track (bg-white/20) */}
-                      <div className="relative w-full max-w-[80px] md:max-w-[100px] lg:max-w-[120px] h-[350px] md:h-[400px] lg:h-[440px] rounded-full flex items-center justify-center overflow-hidden bg-white/20 border border-white/30 shadow-[inset_0_10px_40px_rgba(0,0,0,0.1)] backdrop-blur-sm">
-                          {/* Fill Gradient */}
-                          <div className="absolute bottom-0 left-0 right-0 w-full transition-all duration-1000 ease-out" style={{ height: `${pillars[key]}%`, background: `linear-gradient(to top, ${info.color}aa, ${info.color})`, opacity: 0.95 }} />
+                      {/* FIX: Replaced 'bg-white/20' with 'bg-slate-200' (SOLID GREY) */}
+                      <div className="relative w-full max-w-[80px] md:max-w-[100px] lg:max-w-[120px] h-[350px] md:h-[400px] lg:h-[440px] rounded-full flex items-center justify-center overflow-hidden bg-slate-200 border-4 border-white/50 shadow-inner">
+                          
+                          {/* Gradient Fill */}
+                          <div className="absolute bottom-0 left-0 right-0 w-full transition-all duration-1000 ease-out" style={{ height: `${pillars[key]}%`, background: `linear-gradient(to top, ${info.color}, ${info.color})`, opacity: 1 }} />
                           
                           <input type="range" min="0" max="100" value={pillars[key]} onChange={(e) => setPillars({...pillars, [key]: parseInt(e.target.value)})} className="absolute -rotate-90 w-[500px] h-full opacity-0 cursor-pointer z-20" />
                           
-                          <div className="absolute w-[1.5px] h-full bg-white/30 z-10" />
+                          {/* Center Line */}
+                          <div className="absolute w-[2px] h-full bg-black/5 z-10" />
                           
                           {/* Knob */}
-                          <div className="absolute w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.8)] z-10 transition-all duration-300 pointer-events-none flex items-center justify-center bg-white" style={{ top: `${100 - pillars[key]}%`, transform: 'translateY(-50%)' }}>
-                              <div className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 rounded-full" style={{ backgroundColor: info.color }} />
+                          <div className="absolute w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full shadow-lg z-10 transition-all duration-300 pointer-events-none flex items-center justify-center bg-white ring-4 ring-black/5" style={{ top: `${100 - pillars[key]}%`, transform: 'translateY(-50%)' }}>
+                              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: info.color }} />
                           </div>
                       </div>
-                      <span className="mt-4 text-xs font-bold text-white/70">{pillars[key]}%</span>
+                      <span className="mt-4 text-xs font-bold text-white/90">{pillars[key]}%</span>
                   </div>
               );
           })}
@@ -110,7 +112,8 @@ const Tracker = ({
                   <button 
                     key={tag} 
                     onClick={() => toggleTag(tag)} 
-                    className={`relative px-6 py-3 md:px-10 md:py-4 lg:px-14 lg:py-5 rounded-[24px] text-[10px] md:text-[11px] lg:text-[12px] font-black uppercase tracking-[0.2em] border-2 transition-all duration-300 shadow-xl ${getTagStyle(tag)}`}
+                    // FIX: Buttons are now Solid White/Grey by default, not transparent
+                    className={`relative px-6 py-3 md:px-10 md:py-4 lg:px-14 lg:py-5 rounded-[24px] text-[10px] md:text-[11px] lg:text-[12px] font-black uppercase tracking-[0.2em] transition-all duration-300 shadow-md ${getTagStyle(tag)}`}
                   >
                     {activeTags[tag] === 'charge' && <Battery size={12} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />}
                     {activeTags[tag] === 'drain' && <BatteryWarning size={12} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />}
