@@ -3,8 +3,8 @@ import { Moon, Sun, Star, Cloud, Heart, Zap, Anchor, Feather } from 'lucide-reac
 export const THEME = {
   primary: '#D4AF37',   // Gold
   secondary: '#E6E6FA', // Lavender
-  bg: '#2C3E50',        // Slate Blue
-  gridColor: 'rgba(255, 255, 255, 0.05)',
+  bg: '#40566E',        // LIGHTER Slate Blue (Previously #2C3E50)
+  gridColor: 'rgba(255, 255, 255, 0.1)', // Increased opacity for brightness
 };
 
 export const PILLAR_INFO = {
@@ -204,6 +204,7 @@ export const SACRED_TOOLS = [
     img: 'https://images.unsplash.com/photo-1565538392686-350731bd1cb8?auto=format&fit=crop&q=80&w=400'
   }
 ];
+
 export const WHAKATAUKI = [
   { 
     maori: 'Tama tū tama ora, tama noho tama mate.', 
