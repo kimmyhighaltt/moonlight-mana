@@ -4,35 +4,40 @@ import { THEME, SACRED_TOOLS } from '../constants/index';
 import { StatusHeader, BottomNav } from '../components/UIComponents';
 
 const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData }) => {
-  // We duplicate the tools list to create a seamless infinite loop
   const carouselItems = [...SACRED_TOOLS, ...SACRED_TOOLS];
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center p-6 pb-40 relative overflow-hidden animate-slide-up" style={{ backgroundColor: THEME.bg, color: '#FFFFFF' }}>
-      <StatusHeader isOnline={isOnline} />
+    // FIX: Removed 'items-center' from main div to allow full width, added explicit bg color
+    <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden animate-slide-up pb-32" style={{ backgroundColor: THEME.bg, color: '#FFFFFF' }}>
       
-      {/* HEADER SECTION */}
-      <header className="mt-16 flex flex-col items-center relative z-10">
-        <button onClick={toggleHemisphere} className="flex items-center gap-2 mb-4 px-5 py-2.5 rounded-full border border-gold/20 hover:bg-gold/5 transition-all bg-white/5 backdrop-blur-sm shadow-lg">
-          <Globe size={14} color={THEME.primary} />
-          <p className="text-[11px] tracking-[0.2em] uppercase font-black" style={{ color: THEME.primary }}>
-            {hemisphere} Hemisphere
+      {/* Mobile-Friendly Header */}
+      <div className="w-full flex justify-between items-start p-6 pt-12 md:p-10">
+        <StatusHeader isOnline={isOnline} />
+        <button onClick={toggleHemisphere} className="flex items-center gap-2 px-4 py-2 rounded-full border border-gold/20 bg-white/5 backdrop-blur-sm">
+          <Globe size={12} color={THEME.primary} />
+          <p className="text-[10px] tracking-[0.2em] uppercase font-black" style={{ color: THEME.primary }}>
+            {hemisphere}
           </p>
         </button>
-        <h1 className="text-5xl font-bold tracking-tight text-center">Moonlight Mana</h1>
+      </div>
+      
+      {/* Hero Section */}
+      <header className="flex flex-col items-center mt-4 md:mt-10 px-4 relative z-10 text-center">
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-2">Moonlight Mana</h1>
+        <p className="text-xs uppercase tracking-[0.3em] opacity-60">Daily Ritual System</p>
       </header>
 
-      {/* MAIN MOON CARD */}
-      <main className="relative z-10 flex flex-col items-center w-full max-w-2xl mt-10">
-        <div className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-[60px] p-12 flex flex-col items-center shadow-2xl group cursor-pointer hover:bg-white/10 transition-all">
-          <div className="relative mb-8">
-            <div className="w-40 h-40 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center animate-spin-slow">
-              <Moon size={72} color={THEME.primary} className={hemisphere === 'Northern' ? 'rotate-180' : ''} />
+      {/* Main Moon Card - Responsive Sizing */}
+      <main className="relative z-10 flex flex-col items-center w-full max-w-2xl mx-auto mt-8 md:mt-12 px-6">
+        <div className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-[40px] md:rounded-[60px] p-8 md:p-12 flex flex-col items-center shadow-2xl group cursor-pointer hover:bg-white/10 transition-all">
+          <div className="relative mb-6 md:mb-8">
+            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center animate-spin-slow">
+              <Moon size={60} color={THEME.primary} className={`md:w-[72px] md:h-[72px] ${hemisphere === 'Northern' ? 'rotate-180' : ''}`} />
             </div>
           </div>
           <div className="text-center">
-            <h2 className="text-6xl font-light tracking-tight mb-2">{moonData.percentage}%</h2>
-            <p className="text-[12px] tracking-[0.4em] uppercase opacity-40 font-black" style={{ color: THEME.primary }}>
+            <h2 className="text-5xl md:text-6xl font-light tracking-tight mb-2">{moonData.percentage}%</h2>
+            <p className="text-[10px] md:text-[12px] tracking-[0.4em] uppercase opacity-40 font-black" style={{ color: THEME.primary }}>
               {moonData.label}
             </p>
           </div>
@@ -40,42 +45,39 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData }
         
         <button 
           onClick={() => setView('reflection')} 
-          className="mt-12 px-20 py-7 rounded-full font-black uppercase tracking-widest text-[13px] shadow-[0_30px_60px_-15px_rgba(212,175,55,0.4)] transition-all hover:scale-105 active:scale-95" 
+          className="mt-10 px-16 py-6 md:px-20 md:py-7 rounded-full font-black uppercase tracking-widest text-[12px] md:text-[13px] shadow-[0_30px_60px_-15px_rgba(212,175,55,0.4)] transition-all hover:scale-105 active:scale-95" 
           style={{ backgroundColor: THEME.primary, color: THEME.bg }}
         >
           Begin Ritual
         </button>
       </main>
 
-      {/* NEW: INFINITE CAROUSEL SECTION */}
-      <section className="relative z-10 w-full mt-20 overflow-hidden">
-        <div className="max-w-2xl mx-auto flex items-center justify-between mb-8 px-4">
+      {/* Carousel Section */}
+      <section className="relative z-10 w-full mt-16 md:mt-20 overflow-hidden">
+        <div className="max-w-2xl mx-auto flex items-center justify-between mb-6 px-6">
             <div className="flex items-center gap-3">
-                <ShoppingBag size={16} className="text-white/40" />
-                <h3 className="text-[11px] font-black tracking-[0.3em] uppercase opacity-60">Sacred Tools</h3>
+                <ShoppingBag size={14} className="text-white/40" />
+                <h3 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-60">Sacred Tools</h3>
             </div>
-            <span className="text-[9px] uppercase tracking-widest opacity-30">Curated for you</span>
         </div>
         
-        {/* The Moving Track */}
         <div className="flex w-full overflow-hidden mask-fade">
-            <div className="flex gap-6 animate-marquee hover:pause pl-4">
+            <div className="flex gap-4 md:gap-6 animate-marquee hover:pause pl-4">
                 {carouselItems.map((tool, index) => (
                     <a 
                         key={`${tool.id}-${index}`} 
                         href={tool.link} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex-shrink-0 w-64 bg-white/5 border border-white/10 rounded-[32px] overflow-hidden hover:bg-white/10 transition-colors group"
+                        className="flex-shrink-0 w-56 md:w-64 bg-white/5 border border-white/10 rounded-[24px] md:rounded-[32px] overflow-hidden hover:bg-white/10 transition-colors group"
                     >
-                        <div className="h-32 bg-cover bg-center opacity-80 group-hover:opacity-100 transition-all" style={{ backgroundImage: `url(${tool.img})` }} />
-                        <div className="p-5 flex flex-col gap-2">
+                        <div className="h-28 md:h-32 bg-cover bg-center opacity-80 group-hover:opacity-100 transition-all" style={{ backgroundImage: `url(${tool.img})` }} />
+                        <div className="p-4 md:p-5 flex flex-col gap-2">
                             <div className="flex justify-between items-start">
                                 <h4 className="text-sm font-bold text-white leading-tight">{tool.name}</h4>
                                 <ExternalLink size={12} className="opacity-40 mt-1" />
                             </div>
-                            <p className="text-[10px] text-white/50 line-clamp-2">{tool.desc}</p>
-                            <span className="text-[10px] font-black mt-2" style={{ color: THEME.primary }}>{tool.price}</span>
+                            <span className="text-[10px] font-black mt-1" style={{ color: THEME.primary }}>{tool.price}</span>
                         </div>
                     </a>
                 ))}
@@ -88,21 +90,10 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData }
       <style>{`
         .animate-slide-up { animation: slideUp 0.8s ease-out; }
         .animate-spin-slow { animation: spin 20s linear infinite; }
-        
-        /* THE MARQUEE ANIMATION */
         .animate-marquee { animation: scroll 30s linear infinite; }
-        
-        /* Pause the animation when the user hovers over the track */
         .hover\\:pause:hover { animation-play-state: paused; }
-        
-        /* Fade out the edges of the carousel so it looks smooth */
         .mask-fade { mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent); }
-
-        @keyframes scroll { 
-            0% { transform: translateX(0); } 
-            100% { transform: translateX(-50%); } 
-        }
-
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
