@@ -1,5 +1,5 @@
 import React from 'react';
-import { Moon, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Moon, Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from 'lucide-react'; // Added 'X' icon
 import { THEME } from '../constants/index';
 import { getMoonPhase } from '../utils/lunarLogic';
 import { Logo, GraphGrid, StatusHeader, BottomNav } from '../components/UIComponents';
@@ -32,11 +32,11 @@ const Planner = ({
       const isToday = d === new Date().getDate();
       const isSelected = selectedCalendarDay === d;
 
-      // FIX: Changed default bg to 'bg-white/90' and text to 'text-slate-900' for white look
       daysArray.push(
         <div 
           key={d} 
-          onClick={() => setSelectedCalendarDay(d)}
+          // FIX 1: Toggle Logic (If clicked again, close it by setting to null)
+          onClick={() => setSelectedCalendarDay(isSelected ? null : d)}
           className={`relative h-14 md:h-32 rounded-xl md:rounded-3xl border transition-all cursor-pointer flex flex-col items-center justify-start pt-2 md:pt-4 gap-1 md:gap-2 group
             ${isSelected ? 'bg-gold border-gold text-slate-900 scale-105 z-10' : 'bg-white/90 border-transparent text-slate-900 hover:bg-white'}
             ${isToday ? 'ring-4 ring-gold/50' : ''}
@@ -99,7 +99,15 @@ const Planner = ({
 
       {selectedCalendarDay && (
         <div className="fixed bottom-32 left-4 right-4 md:left-auto md:right-10 md:w-80 bg-white text-slate-900 border-4 border-slate-100 p-6 rounded-[32px] shadow-2xl z-40 animate-slide-up">
-            <div className="flex items-center gap-4 mb-4 border-b border-slate-100 pb-4">
+            {/* FIX 2: Close Button added to top-right */}
+            <button 
+              onClick={() => setSelectedCalendarDay(null)} 
+              className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-all"
+            >
+              <X size={16} />
+            </button>
+
+            <div className="flex items-center gap-4 mb-4 border-b border-slate-100 pb-4 pr-8">
                 <div className="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center border border-gold/20" style={{ borderColor: THEME.primary }}>
                     <CalendarIcon size={20} color={THEME.primary} />
                 </div>
