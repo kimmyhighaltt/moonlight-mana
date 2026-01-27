@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Search, TrendingUp, TrendingDown, Image as ImageIcon, Clock } from 'lucide-react';
+import { Search, TrendingUp, TrendingDown, Image as ImageIcon, Clock, Moon, Star } from 'lucide-react'; // Added Moon, Star
 import { THEME } from '../constants/index';
 import { Logo, GraphGrid, StatusHeader, BottomNav } from '../components/UIComponents';
 import ShareButton from '../components/ShareButton';
@@ -11,7 +11,6 @@ const VaultEntryCard = ({ entry }) => {
     <div className="flex flex-col gap-6 group w-full max-w-lg mx-auto"> 
       <div 
         ref={cardRef}
-        // Ensure BG is WHITE (Solid)
         className="relative bg-white text-slate-900 rounded-[32px] md:rounded-[40px] shadow-xl p-6 md:p-8 flex flex-col items-center transition-all hover:scale-[1.02] cursor-default min-h-[450px] border-b-8 border-gold/10"
       >
         <div className="w-full flex justify-between items-start mb-6">
@@ -61,7 +60,17 @@ const VaultEntryCard = ({ entry }) => {
           })}
         </div>
         
-        <p className="text-sm text-slate-600 italic text-center px-4 line-clamp-3 leading-relaxed font-serif">"{entry.message}"</p>
+        <p className="text-sm text-slate-600 italic text-center px-4 line-clamp-3 leading-relaxed font-serif mb-6">"{entry.message}"</p>
+
+        {/* NEW: BRANDING FOOTER (Visible in Download) */}
+        <div className="w-full pt-6 border-t border-slate-100 flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2 opacity-40">
+                <Star size={8} fill={THEME.primary} stroke="none" />
+                <Moon size={12} fill={THEME.primary} stroke="none" />
+                <Star size={8} fill={THEME.primary} stroke="none" />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Moonlight Mana</span>
+        </div>
       </div>
 
       <div className="flex justify-center opacity-100 md:opacity-0 group-hover:opacity-100 transition-all">
@@ -85,8 +94,6 @@ const Vault = ({ searchTerm, setSearchTerm, filterHighMana, setFilterHighMana, f
           <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative group">
                   <Search className="absolute left-6 top-1/2 -translate-y-1/2 opacity-30 text-slate-400" size={20} />
-                  
-                  {/* FIX: Changed bg-white/10 to bg-white (Solid) and text to slate-900 */}
                   <input 
                     type="text" 
                     placeholder="Search..." 
@@ -96,7 +103,6 @@ const Vault = ({ searchTerm, setSearchTerm, filterHighMana, setFilterHighMana, f
                   />
               </div>
               
-              {/* FIX: Inactive button is now Solid White (bg-white) instead of glass */}
               <button 
                 onClick={() => setFilterHighMana(!filterHighMana)} 
                 className={`px-6 py-4 rounded-[24px] text-[10px] font-black uppercase tracking-[0.3em] border-2 transition-all shadow-lg ${filterHighMana ? 'bg-gold border-gold text-slate-900' : 'bg-white border-white text-slate-500 hover:text-slate-900'}`} 
