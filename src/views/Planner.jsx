@@ -7,6 +7,19 @@ import { Logo, GraphGrid, StatusHeader, BottomNav } from '../components/UICompon
 const Planner = ({ 
   currentTime, hemisphere, toggleHemisphere, selectedCalendarDay, setSelectedCalendarDay, setView 
 }) => {
+  
+  // NEW: Dynamic Spiritual Focus based on Moon Phase
+  const PHASE_QUOTES = {
+    'New Moon': "A time of darkness and new beginnings. Set your intentions clearly.",
+    'Waxing Crescent': "Energy is building. Take the first step towards your goals.",
+    'First Quarter': "Challenges may arise. Stand firm in your decisions.",
+    'Waxing Gibbous': "Refine and edit. You are close to fruition.",
+    'Full Moon': "Maximum power and illumination. Celebrate your progress.",
+    'Waning Gibbous': "Gratitude and sharing. Give back what you have received.",
+    'Last Quarter': "Release and let go. Clear the path for what comes next.",
+    'Waning Crescent': "Rest, recover, and reflect. The cycle is almost complete."
+  };
+
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -19,22 +32,14 @@ const Planner = ({
   const monthName = currentTime.toLocaleString('default', { month: 'long' }).toUpperCase();
   const year = currentTime.getFullYear();
 
-  // NEW: Calculate approx tide times based on the day of the month
-  // Tides shift approx 50 mins later each day. 
-  // This is a simulation to give the user a realistic feel.
   const getTideTimes = (day) => {
-    const baseHour = 6; // Start reference (e.g., High tide at 6am on 1st)
+    const baseHour = 6; 
     const dailyShiftMinutes = 50 * (day - 1);
-    
     let totalMinutes = (baseHour * 60) + dailyShiftMinutes;
-    
-    // Normalize to 24h
     while (totalMinutes >= 1440) totalMinutes -= 1440;
     
     const h1 = Math.floor(totalMinutes / 60);
     const m1 = totalMinutes % 60;
-    
-    // Low tide is roughly 6.2 hours after high
     let lowMinutes = totalMinutes + (6.2 * 60);
     while (lowMinutes >= 1440) lowMinutes -= 1440;
     const h2 = Math.floor(lowMinutes / 60);
@@ -46,10 +51,7 @@ const Planner = ({
         return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
     };
 
-    return {
-        high: fmt(h1, m1),
-        low: fmt(h2, m2)
-    };
+    return { high: fmt(h1, m1), low: fmt(h2, m2) };
   };
 
   const renderCalendar = () => {
@@ -76,11 +78,9 @@ const Planner = ({
           style={{ backgroundColor: isSelected ? THEME.primary : '' }}
         >
           <span className={`text-[10px] md:text-sm font-black opacity-80`}>{d}</span>
-          
           <div className="flex-1 flex items-center justify-center">
              <Moon size={16} className={`md:w-8 md:h-8 ${hemisphere === 'Northern' ? 'rotate-180' : ''}`} fill={isSelected ? '#000' : 'currentColor'} color={isSelected ? '#000' : THEME.primary} />
           </div>
-
           <span className="hidden md:block text-[8px] uppercase tracking-widest opacity-60 font-black pb-4 text-center px-1">
             {moon.label}
           </span>
@@ -91,13 +91,21 @@ const Planner = ({
     return [...blanks, ...daysArray];
   };
 
-  // Pre-calculate tide for the selected day
-  const tides = selectedCalendarDay ? getTideTimes(selectedCalendarDay) : null;
+  // Pre-calculate data for the selected day
+  let tides = null;
+  let phaseQuote = "";
+  
+  if (selectedCalendarDay) {
+      tides = getTideTimes(selectedCalendarDay);
+      const thisDate = new Date(year, currentTime.getMonth(), selectedCalendarDay);
+      const moon = getMoonPhase(thisDate);
+      // Fallback to a generic quote if phase not found
+      phaseQuote = PHASE_QUOTES[moon.label] || "Connect with the lunar energy today.";
+  }
 
   return (
     <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden font-sans animate-fade-in pb-40" style={{ backgroundColor: THEME.bg }}>
       <GraphGrid />
-      
       <div className="w-full flex justify-between items-start p-6 pt-12 md:p-10">
         <StatusHeader isOnline={true} />
         <button onClick={toggleHemisphere} className="flex items-center gap-2 px-4 py-2 rounded-full border border-gold/20 bg-white/5 backdrop-blur-sm">
@@ -151,7 +159,6 @@ const Planner = ({
                 </div>
             </div>
 
-            {/* NEW: TIDE SECTION */}
             <div className="flex items-center gap-4 mb-4 bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
                     <Waves size={18} />
@@ -169,8 +176,9 @@ const Planner = ({
                 </div>
             </div>
 
-            <p className="text-sm text-slate-600 leading-relaxed">
-                The moon is in a powerful phase for setting intentions. Focus your mana on new beginnings.
+            {/* DYNAMIC QUOTE */}
+            <p className="text-sm text-slate-600 leading-relaxed italic">
+                "{phaseQuote}"
             </p>
         </div>
       )}
