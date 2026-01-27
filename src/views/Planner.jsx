@@ -1,5 +1,5 @@
 import React from 'react';
-import { Moon, Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from 'lucide-react'; // Added 'X' icon
+import { Moon, Calendar as CalendarIcon, ChevronLeft, ChevronRight, X, Waves } from 'lucide-react';
 import { THEME } from '../constants/index';
 import { getMoonPhase } from '../utils/lunarLogic';
 import { Logo, GraphGrid, StatusHeader, BottomNav } from '../components/UIComponents';
@@ -19,6 +19,39 @@ const Planner = ({
   const monthName = currentTime.toLocaleString('default', { month: 'long' }).toUpperCase();
   const year = currentTime.getFullYear();
 
+  // NEW: Calculate approx tide times based on the day of the month
+  // Tides shift approx 50 mins later each day. 
+  // This is a simulation to give the user a realistic feel.
+  const getTideTimes = (day) => {
+    const baseHour = 6; // Start reference (e.g., High tide at 6am on 1st)
+    const dailyShiftMinutes = 50 * (day - 1);
+    
+    let totalMinutes = (baseHour * 60) + dailyShiftMinutes;
+    
+    // Normalize to 24h
+    while (totalMinutes >= 1440) totalMinutes -= 1440;
+    
+    const h1 = Math.floor(totalMinutes / 60);
+    const m1 = totalMinutes % 60;
+    
+    // Low tide is roughly 6.2 hours after high
+    let lowMinutes = totalMinutes + (6.2 * 60);
+    while (lowMinutes >= 1440) lowMinutes -= 1440;
+    const h2 = Math.floor(lowMinutes / 60);
+    const m2 = Math.floor(lowMinutes % 60);
+
+    const fmt = (h, m) => {
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+    };
+
+    return {
+        high: fmt(h1, m1),
+        low: fmt(h2, m2)
+    };
+  };
+
   const renderCalendar = () => {
     let blanks = [];
     for (let i = 0; i < firstDay; i++) {
@@ -35,7 +68,6 @@ const Planner = ({
       daysArray.push(
         <div 
           key={d} 
-          // FIX 1: Toggle Logic (If clicked again, close it by setting to null)
           onClick={() => setSelectedCalendarDay(isSelected ? null : d)}
           className={`relative h-14 md:h-32 rounded-xl md:rounded-3xl border transition-all cursor-pointer flex flex-col items-center justify-start pt-2 md:pt-4 gap-1 md:gap-2 group
             ${isSelected ? 'bg-gold border-gold text-slate-900 scale-105 z-10' : 'bg-white/90 border-transparent text-slate-900 hover:bg-white'}
@@ -58,6 +90,9 @@ const Planner = ({
     }
     return [...blanks, ...daysArray];
   };
+
+  // Pre-calculate tide for the selected day
+  const tides = selectedCalendarDay ? getTideTimes(selectedCalendarDay) : null;
 
   return (
     <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden font-sans animate-fade-in pb-40" style={{ backgroundColor: THEME.bg }}>
@@ -99,7 +134,6 @@ const Planner = ({
 
       {selectedCalendarDay && (
         <div className="fixed bottom-32 left-4 right-4 md:left-auto md:right-10 md:w-80 bg-white text-slate-900 border-4 border-slate-100 p-6 rounded-[32px] shadow-2xl z-40 animate-slide-up">
-            {/* FIX 2: Close Button added to top-right */}
             <button 
               onClick={() => setSelectedCalendarDay(null)} 
               className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-all"
@@ -116,6 +150,25 @@ const Planner = ({
                     <span className="text-[10px] uppercase tracking-widest opacity-60 text-slate-500">Projected Energy</span>
                 </div>
             </div>
+
+            {/* NEW: TIDE SECTION */}
+            <div className="flex items-center gap-4 mb-4 bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
+                    <Waves size={18} />
+                </div>
+                <div className="flex flex-col gap-1 w-full">
+                    <div className="flex justify-between items-center w-full">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">High Tide</span>
+                        <span className="text-xs font-bold text-slate-700">{tides.high}</span>
+                    </div>
+                    <div className="w-full h-[1px] bg-blue-200/50" />
+                    <div className="flex justify-between items-center w-full">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Low Tide</span>
+                        <span className="text-xs font-bold text-slate-700">{tides.low}</span>
+                    </div>
+                </div>
+            </div>
+
             <p className="text-sm text-slate-600 leading-relaxed">
                 The moon is in a powerful phase for setting intentions. Focus your mana on new beginnings.
             </p>
