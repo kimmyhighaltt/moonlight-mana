@@ -184,24 +184,98 @@ export const SACRED_TOOLS = [
     name: 'The Starlight Tarot Deck',
     desc: 'Classic Rider-Waite imagery with a celestial gold finish.',
     price: '$24.99',
-    link: 'https://amazon.com/s?k=tarot+deck', // Replace with your affiliate link
-    img: 'https://images.unsplash.com/photo-1632057796985-7cc203241077?auto=format&fit=crop&q=80&w=400' 
+    link: 'https://amzn.to/49YAlkj', // Replace with your affiliate link
+    img: 'https://m.media-amazon.com/images/I/71AOp6C1VjL._SY342_.jpg' 
   },
   {
     id: 'sage-1',
     name: 'White Sage Bundle',
     desc: 'Premium California sage for clearing negative energy.',
     price: '$8.50',
-    link: 'https://amazon.com/s?k=white+sage', // Replace with your affiliate link
-    img: 'https://images.unsplash.com/photo-1601662529555-46eb11e89b43?auto=format&fit=crop&q=80&w=400'
+    link: 'https://amzn.to/4q0SEvi', // Replace with your affiliate link
+    img: 'https://m.media-amazon.com/images/I/81qkJ2mMSbL._AC_SX679_.jpg'
   },
   {
     id: 'crystal-1',
     name: 'Amethyst Cluster',
     desc: 'Raw crystals to enhance spiritual connection.',
     price: '$15.00',
-    link: 'https://amazon.com/s?k=amethyst+cluster', // Replace with your affiliate link
-    img: 'https://images.unsplash.com/photo-1565538392686-350731bd1cb8?auto=format&fit=crop&q=80&w=400'
+    link: 'https://amzn.to/4r8PuX8', // Replace with your affiliate link
+    img: 'https://m.media-amazon.com/images/I/819sOd2ebeL._AC_SX679_.jpg'
+  },
+  {
+    id: 'deck-classic',
+    name: 'The Rider Waite Tarot',
+    desc: 'The essential deck for all readers.',
+    price: '$24.99',
+    link: 'https://amzn.to/4t6KjZO', 
+    img: 'https://m.media-amazon.com/images/I/71YMG6rKgnL._SY466_.jpg' 
+  },
+  {
+    id: 'journal-moon',
+    name: 'Moonology Diary 2026',
+    desc: 'Align your life with the lunar cycles.',
+    price: '$18.00',
+    link: 'https://amzn.to/49X3c8q',
+    img: 'https://m.media-amazon.com/images/I/71djIm0c9DL._SX445_.jpg'
+  },
+  {
+    id: 'cleansing-selenite',
+    name: 'Selenite Cleansing Stick',
+    desc: 'Clear negative energy instantly.',
+    price: '$12.00',
+    link: 'https://amzn.to/4bhimYJ',
+    img: 'https://m.media-amazon.com/images/I/61FaJMlWP8L._SX466_.jpg'
+  },
+
+  // --- NEW ITEMS ---
+  {
+    id: 'deck-modern',
+    name: 'Modern Witch Tarot',
+    desc: 'A stylish, contemporary take on tarot.',
+    price: '$28.00',
+    link: 'https://amzn.to/3Z0xrGQ', // Search Amazon for "Modern Witch Tarot"
+    img: 'https://m.media-amazon.com/images/I/81Ri5CeTklL._SY342_.jpg' // Right-click Amazon image to get real link
+  },
+  {
+    id: 'oracle-light',
+    name: 'Work Your Light Oracle',
+    desc: 'Gentle guidance for your soul journey.',
+    price: '$22.00',
+    link: 'https://amzn.to/3O6zQ07', // Search "Work Your Light Oracle"
+    img: 'https://m.media-amazon.com/images/I/71kWsJJY9fL._SY342_.jpg'
+  },
+  {
+    id: 'decor-lamp',
+    name: '3D Moon Lamp',
+    desc: 'Bring the full moon into your room.',
+    price: '$35.00',
+    link: 'https://amzn.to/3YWVLcy', // Search "Moon Lamp"
+    img: 'https://m.media-amazon.com/images/I/81Mdq0wkxqL._AC_SX679_.jpg'
+  },
+  {
+    id: 'sound-bowl',
+    name: 'Tibetan Singing Bowl',
+    desc: 'Sound healing for deep meditation.',
+    price: '$45.00',
+    link: 'https://amzn.to/3LVAygb', // Search "Singing Bowl"
+    img: 'https://m.media-amazon.com/images/I/61IRVh7WUpL._AC_SX679_.jpg'
+  },
+  {
+    id: 'decor-salt',
+    name: 'Himalayan Salt Lamp',
+    desc: 'Purify the air and set the mood.',
+    price: '$25.00',
+    link: 'https://amzn.to/3NFzspk', // Search "Salt Lamp"
+    img: 'https://m.media-amazon.com/images/I/71fKbPe9gML._AC_SX679_.jpg'
+  },
+  {
+    id: 'crystal-set',
+    name: 'Chakra Healing Crystals',
+    desc: '7 stones for balancing your energy.',
+    price: '$29.99',
+    link: 'https://amzn.to/4t6Lc4A', // Search "Chakra Stones"
+    img: 'https://m.media-amazon.com/images/I/81eyC6EOThL._AC_SX679_.jpg'
   }
 ];
 
