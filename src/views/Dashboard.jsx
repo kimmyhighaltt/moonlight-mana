@@ -43,13 +43,26 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData }
           </div>
         </div>
         
+        {/* NEW: Beginner-Friendly Guidance Block */}
+        <div className="mb-2 mx-4 bg-white/5 p-4 rounded-xl border border-white/10 text-center max-w-sm mt-8">
+          <p className="font-bold text-sm mb-1 uppercase tracking-widest" style={{ color: THEME.primary }}>
+            DAILY GUIDANCE
+          </p>
+          <p className="text-sm text-white/80 leading-relaxed">
+            Align your energy with the moon. Click below to <strong>track your wellness</strong> and <strong>pull your daily tarot card</strong>.
+          </p>
+        </div>
+        
+        {/* UPDATED: Button Text & Helper Text */}
         <button 
           onClick={() => setView('reflection')} 
-          className="mt-10 px-16 py-6 md:px-20 md:py-7 rounded-full font-black uppercase tracking-widest text-[12px] md:text-[13px] shadow-[0_30px_60px_-15px_rgba(212,175,55,0.4)] transition-all hover:scale-105 active:scale-95" 
+          className="mt-6 px-16 py-6 md:px-20 md:py-7 rounded-full font-black uppercase tracking-widest text-[12px] md:text-[13px] shadow-[0_30px_60px_-15px_rgba(212,175,55,0.4)] transition-all hover:scale-105 active:scale-95" 
           style={{ backgroundColor: THEME.primary, color: THEME.bg }}
         >
-          Begin Ritual
+          Start Daily Check-in
         </button>
+        <p className="mt-3 text-xs text-white/50">Takes less than 2 minutes</p>
+
       </main>
 
       {/* Carousel Section */}

@@ -70,35 +70,37 @@ const Tracker = ({
       
       {/* SLIDERS SECTION */}
       <div className="relative z-10 w-full max-w-5xl mx-auto flex justify-between gap-2 md:gap-4 lg:gap-8 mb-20 px-2 md:px-8">
-          {Object.keys(PILLAR_INFO).map((key) => {
-              const info = PILLAR_INFO[key];
-              return (
-                  <div key={key} className="flex flex-col items-center flex-1 group min-w-0">
-                      <div className="flex flex-col items-center mb-4 md:mb-6 h-14 md:h-16 justify-center text-center">
-                          <span className="text-[10px] md:text-[12px] lg:text-[14px] uppercase tracking-[0.2em] font-black leading-tight text-white mb-1 md:mb-2 truncate w-full">{info.label}</span>
-                          <span className="text-[8px] md:text-[10px] font-bold text-yellow-600/70 uppercase tracking-[0.2em] md:tracking-[0.4em]">{info.sub}</span>
-                      </div>
-                      
-                      {/* FIX: Replaced 'bg-white/20' with 'bg-slate-200' (SOLID GREY) */}
-                      <div className="relative w-full max-w-[80px] md:max-w-[100px] lg:max-w-[120px] h-[350px] md:h-[400px] lg:h-[440px] rounded-full flex items-center justify-center overflow-hidden bg-slate-200 border-4 border-white/50 shadow-inner">
-                          
-                          {/* Gradient Fill */}
-                          <div className="absolute bottom-0 left-0 right-0 w-full transition-all duration-1000 ease-out" style={{ height: `${pillars[key]}%`, background: `linear-gradient(to top, ${info.color}, ${info.color})`, opacity: 1 }} />
-                          
-                          <input type="range" min="0" max="100" value={pillars[key]} onChange={(e) => setPillars({...pillars, [key]: parseInt(e.target.value)})} className="absolute -rotate-90 w-[500px] h-full opacity-0 cursor-pointer z-20" />
-                          
-                          {/* Center Line */}
-                          <div className="absolute w-[2px] h-full bg-black/5 z-10" />
-                          
-                          {/* Knob */}
-                          <div className="absolute w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full shadow-lg z-10 transition-all duration-300 pointer-events-none flex items-center justify-center bg-white ring-4 ring-black/5" style={{ top: `${100 - pillars[key]}%`, transform: 'translateY(-50%)' }}>
-                              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: info.color }} />
-                          </div>
-                      </div>
-                      <span className="mt-4 text-xs font-bold text-white/90">{pillars[key]}%</span>
-                  </div>
-              );
-          })}
+         {Object.entries(PILLAR_INFO).map(([key, pillar]) => (
+  <div key={key} className="mb-6">
+    <div className="flex justify-between items-end mb-2">
+      <div>
+        <h3 className="font-serif text-lg text-white">{pillar.label}</h3>
+        <p className="text-xs text-white/60 uppercase tracking-widest">{pillar.sub}</p>
+        
+        {/* 👇 THIS IS THE CODE YOU WANTED TO ADD 👇 */}
+        <p className="text-xs text-[#D4AF37] italic mt-1 font-medium">
+           {pillar.question}
+        </p>
+
+      </div>
+      <span className="text-2xl font-bold" style={{ color: pillar.color }}>
+        {rituals[key]}%
+      </span>
+    </div>
+    
+    <input
+      type="range"
+      min="0"
+      max="100"
+      value={rituals[key]}
+      onChange={(e) => handleSliderChange(key, parseInt(e.target.value))}
+      className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-white/20"
+      style={{
+        backgroundImage: `linear-gradient(to right, ${pillar.color} ${rituals[key]}%, rgba(255,255,255,0.1) ${rituals[key]}%)`
+      }}
+    />
+  </div>
+))}
       </div>
 
       <div className="relative z-10 w-full max-w-3xl mx-auto text-center flex flex-col items-center gap-6 md:gap-8 mb-16 md:mb-20 px-4">

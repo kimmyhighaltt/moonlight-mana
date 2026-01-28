@@ -9,10 +9,30 @@ export const THEME = {
 };
 
 export const PILLAR_INFO = {
-  mind: { label: 'Hinengaro', sub: 'Mind', color: '#60A5FA' },
-  body: { label: 'Tinana', sub: 'Body', color: '#34D399' },
-  heart: { label: 'Whatumanawa', sub: 'Heart', color: '#F472B6' },
-  soul: { label: 'Wairua', sub: 'Spirit', color: '#A78BFA' },
+  mind: { 
+    label: 'Hinengaro', 
+    sub: 'Mind', 
+    color: '#60A5FA',
+    question: 'Is your mind clear or cluttered today?' 
+  },
+  body: { 
+    label: 'Tinana', 
+    sub: 'Body', 
+    color: '#34D399',
+    question: 'How is your physical energy level?' 
+  },
+  heart: { 
+    label: 'Whatumanawa', 
+    sub: 'Heart', 
+    color: '#F472B6', 
+    question: 'How are you feeling emotionally?' 
+  },
+  soul: { 
+    label: 'Wairua', 
+    sub: 'Spirit', 
+    color: '#A78BFA',
+    question: 'Do you feel connected to your purpose?' 
+  },
 };
 
 // THE 22 MAJOR ARCANA (Rider-Waite-Smith Public Domain Images)
