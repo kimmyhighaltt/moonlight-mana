@@ -17,6 +17,13 @@ const Tracker = ({
     (pillars.mind + pillars.body + pillars.heart + pillars.soul) / 4
   );
 
+  const handleSliderChange = (pillarKey, value) => {
+    setPillars(prev => ({
+      ...prev,
+      [pillarKey]: value
+    }));
+  };
+
   const toggleTag = (tag) => {
     const currentState = activeTags[tag];
     const newTags = { ...activeTags };
@@ -34,12 +41,12 @@ const Tracker = ({
   const getTagStyle = (tag) => {
     const state = activeTags[tag];
     if (state === 'charge') {
-        return 'bg-emerald-500 text-emerald-900 font-bold border-emerald-400 shadow-lg scale-105'; // Solid Green
+        return 'bg-emerald-500 text-emerald-900 font-bold border-emerald-400 shadow-lg scale-105'; 
     }
     if (state === 'drain') {
-        return 'bg-rose-500 text-white font-bold border-rose-600 shadow-lg scale-105'; // Solid Red
+        return 'bg-rose-500 text-white font-bold border-rose-600 shadow-lg scale-105'; 
     }
-    return 'bg-slate-200 border-white/50 text-slate-600 hover:bg-white'; // Solid Grey (Default)
+    return 'bg-slate-200 border-white/50 text-slate-600 hover:bg-white'; 
   };
 
   return (
@@ -69,44 +76,58 @@ const Tracker = ({
       </div>
       
       {/* SLIDERS SECTION */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto flex justify-between gap-2 md:gap-4 lg:gap-8 mb-20 px-2 md:px-8">
+      <div className="relative z-10 w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-20 px-6 md:px-12">
          {Object.entries(PILLAR_INFO).map(([key, pillar]) => (
-  <div key={key} className="mb-6">
-    <div className="flex justify-between items-end mb-2">
-      <div>
-        <h3 className="font-serif text-lg text-white">{pillar.label}</h3>
-        <p className="text-xs text-white/60 uppercase tracking-widest">{pillar.sub}</p>
-        
-        {/* 👇 THIS IS THE CODE YOU WANTED TO ADD 👇 */}
-        <p className="text-xs text-[#D4AF37] italic mt-1 font-medium">
-           {pillar.question}
-        </p>
-
-      </div>
-      <span className="text-2xl font-bold" style={{ color: pillar.color }}>
-        {rituals[key]}%
-      </span>
-    </div>
-    
-    <input
-      type="range"
-      min="0"
-      max="100"
-      value={rituals[key]}
-      onChange={(e) => handleSliderChange(key, parseInt(e.target.value))}
-      className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-white/20"
-      style={{
-        backgroundImage: `linear-gradient(to right, ${pillar.color} ${rituals[key]}%, rgba(255,255,255,0.1) ${rituals[key]}%)`
-      }}
-    />
-  </div>
-))}
+            <div key={key} className="w-full mb-2">
+              <div className="flex justify-between items-end mb-3">
+                <div>
+                  <h3 className="font-serif text-lg text-white">{pillar.label}</h3>
+                  <p className="text-xs text-white/60 uppercase tracking-widest">{pillar.sub}</p>
+                  <p className="text-xs text-[#D4AF37] italic mt-1 font-medium">
+                     {pillar.question}
+                  </p>
+                </div>
+                <span className="text-2xl font-bold" style={{ color: pillar.color }}>
+                  {pillars[key]}%
+                </span>
+              </div>
+              
+              {/* TEST TUBE STYLE SLIDER */}
+              {/* Outer container acts as the 'glass tube' (border + dark bg) */}
+              <div className="relative h-6 w-full rounded-full border border-white/20 bg-black/20 shadow-inner overflow-hidden">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={pillars[key]}
+                    onChange={(e) => handleSliderChange(key, parseInt(e.target.value))}
+                    className="absolute w-full h-full opacity-0 z-20 cursor-pointer"
+                  />
+                  {/* The Liquid Fill */}
+                  <div 
+                    className="absolute left-0 top-0 h-full transition-all duration-300 ease-out z-10 rounded-l-full"
+                    style={{ 
+                        width: `${pillars[key]}%`,
+                        backgroundColor: pillar.color,
+                        boxShadow: `inset 0 2px 0 rgba(255,255,255,0.3), 0 0 10px ${pillar.color}40` // Glassy highlight + glow
+                    }}
+                  />
+              </div>
+            </div>
+          ))}
       </div>
 
       <div className="relative z-10 w-full max-w-3xl mx-auto text-center flex flex-col items-center gap-6 md:gap-8 mb-16 md:mb-20 px-4">
-          <div className="flex items-center gap-4">
-            <Zap size={20} className="text-gold" style={{ color: THEME.primary }} />
-            <h4 className="text-sm md:text-lg font-bold tracking-[0.2em] text-white uppercase">Energy Sources</h4>
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-4">
+                <Zap size={20} className="text-gold" style={{ color: THEME.primary }} />
+                <h4 className="text-sm md:text-lg font-bold tracking-[0.2em] text-white uppercase">Energy Sources</h4>
+            </div>
+            
+            {/* ADDED: Missing Instruction Text */}
+            <p className="text-[10px] md:text-xs text-white/50 font-medium tracking-wide uppercase">
+                Tap once to Charge (+), Tap twice to Drain (-)
+            </p>
           </div>
           
           <div className="flex flex-wrap justify-center gap-3 md:gap-4 lg:gap-6">
@@ -114,7 +135,6 @@ const Tracker = ({
                   <button 
                     key={tag} 
                     onClick={() => toggleTag(tag)} 
-                    // FIX: Buttons are now Solid White/Grey by default, not transparent
                     className={`relative px-6 py-3 md:px-10 md:py-4 lg:px-14 lg:py-5 rounded-[24px] text-[10px] md:text-[11px] lg:text-[12px] font-black uppercase tracking-[0.2em] transition-all duration-300 shadow-md ${getTagStyle(tag)}`}
                   >
                     {activeTags[tag] === 'charge' && <Battery size={12} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />}

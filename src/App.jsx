@@ -16,6 +16,22 @@ import Vault from './views/Vault';
 import Planner from './views/Planner';
 
 /**
+ * AI LOGIC: The Smart Interpreter
+ * Automatically generates advice based on the user's lowest energy pillar.
+ */
+const getSmartReading = (card, pillars, userReflection) => {
+  // 1. Find the lowest pillar (The "Problem Area")
+  const lowestPillar = Object.entries(pillars).reduce((a, b) => a[1] < b[1] ? a : b);
+  const [problemArea, score] = lowestPillar;
+
+  // 2. If they wrote a custom reflection, use that.
+  if (userReflection && userReflection.trim() !== "") return userReflection;
+
+  // 3. Otherwise, generate "AI" advice based on the combo
+  return `Your ${problemArea} energy is low (${score}%). The ${card.name} suggests you focus on ${card.message.toLowerCase()} to restore balance here.`;
+};
+
+/**
  * MOONLIGHT MANA - CONTROLLER
  */
 const App = () => {
@@ -119,6 +135,9 @@ const App = () => {
         entryDateObj.setMinutes(0);
       }
 
+      // 👇 NEW: Generate Smart Message using the AI logic
+      const smartMessage = getSmartReading(selectedCard, pillars, reflection.theMessage);
+
       const newEntry = {
         id: Date.now(),
         date: entryDateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase(),
@@ -127,7 +146,7 @@ const App = () => {
         card: selectedCard.name,
         img: selectedCard.img,
         mana: averageMana,
-        message: reflection.theMessage || selectedCard.message,
+        message: smartMessage, // <--- Saves the AI interpretation or user note
         pillars: { ...pillars },
         trend: averageMana > 65 ? 'up' : 'down',
         tags: { ...activeTags }
@@ -150,6 +169,7 @@ const App = () => {
   // --- Render Views ---
 
   if (view === 'splash') return <Splash />;
+  
 
   if (view === 'dashboard') {
     return (
@@ -174,6 +194,11 @@ const App = () => {
         rituals={rituals}
         checkedItems={checkedItems}
         toggleCheck={toggleCheck}
+        
+        // 👇 CRITICAL FIX: Passing pillars state to Reflection so sliders work
+        pillars={pillars}
+        setPillars={setPillars}
+
         newRitualInput={newRitualInput}
         setNewRitualInput={setNewRitualInput}
         addRitual={addRitual}
@@ -184,7 +209,7 @@ const App = () => {
         // PROPS
         selectedHour={selectedHour}
         setSelectedHour={setSelectedHour}
-        onBack={() => setView('dashboard')} // <--- ROUTING LOGIC
+        onBack={() => setView('dashboard')} 
       />
     );
   }
@@ -201,7 +226,7 @@ const App = () => {
         handleLogMana={handleLogMana}
         isOnline={isOnline}
         setView={setView}
-        onBack={() => setView('reflection')} // <--- ROUTING LOGIC
+        onBack={() => setView('reflection')} 
       />
     );
   }
