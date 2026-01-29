@@ -12,7 +12,8 @@ const Reflection = ({
   currentTime, hemisphere, isFlipped, selectedCard, handleCardPull,
   rituals, checkedItems, toggleCheck, newRitualInput, setNewRitualInput,
   addRitual, reflection, setReflection, setView, isOnline,
-  selectedHour, setSelectedHour, onBack
+  selectedHour, setSelectedHour, onBack,
+  userProfile // 👈 1. ADDED USER PROFILE PROP HERE
 }) => {
 
   const [isGuided, setIsGuided] = useState(true);
@@ -32,8 +33,11 @@ const Reflection = ({
     const tool = getRecommendationForCard(selectedCard.name);
     const ritualAdvice = getRitualAdvice(tool);
 
-    // 3. Build Message
-    const fullMessage = `${selectedCard.name} has appeared. ${specificWisdom} ${ritualAdvice} Breathe deeply and accept this guidance.`;
+    // 3. Build Message (PERSONALIZED)
+    // If name exists, add it. Otherwise, keep it empty.
+    const greeting = userProfile ? `${userProfile.name}, ` : "";
+    
+    const fullMessage = `${greeting}${selectedCard.name} has appeared. ${specificWisdom} ${ritualAdvice} Breathe deeply and accept this guidance.`;
 
     // 4. Stream Text
     setTimeout(() => {

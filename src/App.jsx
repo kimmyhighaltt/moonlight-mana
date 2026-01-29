@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import OnboardingModal from './components/OnboardingModal';
+import { getZodiacSign, getLifePathNumber } from './utils/cosmicLogic';
 
 // 1. Data & Utils
 import { THEME, PILLAR_INFO, TAROT_DECK, INITIAL_MOCK_ENTRIES } from './constants/index';
@@ -17,17 +19,13 @@ import Planner from './views/Planner';
 
 /**
  * AI LOGIC: The Smart Interpreter
- * Automatically generates advice based on the user's lowest energy pillar.
  */
 const getSmartReading = (card, pillars, userReflection) => {
-  // 1. Find the lowest pillar (The "Problem Area")
   const lowestPillar = Object.entries(pillars).reduce((a, b) => a[1] < b[1] ? a : b);
   const [problemArea, score] = lowestPillar;
 
-  // 2. If they wrote a custom reflection, use that.
   if (userReflection && userReflection.trim() !== "") return userReflection;
 
-  // 3. Otherwise, generate "AI" advice based on the combo
   return `Your ${problemArea} energy is low (${score}%). The ${card.name} suggests you focus on ${card.message.toLowerCase()} to restore balance here.`;
 };
 
@@ -36,8 +34,8 @@ const getSmartReading = (card, pillars, userReflection) => {
  */
 const App = () => {
   // --- Global Settings ---
-  const [view, setView] = useState('splash'); 
-  const [hemisphere, setHemisphere] = useState('Southern'); 
+  const [view, setView] = useState('splash');
+  const [hemisphere, setHemisphere] = useState('Southern');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOnline, setIsOnline] = useState(true);
 
@@ -52,7 +50,6 @@ const App = () => {
     }
   });
 
-  
   // --- Session State ---
   const [isFlipped, setIsFlipped] = useState(false);
   const [selectedCard, setSelectedCard] = useState(TAROT_DECK[0]);
@@ -63,14 +60,28 @@ const App = () => {
   const [pillars, setPillars] = useState({ mind: 60, body: 60, heart: 60, soul: 60 });
   const [activeTags, setActiveTags] = useState({ 'Aotearoa (Nature)': 'charge' });
   const [isLogging, setIsLogging] = useState(false);
-
-  // NEW: State for the custom time selection
   const [selectedHour, setSelectedHour] = useState(null);
-  
+
   // --- View State ---
   const [searchTerm, setSearchTerm] = useState('');
   const [filterHighMana, setFilterHighMana] = useState(false);
   const [selectedCalendarDay, setSelectedCalendarDay] = useState(null);
+
+  // --- USER PROFILE (Cosmic Identity) ---
+  const [userProfile, setUserProfile] = useState(() => {
+    const saved = localStorage.getItem('moonlight_user');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const handleOnboardingComplete = (data) => {
+    const profile = {
+      ...data,
+      sign: getZodiacSign(data.dob),
+      lifePath: getLifePathNumber(data.dob)
+    };
+    setUserProfile(profile);
+    localStorage.setItem('moonlight_user', JSON.stringify(profile));
+  };
 
   // --- Computed Data ---
   const moonData = getMoonPhase(currentTime);
@@ -80,38 +91,33 @@ const App = () => {
     localStorage.setItem('moonlight_vault', JSON.stringify(journalEntries));
   }, [journalEntries]);
 
-  // ------------------------------------------------------------------
-  // 🔗 URL & ROUTER FIX (Fixes Analytics & Back Button)
-  // ------------------------------------------------------------------
+  // URL & Router Fix
   useEffect(() => {
-    // 1. When the view changes, update the URL hash (e.g. /#reflection)
     if (view !== 'splash') {
       window.location.hash = view;
     }
   }, [view]);
 
   useEffect(() => {
-    // 2. Handle the Browser "Back" Button
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
       if (hash && hash !== view) {
         setView(hash);
       }
     };
-
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [view]);
 
-  // --- Timer & Online Status ---
+  // Timer & Online Status
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     const init = setTimeout(() => setView('dashboard'), 3000);
-    
+
     const handleConn = () => setIsOnline(navigator.onLine);
     window.addEventListener('online', handleConn);
     window.addEventListener('offline', handleConn);
-    
+
     return () => {
       clearInterval(timer);
       clearTimeout(init);
@@ -121,11 +127,10 @@ const App = () => {
   }, []);
 
   // --- Handlers ---
-
   const toggleHemisphere = () => setHemisphere(prev => prev === 'Southern' ? 'Northern' : 'Southern');
 
   const toggleCheck = (id) => {
-    if (window.navigator?.vibrate) window.navigator.vibrate(50); 
+    if (window.navigator?.vibrate) window.navigator.vibrate(50);
     setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
@@ -134,7 +139,7 @@ const App = () => {
       const randomIndex = Math.floor(Math.random() * TAROT_DECK.length);
       setSelectedCard(TAROT_DECK[randomIndex]);
       setIsFlipped(true);
-      if (window.navigator?.vibrate) window.navigator.vibrate([100, 50, 100]); 
+      if (window.navigator?.vibrate) window.navigator.vibrate([100, 50, 100]);
     } else {
       setIsFlipped(false);
     }
@@ -145,78 +150,81 @@ const App = () => {
     if (!newRitualInput.trim()) return;
     setRituals([...rituals, newRitualInput.trim()]);
     setNewRitualInput('');
-    if (window.navigator?.vibrate) window.navigator.vibrate([30, 50, 30]); 
+    if (window.navigator?.vibrate) window.navigator.vibrate([30, 50, 30]);
   };
 
   const handleLogMana = () => {
     setIsLogging(true);
     setTimeout(() => {
       const averageMana = Math.round((pillars.mind + pillars.body + pillars.heart + pillars.soul) / 4);
-      
-      // LOGIC: Use selectedHour if it exists, otherwise use currentTime
+
       let entryDateObj = new Date(currentTime);
       if (selectedHour !== null) {
         entryDateObj.setHours(selectedHour);
         entryDateObj.setMinutes(0);
       }
 
-      // Generate Smart Message using the AI logic
       const smartMessage = getSmartReading(selectedCard, pillars, reflection.theMessage);
 
       const newEntry = {
         id: Date.now(),
         date: entryDateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase(),
-        time: entryDateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), 
+        time: entryDateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
         moon: moonData.label,
         card: selectedCard.name,
         img: selectedCard.img,
         mana: averageMana,
-        message: smartMessage, 
+        message: smartMessage,
         pillars: { ...pillars },
         trend: averageMana > 65 ? 'up' : 'down',
         tags: { ...activeTags }
       };
       setJournalEntries([newEntry, ...journalEntries]);
       setIsLogging(false);
-      setSelectedHour(null); 
+      setSelectedHour(null);
       setView('vault');
-      if (window.navigator?.vibrate) window.navigator.vibrate([100, 30, 100, 30, 200]); 
+      if (window.navigator?.vibrate) window.navigator.vibrate([100, 30, 100, 30, 200]);
     }, 1800);
   };
 
-  // 👇 NEW: Handle Delete Function
   const handleDeleteEntry = (idToDelete) => {
     setJournalEntries(prevEntries => prevEntries.filter(entry => entry.id !== idToDelete));
   };
 
   const filteredEntries = journalEntries.filter(entry => {
-    const matchesSearch = entry.card.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          entry.message.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = entry.card.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      entry.message.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesHighMana = filterHighMana ? entry.mana >= 85 : true;
     return matchesSearch && matchesHighMana;
   });
-  
 
-  // --- Render Views ---
+  // --- RENDER FLOW ---
 
+  // 1. Splash Screen always comes first
   if (view === 'splash') return <Splash />;
-  
 
+  // 2. 🛑 BLOCKING CHECK: If no profile exists, show Onboarding
+  if (!userProfile) {
+    return <OnboardingModal onComplete={handleOnboardingComplete} />;
+  }
+
+  // 3. Main Application Views (Only reachable if userProfile exists)
   if (view === 'dashboard') {
     return (
-      <Dashboard 
-        hemisphere={hemisphere} 
-        toggleHemisphere={toggleHemisphere} 
-        setView={setView} 
+      <Dashboard
+        hemisphere={hemisphere}
+        toggleHemisphere={toggleHemisphere}
+        setView={setView}
         isOnline={isOnline}
         moonData={moonData}
+        userProfile={userProfile} 
       />
     );
   }
 
   if (view === 'reflection') {
     return (
-      <Reflection 
+      <Reflection
         currentTime={currentTime}
         hemisphere={hemisphere}
         isFlipped={isFlipped}
@@ -236,14 +244,15 @@ const App = () => {
         isOnline={isOnline}
         selectedHour={selectedHour}
         setSelectedHour={setSelectedHour}
-        onBack={() => setView('dashboard')} 
+        onBack={() => setView('dashboard')}
+        userProfile={userProfile}
       />
     );
   }
 
   if (view === 'tracker') {
     return (
-      <Tracker 
+      <Tracker
         isLogging={isLogging}
         currentTime={currentTime}
         pillars={pillars}
@@ -253,14 +262,14 @@ const App = () => {
         handleLogMana={handleLogMana}
         isOnline={isOnline}
         setView={setView}
-        onBack={() => setView('reflection')} 
+        onBack={() => setView('reflection')}
       />
     );
   }
 
   if (view === 'vault') {
     return (
-      <Vault 
+      <Vault
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         filterHighMana={filterHighMana}
@@ -268,7 +277,6 @@ const App = () => {
         filteredEntries={filteredEntries}
         setView={setView}
         isOnline={isOnline}
-        // 👇 PASSING THE DELETE FUNCTION TO VAULT
         onDelete={handleDeleteEntry}
       />
     );
@@ -276,7 +284,7 @@ const App = () => {
 
   if (view === 'planner') {
     return (
-      <Planner 
+      <Planner
         currentTime={currentTime}
         hemisphere={hemisphere}
         toggleHemisphere={toggleHemisphere}

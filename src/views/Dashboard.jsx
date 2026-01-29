@@ -3,7 +3,7 @@ import { Globe, Moon, ShoppingBag, ExternalLink } from 'lucide-react';
 import { THEME, SACRED_TOOLS } from '../constants/index';
 import { StatusHeader, BottomNav } from '../components/UIComponents';
 
-const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData }) => {
+const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, userProfile }) => {
   const carouselItems = [...SACRED_TOOLS, ...SACRED_TOOLS];
 
   return (
@@ -21,10 +21,24 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData }
         </button>
       </div>
       
-      {/* Hero Section */}
+      {/* Hero Section (PERSONALIZED) */}
       <header className="flex flex-col items-center mt-4 md:mt-10 px-4 relative z-10 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-2">Moonlight Mana</h1>
-        <p className="text-xs uppercase tracking-[0.3em] opacity-60">Daily Ritual System</p>
+        {/* Zodiac / Subtitle Badge */}
+        <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-80 animate-pulse mb-2" style={{ color: THEME.primary }}>
+            {userProfile 
+                ? `${userProfile.sign} Sun • Life Path ${userProfile.lifePath}` 
+                : "Daily Ritual System"}
+        </p>
+
+        {/* Main Title / Greeting */}
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-2">
+            {userProfile ? `Rise, ${userProfile.name}.` : "Moonlight Mana"}
+        </h1>
+
+        {/* Tagline */}
+        <p className="text-xs text-white/50 font-medium tracking-wider uppercase">
+             The veil is thin today
+        </p>
       </header>
 
       {/* Main Moon Card - Responsive Sizing */}
