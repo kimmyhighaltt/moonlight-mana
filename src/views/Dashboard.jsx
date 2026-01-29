@@ -1,47 +1,65 @@
 import React from 'react';
-import { Globe, Moon, ShoppingBag, ExternalLink } from 'lucide-react';
+import { Globe, Moon, ShoppingBag, ExternalLink, Flame } from 'lucide-react';
 import { THEME, SACRED_TOOLS } from '../constants/index';
 import { StatusHeader, BottomNav } from '../components/UIComponents';
 
-const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, userProfile }) => {
+const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, userProfile, streak }) => {
   const carouselItems = [...SACRED_TOOLS, ...SACRED_TOOLS];
 
   return (
-    // FIX: Removed 'items-center' from main div to allow full width, added explicit bg color
     <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden animate-slide-up pb-32" style={{ backgroundColor: THEME.bg, color: '#FFFFFF' }}>
       
-      {/* Mobile-Friendly Header */}
-      <div className="w-full flex justify-between items-start p-6 pt-12 md:p-10">
+      {/* --- HEADER ROW --- */}
+      <div className="w-full flex justify-between items-center p-6 pt-12 md:p-10">
+        
+        {/* Left: Status Icons */}
         <StatusHeader isOnline={isOnline} />
-        <button onClick={toggleHemisphere} className="flex items-center gap-2 px-4 py-2 rounded-full border border-gold/20 bg-white/5 backdrop-blur-sm">
-          <Globe size={12} color={THEME.primary} />
-          <p className="text-[10px] tracking-[0.2em] uppercase font-black" style={{ color: THEME.primary }}>
-            {hemisphere}
-          </p>
-        </button>
+        
+        {/* Right: Streak & Hemisphere Group */}
+        <div className="flex items-center gap-3">
+            
+            {/* 🔥 STREAK BADGE (Moved Here) */}
+            {streak > 0 && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 border border-orange-500/20 rounded-full animate-in fade-in slide-in-from-top-4">
+                <Flame size={12} className="text-orange-500 fill-orange-500 animate-pulse" />
+                <span className="text-[10px] font-black tracking-widest text-orange-400 uppercase">
+                    {streak} Day
+                </span>
+              </div>
+            )}
+
+            {/* Hemisphere Toggle */}
+            <button onClick={toggleHemisphere} className="flex items-center gap-2 px-4 py-2 rounded-full border border-gold/20 bg-white/5 backdrop-blur-sm">
+                <Globe size={12} color={THEME.primary} />
+                <p className="text-[10px] tracking-[0.2em] uppercase font-black" style={{ color: THEME.primary }}>
+                    {hemisphere}
+                </p>
+            </button>
+        </div>
       </div>
       
-      {/* Hero Section (PERSONALIZED) */}
+      {/* --- HERO SECTION (Cleaned Up) --- */}
       <header className="flex flex-col items-center mt-4 md:mt-10 px-4 relative z-10 text-center">
-        {/* Zodiac / Subtitle Badge */}
-        <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-80 animate-pulse mb-2" style={{ color: THEME.primary }}>
+        
+        {/* Zodiac Line */}
+        <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-60 mb-1" style={{ color: THEME.primary }}>
             {userProfile 
                 ? `${userProfile.sign} Sun • Life Path ${userProfile.lifePath}` 
                 : "Daily Ritual System"}
         </p>
 
-        {/* Main Title / Greeting */}
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-2">
+        {/* Main Title */}
+        <h1 className="text-4xl md:text-6xl font-serif tracking-tight mb-2 text-white">
             {userProfile ? `Rise, ${userProfile.name}.` : "Moonlight Mana"}
         </h1>
 
         {/* Tagline */}
-        <p className="text-xs text-white/50 font-medium tracking-wider uppercase">
+        <p className="text-[10px] text-white/40 font-bold tracking-[0.2em] uppercase">
              The veil is thin today
         </p>
       </header>
 
-      {/* Main Moon Card - Responsive Sizing */}
+      {/* --- MOON CARD --- */}
       <main className="relative z-10 flex flex-col items-center w-full max-w-2xl mx-auto mt-8 md:mt-12 px-6">
         <div className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-[40px] md:rounded-[60px] p-8 md:p-12 flex flex-col items-center shadow-2xl group cursor-pointer hover:bg-white/10 transition-all">
           <div className="relative mb-6 md:mb-8">
@@ -57,17 +75,17 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
           </div>
         </div>
         
-        {/* NEW: Beginner-Friendly Guidance Block */}
+        {/* Guidance Block */}
         <div className="mb-2 mx-4 bg-white/5 p-4 rounded-xl border border-white/10 text-center max-w-sm mt-8">
-          <p className="font-bold text-sm mb-1 uppercase tracking-widest" style={{ color: THEME.primary }}>
-            DAILY GUIDANCE
+          <p className="font-bold text-[10px] mb-2 uppercase tracking-widest text-gold opacity-80" style={{ color: THEME.primary }}>
+            Daily Guidance
           </p>
-          <p className="text-sm text-white/80 leading-relaxed">
-            Align your energy with the moon. Click below to <strong>track your wellness</strong> and <strong>pull your daily tarot card</strong>.
+          <p className="text-xs text-white/70 leading-relaxed font-medium">
+            Align your energy with the moon. <br/>Click below to <strong>track your wellness</strong>.
           </p>
         </div>
         
-        {/* UPDATED: Button Text & Helper Text */}
+        {/* Action Button */}
         <button 
           onClick={() => setView('reflection')} 
           className="mt-6 px-16 py-6 md:px-20 md:py-7 rounded-full font-black uppercase tracking-widest text-[12px] md:text-[13px] shadow-[0_30px_60px_-15px_rgba(212,175,55,0.4)] transition-all hover:scale-105 active:scale-95" 
@@ -75,11 +93,11 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
         >
           Start Daily Check-in
         </button>
-        <p className="mt-3 text-xs text-white/50">Takes less than 2 minutes</p>
+        <p className="mt-4 text-[9px] uppercase tracking-widest opacity-30">Takes less than 2 minutes</p>
 
       </main>
 
-      {/* Carousel Section */}
+      {/* --- CAROUSEL --- */}
       <section className="relative z-10 w-full mt-16 md:mt-20 overflow-hidden">
         <div className="max-w-2xl mx-auto flex items-center justify-between mb-6 px-6">
             <div className="flex items-center gap-3">

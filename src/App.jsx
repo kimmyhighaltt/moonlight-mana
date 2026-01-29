@@ -83,6 +83,38 @@ const App = () => {
     localStorage.setItem('moonlight_user', JSON.stringify(profile));
   };
 
+  // --- STREAK LOGIC (New!) ---
+  const [streak, setStreak] = useState(0);
+
+  useEffect(() => {
+    const checkStreak = () => {
+      const today = new Date().toDateString(); // e.g. "Fri Nov 15 2024"
+      const saved = JSON.parse(localStorage.getItem('moonlight_streak')) || { date: null, count: 0 };
+      
+      // Case 1: Already visited today? Do nothing, just set state.
+      if (saved.date === today) {
+        setStreak(saved.count);
+        return;
+      }
+
+      // Case 2: Visited Yesterday? (Streak Continues!)
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      if (saved.date === yesterday.toDateString()) {
+        const newCount = saved.count + 1;
+        setStreak(newCount);
+        localStorage.setItem('moonlight_streak', JSON.stringify({ date: today, count: newCount }));
+      } 
+      // Case 3: Missed a day? (Reset to 1)
+      else {
+        setStreak(1);
+        localStorage.setItem('moonlight_streak', JSON.stringify({ date: today, count: 1 }));
+      }
+    };
+    checkStreak();
+  }, []); // Run once on mount
+
   // --- Computed Data ---
   const moonData = getMoonPhase(currentTime);
 
@@ -218,6 +250,7 @@ const App = () => {
         isOnline={isOnline}
         moonData={moonData}
         userProfile={userProfile} 
+        streak={streak} // 👈 PASSED THE STREAK PROP HERE
       />
     );
   }

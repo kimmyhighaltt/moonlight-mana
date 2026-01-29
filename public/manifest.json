@@ -1,6 +1,6 @@
 {
   "short_name": "Moonlight",
-  "name": "Moonlight Mana",
+  "name": "Moonlight Mana | Daily Rituals",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#2C3E50",
-  "background_color": "#2C3E50"
+  "theme_color": "#0F172A",
+  "background_color": "#0F172A"
 }
