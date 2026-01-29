@@ -1,18 +1,32 @@
 import React, { useRef } from 'react';
-import { Search, TrendingUp, TrendingDown, Image as ImageIcon, Clock, Moon, Star } from 'lucide-react'; // Added Moon, Star
-import { THEME } from '../constants/index';
+import { Search, TrendingUp, TrendingDown, Image as ImageIcon, Clock, Moon, Star, Ghost, Trash2 } from 'lucide-react'; 
+import { THEME, TAROT_DECK } from '../constants/index'; 
 import { Logo, GraphGrid, StatusHeader, BottomNav } from '../components/UIComponents';
 import ShareButton from '../components/ShareButton';
 
-const VaultEntryCard = ({ entry }) => {
+const VaultEntryCard = ({ entry, onDelete }) => {
   const cardRef = useRef(null);
 
+  // 🔍 SMART REPAIR: Look up the fresh image from the deck
+  const deckCard = TAROT_DECK.find(c => c.name === entry.card);
+  const displayImg = deckCard?.img || entry.img;
+
+  // 🗑️ HANDLE DELETE
+  const handleDeleteClick = () => {
+    if (window.confirm("Are you sure you want to delete this sacred memory? This cannot be undone.")) {
+      onDelete(entry.id);
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-6 group w-full max-w-lg mx-auto"> 
+    <div className="flex flex-col gap-6 group w-full max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700"> 
+      
+      {/* THE CARD ITSELF */}
       <div 
         ref={cardRef}
         className="relative bg-white text-slate-900 rounded-[32px] md:rounded-[40px] shadow-xl p-6 md:p-8 flex flex-col items-center transition-all hover:scale-[1.02] cursor-default min-h-[450px] border-b-8 border-gold/10"
       >
+        {/* Header: Date & Trend */}
         <div className="w-full flex justify-between items-start mb-6">
           <div className="flex items-center gap-4">
             <div className="flex flex-col text-left">
@@ -24,7 +38,10 @@ const VaultEntryCard = ({ entry }) => {
                     </div>
                 )}
             </div>
-            {entry.trend === 'up' ? <TrendingUp size={18} className="text-green-500 mb-4" /> : <TrendingDown size={18} className="text-orange-400 mb-4" />}
+            {entry.trend === 'up' 
+                ? <TrendingUp size={18} className="text-green-500 mb-4" /> 
+                : <TrendingDown size={18} className="text-orange-400 mb-4" />
+            }
           </div>
           
           <div className="flex flex-col items-end gap-2">
@@ -32,9 +49,10 @@ const VaultEntryCard = ({ entry }) => {
           </div>
         </div>
 
+        {/* IMAGE AREA - RESTORED ORIGINAL STYLING */}
         <div className="w-full aspect-[1/1.5] rounded-[24px] bg-zinc-100 overflow-hidden relative mb-6 shadow-lg border-4 border-slate-50">
-          {entry.img ? (
-            <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url("${entry.img}")` }} />
+          {displayImg ? (
+            <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url("${displayImg}")` }} />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-slate-300"><ImageIcon size={48} /></div>
           )}
@@ -43,9 +61,10 @@ const VaultEntryCard = ({ entry }) => {
           </div>
         </div>
         
+        {/* Mana Graph */}
         <div className="w-full grid grid-cols-2 gap-4 mb-6">
           {['Body', 'Soul', 'Mind', 'Heart'].map(l => {
-            const v = entry.pillars?.[l.toLowerCase()] || entry.mana;
+            const v = entry.pillars?.[l.toLowerCase()] || entry.mana || 0;
             return (
               <div key={l} className="flex flex-col gap-1.5">
                 <div className="flex justify-between items-center">
@@ -60,9 +79,12 @@ const VaultEntryCard = ({ entry }) => {
           })}
         </div>
         
-        <p className="text-sm text-slate-600 italic text-center px-4 line-clamp-3 leading-relaxed font-serif mb-6">"{entry.message}"</p>
+        {/* Message */}
+        <p className="text-sm text-slate-600 italic text-center px-4 line-clamp-3 leading-relaxed font-serif mb-6">
+            "{entry.message || "No reflection recorded."}"
+        </p>
 
-        {/* NEW: BRANDING FOOTER (Visible in Download) */}
+        {/* Branding Footer */}
         <div className="w-full pt-6 border-t border-slate-100 flex flex-col items-center gap-2">
             <div className="flex items-center gap-2 opacity-40">
                 <Star size={8} fill={THEME.primary} stroke="none" />
@@ -73,14 +95,28 @@ const VaultEntryCard = ({ entry }) => {
         </div>
       </div>
 
-      <div className="flex justify-center opacity-100 md:opacity-0 group-hover:opacity-100 transition-all">
+      {/* ACTION BUTTONS: SHARE & DELETE */}
+      <div className="flex justify-center gap-4 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all">
+        
+        {/* Share */}
         <ShareButton targetRef={cardRef} fileName={`moonlight-${entry.date}.png`} />
+        
+        {/* Delete */}
+        {onDelete && (
+            <button 
+                onClick={handleDeleteClick}
+                className="bg-white/10 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 p-4 rounded-full transition-all shadow-lg backdrop-blur-sm"
+                title="Delete Entry"
+            >
+                <Trash2 size={20} />
+            </button>
+        )}
       </div>
     </div>
   );
 };
 
-const Vault = ({ searchTerm, setSearchTerm, filterHighMana, setFilterHighMana, filteredEntries, setView, isOnline }) => {
+const Vault = ({ searchTerm, setSearchTerm, filterHighMana, setFilterHighMana, filteredEntries, setView, isOnline, onDelete }) => {
   return (
     <div className="min-h-screen w-full flex flex-col p-6 md:p-10 lg:p-16 pb-40 relative overflow-x-hidden font-sans animate-fade-in" style={{ backgroundColor: THEME.bg, color: THEME.secondary }}>
       <GraphGrid />
@@ -88,8 +124,11 @@ const Vault = ({ searchTerm, setSearchTerm, filterHighMana, setFilterHighMana, f
           <StatusHeader isOnline={isOnline} />
       </div>
       
-      <div className="w-full flex justify-center mb-8 relative z-10"><Logo size="text-4xl md:text-5xl lg:text-6xl" subtitle="THE SACRED ARCHIVE" /></div>
+      <div className="w-full flex justify-center mb-8 relative z-10">
+        <Logo size="text-4xl md:text-5xl lg:text-6xl" subtitle="THE SACRED ARCHIVE" />
+      </div>
       
+      {/* Search & Filter Bar */}
       <div className="relative z-10 w-full max-w-5xl mx-auto mb-10 space-y-4 px-2">
           <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative group">
@@ -113,11 +152,22 @@ const Vault = ({ searchTerm, setSearchTerm, filterHighMana, setFilterHighMana, f
           </div>
       </div>
 
-      <div className="relative z-10 w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 px-2 mb-20">
-          {filteredEntries.map(entry => (
-             <VaultEntryCard key={entry.id} entry={entry} />
-          ))}
-      </div>
+      {/* Grid of Entries */}
+      {filteredEntries.length > 0 ? (
+          <div className="relative z-10 w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 px-2 mb-20">
+              {filteredEntries.map(entry => (
+                 <VaultEntryCard key={entry.id} entry={entry} onDelete={onDelete} />
+              ))}
+          </div>
+      ) : (
+          // Empty State
+          <div className="w-full flex flex-col items-center justify-center py-20 opacity-50">
+            <Ghost size={48} className="mb-4 text-white/20" />
+            <p className="text-white text-lg font-serif italic">The archives are silent...</p>
+            <p className="text-white/40 text-xs uppercase tracking-widest mt-2">No entries found.</p>
+          </div>
+      )}
+
       <BottomNav view="vault" setView={setView} />
     </div>
   );

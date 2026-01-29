@@ -52,6 +52,7 @@ const App = () => {
     }
   });
 
+  
   // --- Session State ---
   const [isFlipped, setIsFlipped] = useState(false);
   const [selectedCard, setSelectedCard] = useState(TAROT_DECK[0]);
@@ -79,6 +80,30 @@ const App = () => {
     localStorage.setItem('moonlight_vault', JSON.stringify(journalEntries));
   }, [journalEntries]);
 
+  // ------------------------------------------------------------------
+  // 🔗 URL & ROUTER FIX (Fixes Analytics & Back Button)
+  // ------------------------------------------------------------------
+  useEffect(() => {
+    // 1. When the view changes, update the URL hash (e.g. /#reflection)
+    if (view !== 'splash') {
+      window.location.hash = view;
+    }
+  }, [view]);
+
+  useEffect(() => {
+    // 2. Handle the Browser "Back" Button
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && hash !== view) {
+        setView(hash);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [view]);
+
+  // --- Timer & Online Status ---
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     const init = setTimeout(() => setView('dashboard'), 3000);
@@ -135,7 +160,7 @@ const App = () => {
         entryDateObj.setMinutes(0);
       }
 
-      // 👇 NEW: Generate Smart Message using the AI logic
+      // Generate Smart Message using the AI logic
       const smartMessage = getSmartReading(selectedCard, pillars, reflection.theMessage);
 
       const newEntry = {
@@ -146,7 +171,7 @@ const App = () => {
         card: selectedCard.name,
         img: selectedCard.img,
         mana: averageMana,
-        message: smartMessage, // <--- Saves the AI interpretation or user note
+        message: smartMessage, 
         pillars: { ...pillars },
         trend: averageMana > 65 ? 'up' : 'down',
         tags: { ...activeTags }
@@ -159,12 +184,18 @@ const App = () => {
     }, 1800);
   };
 
+  // 👇 NEW: Handle Delete Function
+  const handleDeleteEntry = (idToDelete) => {
+    setJournalEntries(prevEntries => prevEntries.filter(entry => entry.id !== idToDelete));
+  };
+
   const filteredEntries = journalEntries.filter(entry => {
     const matchesSearch = entry.card.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           entry.message.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesHighMana = filterHighMana ? entry.mana >= 85 : true;
     return matchesSearch && matchesHighMana;
   });
+  
 
   // --- Render Views ---
 
@@ -194,11 +225,8 @@ const App = () => {
         rituals={rituals}
         checkedItems={checkedItems}
         toggleCheck={toggleCheck}
-        
-        // 👇 CRITICAL FIX: Passing pillars state to Reflection so sliders work
         pillars={pillars}
         setPillars={setPillars}
-
         newRitualInput={newRitualInput}
         setNewRitualInput={setNewRitualInput}
         addRitual={addRitual}
@@ -206,7 +234,6 @@ const App = () => {
         setReflection={setReflection}
         setView={setView}
         isOnline={isOnline}
-        // PROPS
         selectedHour={selectedHour}
         setSelectedHour={setSelectedHour}
         onBack={() => setView('dashboard')} 
@@ -241,6 +268,8 @@ const App = () => {
         filteredEntries={filteredEntries}
         setView={setView}
         isOnline={isOnline}
+        // 👇 PASSING THE DELETE FUNCTION TO VAULT
+        onDelete={handleDeleteEntry}
       />
     );
   }
