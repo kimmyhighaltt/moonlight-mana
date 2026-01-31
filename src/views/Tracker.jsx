@@ -13,6 +13,16 @@ const Tracker = ({
     return WHAKATAUKI[randomIndex];
   });
 
+  // 👇 NEW: Defined tags with English descriptions for clarity
+  const TAG_DETAILS = [
+    { id: 'Work', label: 'Mahi', sub: 'Work & Purpose' },
+    { id: 'Whānau', label: 'Whānau', sub: 'Family & Friends' },
+    { id: 'Hauora', label: 'Hauora', sub: 'Health & Body' },
+    { id: 'Aotearoa', label: 'Aotearoa', sub: 'Nature (Land)' },
+    { id: 'Te Moana', label: 'Te Moana', sub: 'Ocean (Water)' },
+    { id: 'Sleep', label: 'Moe', sub: 'Rest & Sleep' }
+  ];
+
   const currentAverage = Math.round(
     (pillars.mind + pillars.body + pillars.heart + pillars.soul) / 4
   );
@@ -41,10 +51,10 @@ const Tracker = ({
   const getTagStyle = (tag) => {
     const state = activeTags[tag];
     if (state === 'charge') {
-        return 'bg-emerald-500 text-emerald-900 font-bold border-emerald-400 shadow-lg scale-105'; 
+        return 'bg-emerald-500 text-emerald-900 border-emerald-400 shadow-lg scale-105'; 
     }
     if (state === 'drain') {
-        return 'bg-rose-500 text-white font-bold border-rose-600 shadow-lg scale-105'; 
+        return 'bg-rose-500 text-white border-rose-600 shadow-lg scale-105'; 
     }
     return 'bg-slate-200 border-white/50 text-slate-600 hover:bg-white'; 
   };
@@ -84,7 +94,7 @@ const Tracker = ({
                   <h3 className="font-serif text-lg text-white">{pillar.label}</h3>
                   <p className="text-xs text-white/60 uppercase tracking-widest">{pillar.sub}</p>
                   <p className="text-xs text-[#D4AF37] italic mt-1 font-medium">
-                     {pillar.question}
+                      {pillar.question}
                   </p>
                 </div>
                 <span className="text-2xl font-bold" style={{ color: pillar.color }}>
@@ -93,7 +103,6 @@ const Tracker = ({
               </div>
               
               {/* TEST TUBE STYLE SLIDER */}
-              {/* Outer container acts as the 'glass tube' (border + dark bg) */}
               <div className="relative h-6 w-full rounded-full border border-white/20 bg-black/20 shadow-inner overflow-hidden">
                   <input
                     type="range"
@@ -103,18 +112,17 @@ const Tracker = ({
                     onChange={(e) => handleSliderChange(key, parseInt(e.target.value))}
                     className="absolute w-full h-full opacity-0 z-20 cursor-pointer"
                   />
-                  {/* The Liquid Fill */}
                   <div 
                     className="absolute left-0 top-0 h-full transition-all duration-300 ease-out z-10 rounded-l-full"
                     style={{ 
                         width: `${pillars[key]}%`,
                         backgroundColor: pillar.color,
-                        boxShadow: `inset 0 2px 0 rgba(255,255,255,0.3), 0 0 10px ${pillar.color}40` // Glassy highlight + glow
+                        boxShadow: `inset 0 2px 0 rgba(255,255,255,0.3), 0 0 10px ${pillar.color}40`
                     }}
                   />
               </div>
             </div>
-          ))}
+         ))}
       </div>
 
       <div className="relative z-10 w-full max-w-3xl mx-auto text-center flex flex-col items-center gap-6 md:gap-8 mb-16 md:mb-20 px-4">
@@ -124,22 +132,30 @@ const Tracker = ({
                 <h4 className="text-sm md:text-lg font-bold tracking-[0.2em] text-white uppercase">Energy Sources</h4>
             </div>
             
-            {/* ADDED: Missing Instruction Text */}
             <p className="text-[10px] md:text-xs text-white/50 font-medium tracking-wide uppercase">
                 Tap once to Charge (+), Tap twice to Drain (-)
             </p>
           </div>
           
+          {/* UPDATED: Buttons now show Label + Subtitle */}
           <div className="flex flex-wrap justify-center gap-3 md:gap-4 lg:gap-6">
-              {['Work', 'Whānau', 'Hauora', 'Aotearoa', 'Te Moana', 'Sleep'].map(tag => (
+              {TAG_DETAILS.map((tag) => (
                   <button 
-                    key={tag} 
-                    onClick={() => toggleTag(tag)} 
-                    className={`relative px-6 py-3 md:px-10 md:py-4 lg:px-14 lg:py-5 rounded-[24px] text-[10px] md:text-[11px] lg:text-[12px] font-black uppercase tracking-[0.2em] transition-all duration-300 shadow-md ${getTagStyle(tag)}`}
+                    key={tag.id} 
+                    onClick={() => toggleTag(tag.id)} 
+                    className={`relative flex flex-col items-center justify-center px-6 py-2 md:px-8 md:py-3 lg:px-10 lg:py-4 rounded-[20px] transition-all duration-300 shadow-md ${getTagStyle(tag.id)}`}
                   >
-                    {activeTags[tag] === 'charge' && <Battery size={12} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />}
-                    {activeTags[tag] === 'drain' && <BatteryWarning size={12} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />}
-                    {tag}
+                    {/* Status Icons */}
+                    {activeTags[tag.id] === 'charge' && <Battery size={12} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />}
+                    {activeTags[tag.id] === 'drain' && <BatteryWarning size={12} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />}
+                    
+                    {/* Text Labels */}
+                    <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.15em] leading-tight">
+                        {tag.label}
+                    </span>
+                    <span className={`text-[8px] md:text-[9px] uppercase tracking-wider font-medium mt-0.5 ${activeTags[tag.id] ? 'opacity-80' : 'opacity-50'}`}>
+                        {tag.sub}
+                    </span>
                   </button>
               ))}
           </div>
