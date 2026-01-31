@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Sun, Moon, CheckCircle2, Plus, Sparkles, PenTool, BookOpen, Stars, Loader2 } from 'lucide-react';
+import { Sun, Moon, CheckCircle2, Plus, Sparkles, PenTool, BookOpen, Stars, Loader2, Share2, Check } from 'lucide-react';
 import { THEME } from '../constants/index';
 import { Logo, GraphGrid, StatusHeader, BottomNav } from '../components/UIComponents';
+import { getMoonPhase } from '../utils/lunarLogic';
 
-// 👇 NEW IMPORTS
 import { MAJOR_ARCANA, getMinorArcanaMeaning } from '../utils/tarotLogic';
 import { getRecommendationForCard, getRitualAdvice } from '../utils/affiliateLogic';
 import RecommendedTool from '../components/RecommendedTool';
@@ -13,12 +13,38 @@ const Reflection = ({
   rituals, checkedItems, toggleCheck, newRitualInput, setNewRitualInput,
   addRitual, reflection, setReflection, setView, isOnline,
   selectedHour, setSelectedHour, onBack,
-  userProfile // 👈 1. ADDED USER PROFILE PROP HERE
+  userProfile
 }) => {
 
   const [isGuided, setIsGuided] = useState(true);
   const [aiState, setAiState] = useState('idle'); 
   const [streamedText, setStreamedText] = useState('');
+  const [showShareTooltip, setShowShareTooltip] = useState(false);
+
+  const moonData = getMoonPhase(currentTime);
+
+  // ------------------------------------------------
+  // 🔮 HANDLE NATIVE SHARE
+  // ------------------------------------------------
+  const handleShare = async () => {
+    const shareText = `✨ The universe sent me a sign today.\n\nI pulled the ${selectedCard.name}: "${selectedCard.message}"\n\n🌑 Moon Phase: ${moonData.label}\n\nDiscover your daily reading here: https://moonlightmana.com`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'My Daily Reading',
+          text: shareText,
+          url: 'https://moonlightmana.com',
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      navigator.clipboard.writeText(shareText);
+      setShowShareTooltip(true);
+      setTimeout(() => setShowShareTooltip(false), 2000);
+    }
+  };
 
   // ------------------------------------------------
   // 🧠 HANDLE AI CHANNELING
@@ -26,20 +52,13 @@ const Reflection = ({
   const handleChannelWisdom = () => {
     setAiState('loading');
 
-    // 1. Get Card Wisdom (From utils)
     let specificWisdom = MAJOR_ARCANA[selectedCard.name] || getMinorArcanaMeaning(selectedCard.name);
-
-    // 2. Get Tool & Ritual Advice (From utils)
     const tool = getRecommendationForCard(selectedCard.name);
     const ritualAdvice = getRitualAdvice(tool);
 
-    // 3. Build Message (PERSONALIZED)
-    // If name exists, add it. Otherwise, keep it empty.
     const greeting = userProfile ? `${userProfile.name}, ` : "";
-    
     const fullMessage = `${greeting}${selectedCard.name} has appeared. ${specificWisdom} ${ritualAdvice} Breathe deeply and accept this guidance.`;
 
-    // 4. Stream Text
     setTimeout(() => {
       setAiState('streaming');
       let i = 0;
@@ -120,39 +139,71 @@ const Reflection = ({
         </div>
       </div>
 
-      <div className="relative z-10 flex flex-col lg:flex-row gap-10 items-start mb-16 px-6 md:px-14">
-        {/* HOUR SELECTOR */}
-        <div className="hidden lg:flex flex-col items-center pr-10 border-r border-white/5 h-[500px] overflow-y-auto custom-scrollbar">
-          <span className="text-[10px] mb-6 font-black tracking-widest text-white opacity-40">HR</span>
+      {/* 👇 LAYOUT UPDATE: Grid with Scrollable Sidebar */}
+      <div className="relative z-10 grid grid-cols-[48px_1fr] lg:flex lg:flex-row items-start gap-4 md:gap-10 mb-16 px-4 md:px-14">
+        
+        {/* 1. LEFT SIDEBAR (Time) - I removed 'no-scrollbar' so you can see it scrolls */}
+        <div className="flex flex-col items-center lg:pr-10 lg:border-r border-white/5 h-[500px] md:h-[500px] overflow-y-auto shrink-0 sticky top-0 pt-2 lg:w-auto col-start-1">
+          <span className="text-[10px] mb-4 lg:mb-6 font-black tracking-widest text-white opacity-40 shrink-0">HR</span>
           {[...Array(24)].map((_, i) => (
-            <button key={i} onClick={() => setSelectedHour(i + 1)} className={`text-[11px] h-10 w-10 flex items-center justify-center font-mono border-b transition-all ${selectedHour === i + 1 ? 'text-gold scale-125' : 'text-white/20'}`} style={{ color: selectedHour === i + 1 ? THEME.primary : '' }}>{i + 1}</button>
+            <button 
+                key={i} 
+                onClick={() => setSelectedHour(i + 1)} 
+                className={`text-[11px] h-10 w-8 lg:w-10 flex shrink-0 items-center justify-center font-mono border-b transition-all 
+                ${selectedHour === i + 1 ? 'text-gold scale-125 border-gold' : 'text-white/20 border-transparent lg:border-white/10'}`} 
+                style={{ 
+                    color: selectedHour === i + 1 ? THEME.primary : '',
+                    borderColor: selectedHour === i + 1 ? THEME.primary : '' 
+                }}
+            >
+                {i + 1}
+            </button>
           ))}
+          {/* Padding at bottom to ensure 24 is reachable */}
+          <div className="h-10 shrink-0 w-full"></div>
         </div>
 
-        {/* CARD AREA */}
-        <div className="w-full lg:flex-1 flex flex-col items-center justify-center py-2">
-          <div className="relative w-[280px] h-[450px] md:w-[350px] md:h-[560px] cursor-pointer perspective-1000 group p-2" onClick={handleCardPull}>
+        {/* 2. MIDDLE (Card) */}
+        <div className="flex flex-col items-center justify-center py-2 min-w-0 col-start-2 lg:flex-1">
+          <div className="relative w-full max-w-[280px] md:max-w-[350px] aspect-[2/3] cursor-pointer perspective-1000 group p-2" onClick={handleCardPull}>
             <div className={`relative w-full h-full transition-all duration-1000 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-              {/* Back of Card */}
-              <div className="absolute inset-0 backface-hidden rounded-[32px] border-4 border-white bg-white shadow-2xl flex items-center justify-center p-8 hover:scale-[1.02] transition-all">
+              <div className="absolute inset-0 backface-hidden rounded-[24px] md:rounded-[32px] border-4 border-white bg-white shadow-2xl flex items-center justify-center p-8 hover:scale-[1.02] transition-all">
                 <div className="flex flex-col items-center">
-                  <Sun size={100} className="text-slate-900 opacity-20 mb-8 animate-pulse" strokeWidth={1} />
-                  <span className="text-[12px] tracking-[0.5em] text-slate-900 font-black uppercase">Tap to Pull</span>
+                  <Sun size={80} className="text-slate-900 opacity-20 mb-6 animate-pulse" strokeWidth={1} />
+                  <span className="text-[10px] md:text-[12px] tracking-[0.5em] text-slate-900 font-black uppercase text-center">Tap to Pull</span>
                 </div>
               </div>
-              {/* Front of Card */}
-              <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-[32px] bg-zinc-900 border-[4px] overflow-hidden flex flex-col shadow-[0_0_80px_rgba(212,175,55,0.3)]" style={{ borderColor: THEME.primary }}>
+              <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-[24px] md:rounded-[32px] bg-zinc-900 border-[4px] overflow-hidden flex flex-col shadow-[0_0_80px_rgba(212,175,55,0.3)]" style={{ borderColor: THEME.primary }}>
                 <div className="flex-1 bg-cover bg-center" style={{ backgroundImage: `url("${selectedCard.img}")` }} />
-                <div className="p-6 text-center bg-zinc-950 border-t border-white/10">
-                  <h4 className="text-lg font-serif uppercase tracking-[0.2em]" style={{ color: THEME.primary }}>{selectedCard.name}</h4>
+                <div className="p-4 md:p-6 text-center bg-zinc-950 border-t border-white/10">
+                  <h4 className="text-sm md:text-lg font-serif uppercase tracking-[0.2em]" style={{ color: THEME.primary }}>{selectedCard.name}</h4>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* AI INTERPRETATION SECTION */}
+          {/* SHARE & AI SECTION */}
           {isFlipped && (
-            <div className="w-[280px] md:w-[350px] mt-8 transition-all duration-1000 animate-in fade-in slide-in-from-bottom-4">
+            <div className="w-full max-w-[280px] md:max-w-[350px] mt-6 transition-all duration-700 animate-in fade-in slide-in-from-bottom-2">
+               <div className="text-center mb-2">
+                 <p className="text-[9px] uppercase tracking-widest opacity-40 font-bold text-white">
+                    Resonate with this message?
+                 </p>
+               </div>
+               <button 
+                 onClick={handleShare}
+                 className="w-full py-3 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center gap-2 group relative overflow-hidden mb-6"
+               >
+                 <Share2 size={14} className="text-white opacity-60 group-hover:opacity-100 transition-opacity" />
+                 <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">Send a Sign</span>
+                 {showShareTooltip && (
+                   <div className="absolute inset-0 bg-emerald-500 flex items-center justify-center gap-2 animate-in fade-in">
+                     <Check size={14} className="text-white" />
+                     <span className="text-[10px] font-bold text-white uppercase tracking-widest">Link Copied</span>
+                   </div>
+                 )}
+               </button>
+
               {aiState === 'idle' ? (
                 <button
                   onClick={handleChannelWisdom}
@@ -183,7 +234,6 @@ const Reflection = ({
                 </div>
               )}
 
-              {/* AFFILIATE TOOL */}
               {(aiState === 'streaming' || aiState === 'complete') && (
                  <RecommendedTool cardName={selectedCard.name} />
               )}
@@ -191,8 +241,8 @@ const Reflection = ({
           )}
         </div>
 
-        {/* RITUALS SECTION */}
-        <div className="w-full lg:w-80 flex flex-col gap-6">
+        {/* 3. RIGHT (Rituals) */}
+        <div className="col-span-2 lg:col-span-1 w-full lg:w-80 flex flex-col gap-6 mt-8 lg:mt-0">
           <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-80 border-b border-white/10 pb-4 text-white">Sacred Rituals:</h3>
           <div className="space-y-4">
             {rituals.map((r) => (
@@ -265,7 +315,18 @@ const Reflection = ({
       </div>
 
       <BottomNav view="reflection" setView={setView} />
-      <style>{`.perspective-1000 { perspective: 1000px; } .transform-style-3d { transform-style: preserve-3d; } .backface-hidden { backface-visibility: hidden; } .rotate-y-180 { transform: rotateY(180deg); } .textarea::-webkit-scrollbar { width: 6px; } .textarea::-webkit-scrollbar-track { background: transparent; } .textarea::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }`}</style>
+      
+      <style>{`
+        .perspective-1000 { perspective: 1000px; } 
+        .transform-style-3d { transform-style: preserve-3d; } 
+        .backface-hidden { backface-visibility: hidden; } 
+        .rotate-y-180 { transform: rotateY(180deg); } 
+        
+        /* I removed the 'no-scrollbar' class from the sidebar so you can see it scrolling */
+        .textarea::-webkit-scrollbar { width: 6px; } 
+        .textarea::-webkit-scrollbar-track { background: transparent; } 
+        .textarea::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+      `}</style>
     </div>
   );
 };
