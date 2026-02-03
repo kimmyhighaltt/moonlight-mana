@@ -262,15 +262,15 @@ export const SACRED_TOOLS = [
     id: 'sage-1',
     name: 'White Sage Bundle',
     desc: '6 Pack White Sage ~ Clear negative energy instantly.',
-    price: '$20.08',
-    link: 'https://amzn.to/4q0SEvi', 
+    price: '$11.97',
+    link: 'https://amzn.to/4t5yOl8', 
     img: 'https://m.media-amazon.com/images/I/81qkJ2mMSbL._AC_SX679_.jpg'
   },
   {
     id: 'ritual-candle', // SWAPPED: Replaces Salt Lamp
     name: 'Chakra Ritual Candles',
     desc: 'Set of colored candles for spellwork and manifestation.',
-    price: '$14.99',
+    price: '$15.99',
     link: 'https://amzn.to/4tfy7FW', 
     img: 'https://m.media-amazon.com/images/I/81i2uGn4l8L._AC_SX679_.jpg'
   },
@@ -278,7 +278,7 @@ export const SACRED_TOOLS = [
     id: 'bath-salts', // SWAPPED: Replaces Singing Bowl
     name: 'Aura Cleansing Salts',
     desc: 'Lavender & Epsom salts to wash away heavy emotions.',
-    price: '$12.99',
+    price: '$3.54',
     link: 'https://amzn.to/3ZeqSAs', 
     img: 'https://m.media-amazon.com/images/I/81RPtbwDwNL._SX679_.jpg'
   },
@@ -296,7 +296,7 @@ export const SACRED_TOOLS = [
     id: 'deck-classic',
     name: 'The Rider Waite Tarot',
     desc: 'The essential deck for all readers.',
-    price: '$22.00',
+    price: '$19.54',
     link: 'https://amzn.to/4t6KjZO', 
     img: 'https://m.media-amazon.com/images/I/71YMG6rKgnL._SY466_.jpg' 
   },
