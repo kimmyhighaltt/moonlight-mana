@@ -249,61 +249,56 @@ export const INITIAL_MOCK_ENTRIES = [
 ];
 
 export const SACRED_TOOLS = [
+  // --- HIGH CONVERSION CONSUMABLES (The Money Makers) ---
   {
-    id: 'deck-1',
-    name: 'The Starlight Tarot Deck',
-    desc: 'Wyspell Tarot Cards: Starlight Tarot Deck with Guide Book.',
-    price: '$26.82',
-    link: 'https://amzn.to/49IbDG3', 
-    img: 'https://m.media-amazon.com/images/I/91i5jQ5mZYL._AC_SX679_.jpg' 
+    id: 'free-audible-trial',
+    name: 'Free Audiobook (Audible)',
+    desc: 'Listen to "The Power of Now" or any spiritual book for free.',
+    price: 'FREE', // Visual trigger for users
+    link: 'https://amzn.to/4a5lJ2E', 
+    img: 'https://m.media-amazon.com/images/I/516kmKfROhL._SX342_.jpg' 
   },
   {
     id: 'sage-1',
     name: 'White Sage Bundle',
-    desc: '6 Pack White Sage ~ Sage Smudge Sticks for Smudging.',
+    desc: '6 Pack White Sage ~ Clear negative energy instantly.',
     price: '$20.08',
     link: 'https://amzn.to/4q0SEvi', 
     img: 'https://m.media-amazon.com/images/I/81qkJ2mMSbL._AC_SX679_.jpg'
   },
   {
-    id: 'crystal-1',
-    name: 'Amethyst Cluster',
-    desc: 'SUNYIK Natural Amethyst Quartz Crystal Cluster.',
-    price: '$28.84',
-    link: 'https://amzn.to/4r8PuX8', 
-    img: 'https://m.media-amazon.com/images/I/819sOd2ebeL._AC_SX679_.jpg'
+    id: 'ritual-candle', // SWAPPED: Replaces Salt Lamp
+    name: 'Chakra Ritual Candles',
+    desc: 'Set of colored candles for spellwork and manifestation.',
+    price: '$14.99',
+    link: 'https://amzn.to/4tfy7FW', 
+    img: 'https://m.media-amazon.com/images/I/81i2uGn4l8L._AC_SX679_.jpg'
+  },
+  {
+    id: 'bath-salts', // SWAPPED: Replaces Singing Bowl
+    name: 'Aura Cleansing Salts',
+    desc: 'Lavender & Epsom salts to wash away heavy emotions.',
+    price: '$12.99',
+    link: 'https://amzn.to/3ZeqSAs', 
+    img: 'https://m.media-amazon.com/images/I/81RPtbwDwNL._SX679_.jpg'
+  },
+
+  // --- THE BEST SELLERS (Decks & Journals) ---
+  {
+    id: 'deck-modern',
+    name: 'Modern Witch Tarot',
+    desc: 'A stylish, contemporary take on tarot. #1 Bestseller.',
+    price: '$18.45', 
+    link: 'https://amzn.to/4as2qBQ',
+    img: 'https://m.media-amazon.com/images/I/81bvT2YcWiL._SY342_.jpg' 
   },
   {
     id: 'deck-classic',
     name: 'The Rider Waite Tarot',
     desc: 'The essential deck for all readers.',
-    price: '$32.78',
+    price: '$22.00',
     link: 'https://amzn.to/4t6KjZO', 
     img: 'https://m.media-amazon.com/images/I/71YMG6rKgnL._SY466_.jpg' 
-  },
-  {
-    id: 'journal-moon',
-    name: 'Moonology Diary 2026',
-    desc: 'Align your life with the lunar cycles.',
-    price: '$27.01',
-    link: 'https://amzn.to/49X3c8q',
-    img: 'https://m.media-amazon.com/images/I/71djIm0c9DL._SX445_.jpg'
-  },
-  {
-    id: 'cleansing-selenite',
-    name: 'Selenite Cleansing Stick',
-    desc: 'Clear negative energy instantly.',
-    price: '$36.91',
-    link: 'https://amzn.to/4bhimYJ',
-    img: 'https://m.media-amazon.com/images/I/61FaJMlWP8L._SX466_.jpg'
-  },
-  {
-    id: 'deck-modern',
-    name: 'Modern Witch Tarot',
-    desc: 'A stylish, contemporary take on tarot.',
-    price: '$56.26',
-    link: 'https://amzn.to/3Z0xrGQ',
-    img: 'https://m.media-amazon.com/images/I/81Ri5CeTklL._SY342_.jpg' 
   },
   {
     id: 'oracle-light',
@@ -314,28 +309,22 @@ export const SACRED_TOOLS = [
     img: 'https://m.media-amazon.com/images/I/71kWsJJY9fL._SY342_.jpg'
   },
   {
-    id: 'decor-lamp',
-    name: '3D Moon Lamp',
-    desc: 'Bring the full moon into your room.',
-    price: '$33.47',
-    link: 'https://amzn.to/3YWVLcy',
-    img: 'https://m.media-amazon.com/images/I/81Mdq0wkxqL._AC_SX679_.jpg'
+    id: 'journal-moon',
+    name: 'Moonology Diary 2026',
+    desc: 'Align your life with the lunar cycles.',
+    price: '$27.01',
+    link: 'https://amzn.to/49X3c8q',
+    img: 'https://m.media-amazon.com/images/I/71djIm0c9DL._SX445_.jpg'
   },
+
+  // --- HIGH TICKET / GIFTS (Keep these for specific cards) ---
   {
-    id: 'sound-bowl',
-    name: 'Tibetan Singing Bowl',
-    desc: 'Sound healing for deep meditation.',
-    price: '$31.82',
-    link: 'https://amzn.to/3LVAygb',
-    img: 'https://m.media-amazon.com/images/I/61IRVh7WUpL._AC_SX679_.jpg'
-  },
-  {
-    id: 'decor-salt',
-    name: 'Himalayan Salt Lamp',
-    desc: 'Purify the air and set the mood.',
-    price: '$33.53',
-    link: 'https://amzn.to/3NFzspk',
-    img: 'https://m.media-amazon.com/images/I/71fKbPe9gML._AC_SX679_.jpg'
+    id: 'cleansing-selenite',
+    name: 'Selenite Cleansing Stick',
+    desc: 'Clear negative energy instantly.',
+    price: '$36.91',
+    link: 'https://amzn.to/4bhimYJ',
+    img: 'https://m.media-amazon.com/images/I/61FaJMlWP8L._SX466_.jpg'
   },
   {
     id: 'crystal-set',
@@ -344,6 +333,14 @@ export const SACRED_TOOLS = [
     price: '$36.89',
     link: 'https://amzn.to/4t6Lc4A',
     img: 'https://m.media-amazon.com/images/I/81eyC6EOThL._AC_SX679_.jpg'
+  },
+  {
+    id: 'decor-lamp',
+    name: '3D Moon Lamp',
+    desc: 'Bring the full moon into your room.',
+    price: '$33.47',
+    link: 'https://amzn.to/3YWVLcy',
+    img: 'https://m.media-amazon.com/images/I/81Mdq0wkxqL._AC_SX679_.jpg'
   }
 ];
 
