@@ -297,24 +297,24 @@ export const SACRED_TOOLS = [
     name: 'The Rider Waite Tarot',
     desc: 'The essential deck for all readers.',
     price: '$19.54',
-    link: 'https://amzn.to/4t6KjZO', 
-    img: 'https://m.media-amazon.com/images/I/71YMG6rKgnL._SY466_.jpg' 
+    link: 'https://amzn.to/4qdayLm', 
+    img: 'https://m.media-amazon.com/images/I/71YMG6rKgnL._SL1404_.jpg' 
   },
   {
     id: 'oracle-light',
     name: 'Work Your Light Oracle',
     desc: 'Gentle guidance for your soul journey.',
-    price: '$22.61',
-    link: 'https://amzn.to/3O6zQ07',
-    img: 'https://m.media-amazon.com/images/I/71kWsJJY9fL._SY342_.jpg'
+    price: '$16.14',
+    link: 'https://amzn.to/3ZK8Lm3',
+    img: 'https://m.media-amazon.com/images/I/8123LkyQThL._SL1400_.jpg'
   },
   {
     id: 'journal-moon',
     name: 'Moonology Diary 2026',
     desc: 'Align your life with the lunar cycles.',
-    price: '$27.01',
-    link: 'https://amzn.to/49X3c8q',
-    img: 'https://m.media-amazon.com/images/I/71djIm0c9DL._SX445_.jpg'
+    price: '$16.10',
+    link: 'https://amzn.to/4tfyMao',
+    img: 'https://m.media-amazon.com/images/I/71djIm0c9DL._SL1500_.jpg'
   },
 
   // --- HIGH TICKET / GIFTS (Keep these for specific cards) ---
@@ -322,25 +322,25 @@ export const SACRED_TOOLS = [
     id: 'cleansing-selenite',
     name: 'Selenite Cleansing Stick',
     desc: 'Clear negative energy instantly.',
-    price: '$36.91',
-    link: 'https://amzn.to/4bhimYJ',
-    img: 'https://m.media-amazon.com/images/I/61FaJMlWP8L._SX466_.jpg'
+    price: '$9.99',
+    link: 'https://amzn.to/4afhvpb',
+    img: 'https://m.media-amazon.com/images/I/81282kmUtKL._AC_SX679_PIbundle-12,TopRight,0,0_SH20_.jpg'
   },
   {
     id: 'crystal-set',
     name: 'Chakra Healing Crystals',
     desc: '7 stones for balancing your energy.',
-    price: '$36.89',
-    link: 'https://amzn.to/4t6Lc4A',
-    img: 'https://m.media-amazon.com/images/I/81eyC6EOThL._AC_SX679_.jpg'
+    price: '$21.99',
+    link: 'https://amzn.to/4qhF6vo',
+    img: 'https://m.media-amazon.com/images/I/81eyC6EOThL._AC_SL1500_.jpg'
   },
   {
     id: 'decor-lamp',
     name: '3D Moon Lamp',
     desc: 'Bring the full moon into your room.',
-    price: '$33.47',
-    link: 'https://amzn.to/3YWVLcy',
-    img: 'https://m.media-amazon.com/images/I/81Mdq0wkxqL._AC_SX679_.jpg'
+    price: '$17.99',
+    link: 'https://amzn.to/3ZfcIir',
+    img: 'https://m.media-amazon.com/images/I/71F4ab7Sx8L._AC_SL1500_.jpg'
   }
 ];
 
