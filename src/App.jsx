@@ -106,7 +106,7 @@ const App = () => {
   // System: Timer & Online Status
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    const splashTimer = setTimeout(() => setView('dashboard'), 3000);
+    const splashTimer = setTimeout(() => setView('dashboard'), 1000);
     const handleConn = () => setIsOnline(navigator.onLine);
     
     window.addEventListener('online', handleConn);
