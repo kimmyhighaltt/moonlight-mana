@@ -1,5 +1,6 @@
 // src/utils/cosmicLogic.js
 
+// --- ZODIAC CALCULATOR ---
 export const getZodiacSign = (dateString) => {
   const date = new Date(dateString);
   const day = date.getDate();
@@ -7,7 +8,7 @@ export const getZodiacSign = (dateString) => {
 
   if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return "Aquarius";
   if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) return "Pisces";
-  if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return "Aries";
+  if ((month === 3 && day >= 21) || (month === 4 && day >= 19)) return "Aries";
   if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return "Taurus";
   if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return "Gemini";
   if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return "Cancer";
@@ -19,18 +20,16 @@ export const getZodiacSign = (dateString) => {
   return "Capricorn";
 };
 
+// --- LIFE PATH CALCULATOR ---
 export const getLifePathNumber = (dateString) => {
   const date = new Date(dateString);
-  // Format: YYYY-MM-DD
   const str = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
   
-  // Sum all digits
   let sum = 0;
   for (let char of str) {
     if (!isNaN(parseInt(char))) sum += parseInt(char);
   }
 
-  // Reduce to single digit (or 11/22/33 Master Numbers)
   while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
     let tempSum = 0;
     for (let char of sum.toString()) tempSum += parseInt(char);
