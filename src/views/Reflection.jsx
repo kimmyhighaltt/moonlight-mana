@@ -21,7 +21,23 @@ const Reflection = ({
   const [streamedText, setStreamedText] = useState('');
   const [showShareTooltip, setShowShareTooltip] = useState(false);
 
-  const moonData = getMoonPhase(currentTime);
+  // ------------------------------------------------
+  // 🕒 TIME & MOON LOGIC (Moved to Top)
+  // ------------------------------------------------
+  // 1. Calculate the Display Time first (handling the sidebar selection)
+  let displayTime = new Date(currentTime);
+  if (selectedHour !== null) {
+    displayTime.setHours(selectedHour);
+    displayTime.setMinutes(0);
+  }
+
+  // 2. Calculate Moon Phase based on that ADJUSTED time
+  const moonData = getMoonPhase(displayTime);
+
+  // 3. Format Strings
+  const ds = displayTime.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
+  const ts = displayTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
 
   // ------------------------------------------------
   // 🔮 HANDLE NATIVE SHARE
@@ -73,15 +89,6 @@ const Reflection = ({
     }, 1500); 
   };
 
-  // Time & Date Logic
-  let displayTime = new Date(currentTime);
-  if (selectedHour !== null) {
-    displayTime.setHours(selectedHour);
-    displayTime.setMinutes(0);
-  }
-  const ds = displayTime.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
-  const ts = displayTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
   const PROMPTS = {
     firstImpressions: {
       label: "First Impressions",
@@ -132,8 +139,9 @@ const Reflection = ({
           <div className="bg-[#34495E] border border-white/10 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-xl w-full justify-center md:w-auto">
             <Moon size={18} color={THEME.primary} className={hemisphere === 'Northern' ? 'rotate-180' : ''} />
             <div className="flex flex-col">
-              <span className="text-[10px] font-black text-white uppercase">New Moon</span>
-              <span className="text-[8px] opacity-40 uppercase">0% Illum</span>
+              {/* Uses the dynamically updated moonData now */}
+              <span className="text-[10px] font-black text-white uppercase">{moonData.label}</span>
+              <span className="text-[8px] opacity-40 uppercase">Phase Adjusted</span>
             </div>
           </div>
         </div>
@@ -142,7 +150,7 @@ const Reflection = ({
       {/* 👇 LAYOUT UPDATE: Grid with Scrollable Sidebar */}
       <div className="relative z-10 grid grid-cols-[48px_1fr] lg:flex lg:flex-row items-start gap-4 md:gap-10 mb-16 px-4 md:px-14">
         
-        {/* 1. LEFT SIDEBAR (Time) - I removed 'no-scrollbar' so you can see it scrolls */}
+        {/* 1. LEFT SIDEBAR (Time) */}
         <div className="flex flex-col items-center lg:pr-10 lg:border-r border-white/5 h-[500px] md:h-[500px] overflow-y-auto shrink-0 sticky top-0 pt-2 lg:w-auto col-start-1">
           <span className="text-[10px] mb-4 lg:mb-6 font-black tracking-widest text-white opacity-40 shrink-0">HR</span>
           {[...Array(24)].map((_, i) => (
@@ -187,7 +195,7 @@ const Reflection = ({
             <div className="w-full max-w-[280px] md:max-w-[350px] mt-6 transition-all duration-700 animate-in fade-in slide-in-from-bottom-2">
                <div className="text-center mb-2">
                  <p className="text-[9px] uppercase tracking-widest opacity-40 font-bold text-white">
-                    Resonate with this message?
+                   Resonate with this message?
                  </p>
                </div>
                <button 
@@ -321,8 +329,6 @@ const Reflection = ({
         .transform-style-3d { transform-style: preserve-3d; } 
         .backface-hidden { backface-visibility: hidden; } 
         .rotate-y-180 { transform: rotateY(180deg); } 
-        
-        /* I removed the 'no-scrollbar' class from the sidebar so you can see it scrolling */
         .textarea::-webkit-scrollbar { width: 6px; } 
         .textarea::-webkit-scrollbar-track { background: transparent; } 
         .textarea::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
