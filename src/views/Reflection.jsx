@@ -171,8 +171,18 @@ const Reflection = ({
           <div className="h-10 shrink-0 w-full"></div>
         </div>
 
-        {/* 2. MIDDLE (Card) */}
+        {/* 2. MIDDLE (Card) - NOW INCLUDES CALL TO ACTION */}
         <div className="flex flex-col items-center justify-center py-2 min-w-0 col-start-2 lg:flex-1">
+          
+          {/* 🔔 NEW: USER INSTRUCTION (Only shows before card is flipped) */}
+          {!isFlipped && (
+            <div className="w-full flex justify-center mb-4 animate-pulse px-4 relative z-20">
+              <p className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-gold border border-gold/30 px-4 py-2 rounded-full bg-gold/5 text-center shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+                Tap the card to begin
+              </p>
+            </div>
+          )}
+
           <div className="relative w-full max-w-[280px] md:max-w-[350px] aspect-[2/3] cursor-pointer perspective-1000 group p-2" onClick={handleCardPull}>
             <div className={`relative w-full h-full transition-all duration-1000 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
               <div className="absolute inset-0 backface-hidden rounded-[24px] md:rounded-[32px] border-4 border-white bg-white shadow-2xl flex items-center justify-center p-8 hover:scale-[1.02] transition-all">
