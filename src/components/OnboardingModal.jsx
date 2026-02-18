@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { Sparkles, ArrowRight, Loader2, Moon } from 'lucide-react';
 
 const OnboardingModal = ({ onComplete, isLoading = false }) => {
   const [name, setName] = useState('');
@@ -10,11 +10,18 @@ const OnboardingModal = ({ onComplete, isLoading = false }) => {
     e.preventDefault();
     if (name && dob && !isSubmitting) {
       setIsSubmitting(true);
-      onComplete({ name, dob });
+      onComplete({ name, dob, isGuest: false });
     }
   };
 
-  // Combining internal submitting state with external loading prop for best UI
+  const handleGuestEntry = () => {
+    if (!isSubmitting) {
+        setIsSubmitting(true);
+        // We pass "Seeker" as a default name so the app doesn't break
+        onComplete({ name: 'Seeker', dob: null, isGuest: true }); 
+    }
+  };
+
   const activeLoading = isSubmitting || isLoading;
 
   return (
@@ -86,6 +93,19 @@ const OnboardingModal = ({ onComplete, isLoading = false }) => {
               )}
             </button>
           </form>
+
+          {/* THE NEW GUEST MODE BRIDGE */}
+          {!activeLoading && (
+              <div className="mt-6 pt-4 border-t border-white/5">
+                <button 
+                  onClick={handleGuestEntry}
+                  className="group flex items-center justify-center gap-2 mx-auto text-xs uppercase tracking-widest text-white/40 hover:text-amber-200 transition-colors"
+                >
+                  <Moon size={12} className="group-hover:text-amber-200 transition-colors" />
+                  Just looking? Enter as Guest
+                </button>
+              </div>
+          )}
           
           {activeLoading && (
             <p className="mt-4 text-[10px] text-amber-200/40 uppercase tracking-[0.2em] animate-pulse">

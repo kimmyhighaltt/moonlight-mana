@@ -120,7 +120,7 @@ const Reflection = ({
         <div className="md:hidden"><Logo size="text-3xl" subtitle="REFLECTION" /></div>
         <div className="text-center md:text-right text-white">
           <div className="text-3xl md:text-4xl font-light tracking-tighter">{ts}</div>
-          <div className="text-[11px] uppercase opacity-60 tracking-widest font-black">{ds}</div>
+          <div className="text-11px uppercase opacity-60 tracking-widest font-black">{ds}</div>
         </div>
       </div>
 
@@ -141,7 +141,8 @@ const Reflection = ({
             <div className="flex flex-col">
               {/* Uses the dynamically updated moonData now */}
               <span className="text-[10px] font-black text-white uppercase">{moonData.label}</span>
-              <span className="text-[8px] opacity-40 uppercase">Phase Adjusted</span>
+              {/* UPDATED LABEL HERE */}
+              <span className="text-[8px] opacity-40 uppercase">Daily Alignment</span>
             </div>
           </div>
         </div>
