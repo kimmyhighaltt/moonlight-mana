@@ -26,9 +26,7 @@ const Reflection = ({
   const ds = displayTime.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
   const ts = displayTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-  // 🚨 INTERNAL HANDLER TO PREVENT DOUBLE-PULLS
   const onPullClick = () => {
-    // Only allow the pull if the card hasn't been flipped yet
     if (!isFlipped) {
       handleCardPull();
     }
@@ -65,15 +63,22 @@ const Reflection = ({
       <CelestialBackground />
       <div className="fixed inset-0 bg-slate-900/20 pointer-events-none" />
 
-      {/* HEADER */}
+      {/* 🚨 RESTORED UNIVERSAL HEADER: Branding + Time */}
       <div className="relative z-20 w-full flex flex-col md:flex-row md:justify-between items-center md:items-start p-6 md:p-10 gap-6 max-w-[1600px] mx-auto">
         <StatusHeader isOnline={isOnline} onBack={onBack} />
-        <div className="md:hidden"><Logo size="text-3xl" subtitle="REFLECTION" /></div>
+        
+        {/* BRANDING: Now visible on all devices */}
+        <div className="flex flex-col items-center">
+            <Logo size="text-3xl md:text-4xl" subtitle="DAILY REFLECTION" />
+        </div>
+
         <div className="text-center md:text-right text-white drop-shadow-md">
-          <div className="text-4xl md:text-5xl font-serif tracking-tighter text-amber-50">{ts}</div>
-          <div className="text-[11px] uppercase opacity-60 tracking-widest font-black text-amber-200">{ds}</div>
+          <div className="text-4xl md:text-5xl font-serif font-light tracking-tighter text-amber-50">{ts}</div>
+          <div className="text-[11px] uppercase opacity-60 tracking-[0.4em] font-black text-amber-200">{ds}</div>
         </div>
       </div>
+
+      <div className="w-full h-[1px] mb-8 relative z-10 bg-gradient-to-r from-transparent via-amber-200/10 to-transparent hidden md:block" />
 
       {/* DATA GRID */}
       <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10 px-6 md:px-14 max-w-6xl mx-auto w-full">
@@ -95,19 +100,18 @@ const Reflection = ({
       {/* MAIN RITUAL AREA */}
       <div className="relative z-10 flex flex-col lg:grid lg:grid-cols-[1fr_320px] items-start justify-center gap-10 mb-16 px-6 md:px-14 max-w-7xl mx-auto w-full">
         
-        {/* CENTER COLUMN */}
+        {/* CENTER COLUMN: CARD + WISDOM + TOOL */}
         <div className="flex flex-col items-center justify-center w-full relative">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[450px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
 
           {!isFlipped && (
             <div className="mb-6 animate-pulse z-20">
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-200 border border-amber-200/30 px-6 py-2 rounded-full bg-amber-500/10 backdrop-blur-md shadow-[0_0_20px_rgba(251,191,36,0.15)]">
-                The veil is ready • Tap to pull
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-200 border border-amber-200/30 px-6 py-2 rounded-full bg-amber-500/10 backdrop-blur-md shadow-[0_0_20px_rgba(212,175,55,0.15)]">
+                Presence requested • Tap to pull
               </p>
             </div>
           )}
 
-          {/* 🚨 THE FATE-LOCKED CARD CONTAINER */}
           <div 
             className={`relative w-full max-w-[300px] md:max-w-[340px] aspect-[2/3] perspective-1000 group z-10 
               ${!isFlipped ? 'cursor-pointer' : 'cursor-default pointer-events-none'}`} 
@@ -117,7 +121,7 @@ const Reflection = ({
               <div className="absolute inset-0 backface-hidden rounded-[32px] border border-white/10 bg-slate-900/40 backdrop-blur-xl shadow-2xl flex items-center justify-center p-8 transition-all hover:bg-slate-900/60">
                 <Sun size={60} className="text-amber-100/10" />
               </div>
-              <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-[32px] bg-zinc-900 border-2 border-amber-200/40 overflow-hidden flex flex-col shadow-[0_0_60px_rgba(212,175,55,0.4)]">
+              <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-[32px] bg-zinc-900 border-2 border-amber-200/40 overflow-hidden flex flex-col shadow-[0_0_60px_rgba(212,175,55,0.3)]">
                 <div className="flex-1 bg-cover bg-center" style={{ backgroundImage: `url("${selectedCard.img}")` }} />
                 <div className="p-4 text-center bg-zinc-950/95 backdrop-blur-md border-t border-white/10">
                   <h4 className="text-md font-serif uppercase tracking-widest text-amber-200">{selectedCard.name}</h4>
@@ -126,6 +130,7 @@ const Reflection = ({
             </div>
           </div>
 
+          {/* WISDOM & TOOLS: UNDER CARD */}
           {isFlipped && (
             <div className="w-full max-w-[340px] mt-8 animate-in fade-in slide-in-from-bottom-4 z-10 space-y-6">
               {aiState === 'idle' ? (

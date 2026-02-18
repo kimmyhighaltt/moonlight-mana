@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Loader2, Zap, CheckCircle2, Battery, BatteryWarning, Quote } from 'lucide-react';
 import { THEME, PILLAR_INFO, WHAKATAUKI } from '../constants/index'; 
-import { Logo, GraphGrid, StatusHeader, BottomNav } from '../components/UIComponents';
+import { Logo, StatusHeader, BottomNav } from '../components/UIComponents';
+import CelestialBackground from '../components/CelestialBackground';
 
 const Tracker = ({ 
   isLogging, currentTime, pillars, setPillars, activeTags, setActiveTags, handleLogMana, isOnline, setView,
@@ -13,7 +14,6 @@ const Tracker = ({
     return WHAKATAUKI[randomIndex];
   });
 
-  // 👇 NEW: Defined tags with English descriptions for clarity
   const TAG_DETAILS = [
     { id: 'Work', label: 'Mahi', sub: 'Work & Purpose' },
     { id: 'Whānau', label: 'Whānau', sub: 'Family & Friends' },
@@ -23,168 +23,155 @@ const Tracker = ({
     { id: 'Sleep', label: 'Moe', sub: 'Rest & Sleep' }
   ];
 
+  // 🕒 Standardized Time Logic (Matching Reflection Page)
+  const displayTime = new Date(currentTime);
+  const ds = displayTime.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
+  const ts = displayTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
   const currentAverage = Math.round(
     (pillars.mind + pillars.body + pillars.heart + pillars.soul) / 4
   );
 
   const handleSliderChange = (pillarKey, value) => {
-    setPillars(prev => ({
-      ...prev,
-      [pillarKey]: value
-    }));
+    setPillars(prev => ({ ...prev, [pillarKey]: value }));
   };
 
   const toggleTag = (tag) => {
     const currentState = activeTags[tag];
     const newTags = { ...activeTags };
-
-    if (!currentState) {
-        newTags[tag] = 'charge'; 
-    } else if (currentState === 'charge') {
-        newTags[tag] = 'drain';  
-    } else {
-        delete newTags[tag];     
-    }
+    if (!currentState) { newTags[tag] = 'charge'; } 
+    else if (currentState === 'charge') { newTags[tag] = 'drain'; } 
+    else { delete newTags[tag]; }
     setActiveTags(newTags);
   };
 
   const getTagStyle = (tag) => {
     const state = activeTags[tag];
-    if (state === 'charge') {
-        return 'bg-emerald-500 text-emerald-900 border-emerald-400 shadow-lg scale-105'; 
-    }
-    if (state === 'drain') {
-        return 'bg-rose-500 text-white border-rose-600 shadow-lg scale-105'; 
-    }
-    return 'bg-slate-200 border-white/50 text-slate-600 hover:bg-white'; 
+    if (state === 'charge') return 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50 shadow-[0_0_20px_rgba(16,185,129,0.2)] scale-105 backdrop-blur-md'; 
+    if (state === 'drain') return 'bg-rose-500/20 text-rose-300 border-rose-600/50 shadow-[0_0_20px_rgba(225,29,72,0.2)] scale-105 backdrop-blur-md'; 
+    return 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white backdrop-blur-sm'; 
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden font-sans animate-fade-in pb-40" style={{ backgroundColor: THEME.bg }}>
-      <GraphGrid />
+    <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden font-sans animate-fade-in pb-40 text-white bg-[#020617]">
       
-      <div className="w-full flex justify-between items-start p-6 pt-12">
+      <CelestialBackground />
+      <div className="fixed inset-0 bg-slate-900/20 pointer-events-none" />
+
+      {/* 🚨 THE UNIVERSAL HEADER: Synchronized with Reflection.jsx */}
+      <div className="relative z-20 w-full flex flex-col md:flex-row md:justify-between items-center md:items-start p-6 md:p-10 gap-6 max-w-[1600px] mx-auto">
         <StatusHeader isOnline={isOnline} onBack={onBack} />
-        <div className="text-right text-white">
-            <div className="text-2xl md:text-3xl font-light tracking-tighter">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-            <div className="text-[10px] md:text-[12px] uppercase opacity-60 tracking-widest font-black">{currentTime.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase()}</div>
+        <div className="md:hidden"><Logo size="text-3xl" subtitle="TRACKER" /></div>
+        <div className="text-center md:text-right text-white drop-shadow-md">
+          <div className="text-4xl md:text-5xl font-serif font-light tracking-tighter text-amber-50">{ts}</div>
+          <div className="text-[11px] uppercase opacity-60 tracking-[0.4em] font-black text-amber-200">{ds}</div>
         </div>
       </div>
       
+      {/* MANIFESTING OVERLAY */}
       {isLogging && (
-        <div className="fixed inset-0 z-[100] bg-slate-900/95 backdrop-blur-2xl flex flex-col items-center justify-center animate-in fade-in duration-700">
-          <div className="w-32 h-32 rounded-full border-4 border-gold/10 flex items-center justify-center mb-10 relative">
-             <Loader2 size={64} className="text-gold animate-spin" style={{ color: THEME.primary }} />
-             <div className="absolute inset-0 border-4 border-gold border-t-transparent rounded-full opacity-50" />
+        <div className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-2xl flex flex-col items-center justify-center animate-in fade-in duration-700">
+          <div className="w-32 h-32 rounded-full border-4 border-amber-200/10 flex items-center justify-center mb-10 relative">
+             <Loader2 size={64} className="text-amber-200 animate-spin" />
+             <div className="absolute inset-0 border-4 border-amber-200 border-t-transparent rounded-full opacity-50" />
           </div>
-          <Logo size="text-3xl" subtitle="MANIFESTING SACRED JOURNAL..." showStars={false} />
+          <Logo size="text-3xl" subtitle="SEALING SACRED LEDGER..." />
         </div>
       )}
 
-      <div className="w-full flex justify-center mb-10 md:mb-16 relative z-10">
-        <Logo size="text-4xl md:text-5xl lg:text-6xl" subtitle="DAILY MANA TRACKER" />
+      <div className="w-full flex justify-center mb-8 md:mb-12 relative z-10">
+        <Logo size="text-4xl" subtitle="DAILY MANA TRACKER" />
       </div>
       
-      {/* SLIDERS SECTION */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-20 px-6 md:px-12">
+      {/* PILLAR SLIDERS (GLASS CARDS) */}
+      <div className="relative z-10 w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-16 px-6">
          {Object.entries(PILLAR_INFO).map(([key, pillar]) => (
-            <div key={key} className="w-full mb-2">
-              <div className="flex justify-between items-end mb-3">
+            <div key={key} className="w-full bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[32px] p-6 shadow-2xl transition-all hover:bg-slate-900/50">
+              <div className="flex justify-between items-end mb-4">
                 <div>
-                  <h3 className="font-serif text-lg text-white">{pillar.label}</h3>
-                  <p className="text-xs text-white/60 uppercase tracking-widest">{pillar.sub}</p>
-                  <p className="text-xs text-[#D4AF37] italic mt-1 font-medium">
-                      {pillar.question}
-                  </p>
+                  <h3 className="font-serif text-xl text-white drop-shadow-md">{pillar.label}</h3>
+                  <p className="text-[10px] text-amber-100/40 uppercase tracking-widest font-bold">{pillar.sub}</p>
                 </div>
-                <span className="text-2xl font-bold" style={{ color: pillar.color }}>
+                <span className="text-2xl font-black drop-shadow-lg" style={{ color: pillar.color }}>
                   {pillars[key]}%
                 </span>
               </div>
               
-              {/* TEST TUBE STYLE SLIDER */}
-              <div className="relative h-6 w-full rounded-full border border-white/20 bg-black/20 shadow-inner overflow-hidden">
+              <div className="relative h-4 w-full rounded-full border border-white/5 bg-black/40 shadow-inner overflow-hidden ring-1 ring-white/10">
                   <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={pillars[key]}
+                    type="range" min="0" max="100" value={pillars[key]}
                     onChange={(e) => handleSliderChange(key, parseInt(e.target.value))}
                     className="absolute w-full h-full opacity-0 z-20 cursor-pointer"
                   />
                   <div 
-                    className="absolute left-0 top-0 h-full transition-all duration-300 ease-out z-10 rounded-l-full"
+                    className="absolute left-0 top-0 h-full transition-all duration-500 ease-out z-10 rounded-l-full"
                     style={{ 
                         width: `${pillars[key]}%`,
                         backgroundColor: pillar.color,
-                        boxShadow: `inset 0 2px 0 rgba(255,255,255,0.3), 0 0 10px ${pillar.color}40`
+                        boxShadow: `0 0 15px ${pillar.color}80`
                     }}
                   />
               </div>
+              <p className="text-[10px] text-white/50 italic mt-4 font-medium leading-relaxed">"{pillar.question}"</p>
             </div>
          ))}
       </div>
 
-      <div className="relative z-10 w-full max-w-3xl mx-auto text-center flex flex-col items-center gap-6 md:gap-8 mb-16 md:mb-20 px-4">
+      {/* ENERGY SOURCES */}
+      <div className="relative z-10 w-full max-w-4xl mx-auto text-center flex flex-col items-center gap-8 mb-16 px-4">
           <div className="flex flex-col items-center gap-2">
-            <div className="flex items-center gap-4">
-                <Zap size={20} className="text-gold" style={{ color: THEME.primary }} />
-                <h4 className="text-sm md:text-lg font-bold tracking-[0.2em] text-white uppercase">Energy Sources</h4>
+            <div className="flex items-center gap-3">
+                <Zap size={18} className="text-amber-200 animate-pulse" />
+                <h4 className="text-[10px] font-black tracking-[0.4em] text-white uppercase opacity-80">Energy Sources</h4>
             </div>
-            
-            <p className="text-[10px] md:text-xs text-white/50 font-medium tracking-wide uppercase">
-                Tap once to Charge (+), Tap twice to Drain (-)
-            </p>
+            <p className="text-[9px] text-amber-100/40 font-bold tracking-widest uppercase">Tap once to Charge (+), Tap twice to Drain (-)</p>
           </div>
           
-          {/* UPDATED: Buttons now show Label + Subtitle */}
-          <div className="flex flex-wrap justify-center gap-3 md:gap-4 lg:gap-6">
+          <div className="flex flex-wrap justify-center gap-4">
               {TAG_DETAILS.map((tag) => (
                   <button 
-                    key={tag.id} 
-                    onClick={() => toggleTag(tag.id)} 
-                    className={`relative flex flex-col items-center justify-center px-6 py-2 md:px-8 md:py-3 lg:px-10 lg:py-4 rounded-[20px] transition-all duration-300 shadow-md ${getTagStyle(tag.id)}`}
+                    key={tag.id} onClick={() => toggleTag(tag.id)} 
+                    className={`relative flex flex-col items-center justify-center px-8 py-4 rounded-2xl border transition-all duration-500 ring-1 ring-white/5 ${getTagStyle(tag.id)}`}
                   >
-                    {/* Status Icons */}
-                    {activeTags[tag.id] === 'charge' && <Battery size={12} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />}
-                    {activeTags[tag.id] === 'drain' && <BatteryWarning size={12} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />}
+                    {activeTags[tag.id] === 'charge' && <Battery size={10} className="absolute top-2 right-2 animate-pulse" />}
+                    {activeTags[tag.id] === 'drain' && <BatteryWarning size={10} className="absolute top-2 right-2 animate-bounce" />}
                     
-                    {/* Text Labels */}
-                    <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.15em] leading-tight">
-                        {tag.label}
-                    </span>
-                    <span className={`text-[8px] md:text-[9px] uppercase tracking-wider font-medium mt-0.5 ${activeTags[tag.id] ? 'opacity-80' : 'opacity-50'}`}>
-                        {tag.sub}
-                    </span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">{tag.label}</span>
+                    <span className="text-[8px] uppercase tracking-widest opacity-40 font-black mt-1">{tag.sub}</span>
                   </button>
               ))}
           </div>
       </div>
 
-      <div className="relative z-10 flex justify-center w-full mb-12">
+      {/* COMMIT BUTTON */}
+      <div className="relative z-10 flex justify-center w-full mb-16">
           <button 
             onClick={handleLogMana} 
-            className="px-10 py-5 md:px-16 md:py-6 rounded-full font-black uppercase tracking-widest text-[12px] md:text-[14px] transition-all hover:scale-105 active:scale-95 flex items-center gap-4 md:gap-6 shadow-[0_30px_80px_-20px_rgba(212,175,55,0.5)]" 
-            style={{ backgroundColor: THEME.primary, color: THEME.bg }}
+            className="px-12 py-6 rounded-full font-black uppercase tracking-widest text-[12px] transition-all hover:scale-105 active:scale-95 flex items-center gap-6 shadow-[0_0_50px_rgba(251,191,36,0.2)] bg-gradient-to-r from-amber-200 to-amber-100 text-slate-900 hover:shadow-[0_0_70px_rgba(251,191,36,0.4)]" 
           >
-              <div className="flex flex-col items-end border-r border-black/10 pr-4 md:pr-6">
-                 <span className="text-[8px] md:text-[9px] opacity-60 font-black tracking-widest uppercase">Total</span>
-                 <span className="text-2xl md:text-3xl font-black leading-none">{currentAverage}%</span>
+              <div className="flex flex-col items-end border-r border-slate-900/10 pr-6">
+                 <span className="text-[8px] opacity-60 font-black tracking-widest uppercase">Mana Total</span>
+                 <span className="text-3xl font-black leading-none">{currentAverage}%</span>
               </div>
-              <div className="flex items-center gap-3 md:gap-4 pl-2">
-                <CheckCircle2 size={20} /> 
-                <span>Commit</span>
+              <div className="flex items-center gap-4">
+                <CheckCircle2 size={24} /> 
+                <span>Seal Entry</span>
               </div>
           </button>
       </div>
 
-      <div className="relative z-10 w-full max-w-2xl mx-auto text-center mb-10 px-6 opacity-70 hover:opacity-100 transition-opacity">
-        <Quote size={16} className="mx-auto mb-3 text-white/30" />
-        <p className="text-sm md:text-xl font-serif italic text-white mb-2">"{dailyProverb.maori}"</p>
-        <p className="text-[8px] md:text-[10px] uppercase tracking-[0.2em] font-black text-gold" style={{ color: THEME.primary }}>{dailyProverb.english}</p>
+      {/* PROVERB AREA */}
+      <div className="relative z-10 w-full max-w-2xl mx-auto text-center mb-10 px-6 drop-shadow-2xl">
+        <Quote size={20} className="mx-auto mb-4 text-amber-200 opacity-20" />
+        <p className="text-xl md:text-2xl font-serif italic text-amber-50 leading-relaxed mb-4">"{dailyProverb.maori}"</p>
+        <p className="text-[9px] uppercase tracking-[0.3em] font-black text-amber-200/60">{dailyProverb.english}</p>
       </div>
 
       <BottomNav view="tracker" setView={setView} />
+      
+      <style>{`
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 30px; width: 30px; border-radius: 50%; background: transparent; cursor: pointer; }
+      `}</style>
     </div>
   );
 };
