@@ -5,38 +5,35 @@ import { THEME } from '../constants/index';
 
 const ShareButton = ({ targetRef, fileName = 'moonlight-ritual.png', variant = 'default' }) => {
   const [isGenerating, setIsGenerating] = useState(false);
-
-  const handleShare = async (e) => {
-    // 🛡️ Prevent the ritual from progressing or cards flipping when clicking share
+const handleShare = async (e) => {
     e.stopPropagation(); 
     if (!targetRef.current) return;
 
     setIsGenerating(true);
 
     try {
-      // 🕒 A tiny delay (200ms) allows the browser to finish any rendering 
-      // or "painting" of the card art before the shutter clicks.
-      await new Promise(r => setTimeout(r, 200));
+      // 1. Give it a slightly longer heartbeat (400ms) to ensure the GPU has painted the art
+      await new Promise(r => setTimeout(r, 400));
 
       const dataUrl = await toPng(targetRef.current, {
-        cacheBust: true, // Forces the browser to fetch a fresh image, bypassing security blocks
-        backgroundColor: '#020617', // Match your deep space theme
-        pixelRatio: 2, // High-fidelity for social sharing
-        skipFonts: true, // Prevents timeouts caused by loading custom font files
-        style: {
-          transform: 'scale(1)', // Ensures the image isn't "warped" by CSS 3D transforms
-        },
+        cacheBust: true, // Forces fresh fetch to bypass security blocks
+        backgroundColor: '#020617', 
+        pixelRatio: 2,
+        skipFonts: true,
+        // 🚨 THE CRITICAL ADDITION:
+        // This tells the library to wait for all images to be fully decoded
+        preferredFontFormat: 'woff2',
+        imagePlaceholder: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==', // Transparent fallback
       });
 
-      // 📥 Trigger the download
       const link = document.createElement('a');
       link.download = fileName;
       link.href = dataUrl;
       link.click();
       
     } catch (err) {
-      console.error('Failed to seal the ritual image:', err);
-      alert('The archive could not capture the image. Please try again.');
+      console.error('The Archive failed to seal:', err);
+      alert('Security block detected. Try one more time—the second attempt usually bypasses the cache.');
     } finally {
       setIsGenerating(false);
     }
