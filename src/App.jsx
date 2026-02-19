@@ -75,7 +75,7 @@ const App = () => {
 
   const filteredEntries = journalEntries.filter(entry => {
     const matchesSearch = entry.card.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      entry.message.toLowerCase().includes(searchTerm.toLowerCase());
+      (entry.message && entry.message.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesHighMana = filterHighMana ? entry.mana >= 85 : true;
     return matchesSearch && matchesHighMana;
   });
@@ -85,6 +85,7 @@ const App = () => {
   // =========================================
 
   // Persistence: Save Journal on Change
+  
   useEffect(() => {
     localStorage.setItem('moonlight_vault', JSON.stringify(journalEntries));
   }, [journalEntries]);
@@ -101,6 +102,10 @@ const App = () => {
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [view]);
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
   }, [view]);
 
   // System: Timer & Online Status
@@ -126,13 +131,11 @@ const App = () => {
       const today = new Date().toDateString(); 
       const saved = JSON.parse(localStorage.getItem('moonlight_streak')) || { date: null, count: 0 };
       
-      // 1. Visited Today? (No change)
       if (saved.date === today) {
         setStreak(saved.count);
         return;
       }
 
-      // 2. Visited Yesterday? (Increment)
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       
@@ -141,7 +144,6 @@ const App = () => {
         setStreak(newCount);
         localStorage.setItem('moonlight_streak', JSON.stringify({ date: today, count: newCount }));
       } 
-      // 3. Missed a day? (Reset)
       else {
         setStreak(1);
         localStorage.setItem('moonlight_streak', JSON.stringify({ date: today, count: 1 }));
@@ -194,10 +196,21 @@ const App = () => {
     setJournalEntries(prevEntries => prevEntries.filter(entry => entry.id !== idToDelete));
   };
 
+  /**
+   * HELPER: Generates insight based on lowest energy pillar
+   */
+  const getSmartReading = (card, pillars, userReflection) => {
+    const lowestPillar = Object.entries(pillars).reduce((a, b) => a[1] < b[1] ? a : b);
+    const [problemArea, score] = lowestPillar;
+
+    if (userReflection && userReflection.trim() !== "") return userReflection;
+
+    return `Your ${problemArea} energy is low (${score}%). The ${card.name} suggests you focus on ${card.message.toLowerCase()} to restore balance here.`;
+  };
+
   const handleLogMana = () => {
     setIsLogging(true);
     
-    // Fake "Processing" Delay for UX
     setTimeout(() => {
       const averageMana = Math.round((pillars.mind + pillars.body + pillars.heart + pillars.soul) / 4);
 
@@ -237,12 +250,10 @@ const App = () => {
 
   if (view === 'splash') return <Splash />;
 
-  // Blocking Check: Onboarding
   if (!userProfile) {
     return <OnboardingModal onComplete={handleOnboardingComplete} />;
   }
 
-  // View Routing
   switch (view) {
     case 'dashboard':
       return (
@@ -254,6 +265,7 @@ const App = () => {
           moonData={moonData}
           userProfile={userProfile} 
           streak={streak}
+          currentTime={currentTime} // Standardizing Header
         />
       );
     case 'reflection':
@@ -276,8 +288,6 @@ const App = () => {
           setReflection={setReflection}
           setView={setView}
           isOnline={isOnline}
-          selectedHour={selectedHour}
-          setSelectedHour={setSelectedHour}
           onBack={() => setView('dashboard')}
           userProfile={userProfile}
         />
@@ -300,6 +310,7 @@ const App = () => {
     case 'vault':
       return (
         <Vault
+          currentTime={currentTime} // 🛡️ CRITICAL FIX: Passed the missing prop
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           filterHighMana={filterHighMana}
@@ -308,6 +319,7 @@ const App = () => {
           setView={setView}
           isOnline={isOnline}
           onDelete={handleDeleteEntry}
+          onBack={() => setView('dashboard')}
         />
       );
     case 'planner':
@@ -319,23 +331,13 @@ const App = () => {
           selectedCalendarDay={selectedCalendarDay}
           setSelectedCalendarDay={setSelectedCalendarDay}
           setView={setView}
+          isOnline={isOnline}
+          onBack={() => setView('dashboard')}
         />
       );
     default:
       return null;
   }
-};
-
-/**
- * HELPER: Generates insight based on lowest energy pillar
- */
-const getSmartReading = (card, pillars, userReflection) => {
-  const lowestPillar = Object.entries(pillars).reduce((a, b) => a[1] < b[1] ? a : b);
-  const [problemArea, score] = lowestPillar;
-
-  if (userReflection && userReflection.trim() !== "") return userReflection;
-
-  return `Your ${problemArea} energy is low (${score}%). The ${card.name} suggests you focus on ${card.message.toLowerCase()} to restore balance here.`;
 };
 
 export default App;

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Sun, Moon, CheckCircle2, Plus, Sparkles, PenTool, BookOpen, Stars, Loader2, Share2, Check } from 'lucide-react';
 import { THEME } from '../constants/index';
 import { Logo, StatusHeader, BottomNav } from '../components/UIComponents';
 import CelestialBackground from '../components/CelestialBackground';
+import ShareButton from '../components/ShareButton'; // Restored for peak excitement
 import { getMoonPhase } from '../utils/lunarLogic';
 import { MAJOR_ARCANA, getMinorArcanaMeaning } from '../utils/tarotLogic';
 import { getRecommendationForCard, getRitualAdvice } from '../utils/affiliateLogic';
@@ -18,7 +19,7 @@ const Reflection = ({
   const [isGuided, setIsGuided] = useState(true);
   const [aiState, setAiState] = useState('idle'); 
   const [streamedText, setStreamedText] = useState('');
-  const [showShareTooltip, setShowShareTooltip] = useState(false);
+  const cardRef = useRef(null); // Reference for the ShareButton
 
   // 🕒 AUTOMATIC TIME OBSERVATION
   const displayTime = new Date(currentTime);
@@ -63,15 +64,12 @@ const Reflection = ({
       <CelestialBackground />
       <div className="fixed inset-0 bg-slate-900/20 pointer-events-none" />
 
-      {/* 🚨 RESTORED UNIVERSAL HEADER: Branding + Time */}
+      {/* 🚨 UNIVERSAL HEADER */}
       <div className="relative z-20 w-full flex flex-col md:flex-row md:justify-between items-center md:items-start p-6 md:p-10 gap-6 max-w-[1600px] mx-auto">
         <StatusHeader isOnline={isOnline} onBack={onBack} />
-        
-        {/* BRANDING: Now visible on all devices */}
         <div className="flex flex-col items-center">
             <Logo size="text-3xl md:text-4xl" subtitle="DAILY REFLECTION" />
         </div>
-
         <div className="text-center md:text-right text-white drop-shadow-md">
           <div className="text-4xl md:text-5xl font-serif font-light tracking-tighter text-amber-50">{ts}</div>
           <div className="text-[11px] uppercase opacity-60 tracking-[0.4em] font-black text-amber-200">{ds}</div>
@@ -112,15 +110,23 @@ const Reflection = ({
             </div>
           )}
 
+          {/* 🚨 UPDATED CARD CONTAINER WITH AMBER PULSE */}
           <div 
+            ref={cardRef}
             className={`relative w-full max-w-[300px] md:max-w-[340px] aspect-[2/3] perspective-1000 group z-10 
               ${!isFlipped ? 'cursor-pointer' : 'cursor-default pointer-events-none'}`} 
             onClick={onPullClick}
           >
             <div className={`relative w-full h-full transition-all duration-1000 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-              <div className="absolute inset-0 backface-hidden rounded-[32px] border border-white/10 bg-slate-900/40 backdrop-blur-xl shadow-2xl flex items-center justify-center p-8 transition-all hover:bg-slate-900/60">
-                <Sun size={60} className="text-amber-100/10" />
+              {/* FACE DOWN: Glowing target pulse */}
+              <div className={`absolute inset-0 backface-hidden rounded-[32px] border flex items-center justify-center p-8 transition-all duration-700
+                ${!isFlipped 
+                    ? 'border-amber-200/40 bg-slate-900/60 shadow-[0_0_40px_rgba(251,191,36,0.2)] animate-pulse' 
+                    : 'border-white/10 bg-slate-900/40'}`}>
+                <Sun size={60} className={`transition-opacity ${!isFlipped ? 'opacity-40 text-amber-100' : 'opacity-10'}`} />
               </div>
+
+              {/* FACE UP: Revealed card */}
               <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-[32px] bg-zinc-900 border-2 border-amber-200/40 overflow-hidden flex flex-col shadow-[0_0_60px_rgba(212,175,55,0.3)]">
                 <div className="flex-1 bg-cover bg-center" style={{ backgroundImage: `url("${selectedCard.img}")` }} />
                 <div className="p-4 text-center bg-zinc-950/95 backdrop-blur-md border-t border-white/10">
@@ -139,12 +145,22 @@ const Reflection = ({
                 </button>
               ) : (
                 <>
-                  <div className="p-6 bg-slate-900/60 backdrop-blur-xl border border-amber-200/30 rounded-2xl shadow-xl">
+                  <div className="p-6 bg-slate-900/60 backdrop-blur-xl border border-amber-200/30 rounded-2xl shadow-xl relative">
                     {aiState === 'loading' ? <div className="flex flex-col items-center py-4 gap-2"><Loader2 className="animate-spin text-amber-200" size={20} /></div> :
                       <p className="text-sm font-serif italic text-white/90 leading-relaxed">"{streamedText}"</p>
                     }
                   </div>
-                  {aiState === 'complete' && <RecommendedTool cardName={selectedCard.name} />}
+                  
+                  {/* SHARE BUTTON: Restored for the card reveal moment */}
+                  {aiState === 'complete' && (
+                    <div className="flex flex-col items-center gap-6">
+                        <ShareButton 
+                            targetRef={cardRef} 
+                            fileName={`reflection-${selectedCard.name}-${ds}.png`} 
+                        />
+                        <RecommendedTool cardName={selectedCard.name} />
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -202,7 +218,7 @@ const Reflection = ({
 
       <div className="relative z-10 flex justify-center mb-10">
         <button onClick={() => setView('tracker')} className="px-20 py-7 rounded-full font-black uppercase tracking-widest text-[12px] bg-gradient-to-r from-amber-200 to-amber-100 text-slate-900 shadow-xl hover:scale-105 transition-all">
-           Seal This Entry
+            Seal This Entry
         </button>
       </div>
 
