@@ -1,172 +1,156 @@
 import React, { useRef } from 'react';
-import { Search, TrendingUp, TrendingDown, Image as ImageIcon, Clock, Moon, Star, Ghost, Trash2 } from 'lucide-react'; 
+import { Search, TrendingUp, TrendingDown, Image as ImageIcon, Clock, Ghost, Trash2 } from 'lucide-react'; 
 import { THEME, TAROT_DECK } from '../constants/index'; 
-import { Logo, GraphGrid, StatusHeader, BottomNav } from '../components/UIComponents';
-import ShareButton from '../components/ShareButton';
+import { Logo, StatusHeader, BottomNav } from '../components/UIComponents';
+import CelestialBackground from '../components/CelestialBackground';
+import ShareButton from '../components/ShareButton'; // Ensure this path is correct
 
 const VaultEntryCard = ({ entry, onDelete }) => {
   const cardRef = useRef(null);
-
-  // 🔍 SMART REPAIR: Look up the fresh image from the deck
-  const deckCard = TAROT_DECK.find(c => c.name === entry.card);
+  const deckCard = TAROT_DECK?.find(c => c.name === entry.card);
   const displayImg = deckCard?.img || entry.img;
 
-  // 🗑️ HANDLE DELETE
-  const handleDeleteClick = () => {
-    if (window.confirm("Are you sure you want to delete this sacred memory? This cannot be undone.")) {
+  const handleDeleteClick = (e) => {
+    e.stopPropagation();
+    if (window.confirm("Release this memory from the archive?")) {
       onDelete(entry.id);
     }
   };
 
   return (
-    <div className="flex flex-col gap-6 group w-full max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700"> 
-      
-      {/* THE CARD ITSELF */}
+    <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div 
         ref={cardRef}
-        className="relative bg-white text-slate-900 rounded-[32px] md:rounded-[40px] shadow-xl p-6 md:p-8 flex flex-col items-center transition-all hover:scale-[1.02] cursor-default min-h-[450px] border-b-8 border-gold/10"
+        className="group relative bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-[24px] overflow-hidden transition-all hover:border-amber-200/40 hover:shadow-[0_0_20px_rgba(251,191,36,0.1)] flex flex-col"
       >
-        {/* Header: Date & Trend */}
-        <div className="w-full flex justify-between items-start mb-6">
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col text-left">
-                <span className="text-lg font-black tracking-widest text-slate-900">{entry.date}</span>
-                {entry.time && (
-                    <div className="flex items-center gap-1.5 mt-1 text-slate-400">
-                        <Clock size={10} />
-                        <span className="text-[10px] font-bold tracking-widest uppercase">{entry.time}</span>
-                    </div>
-                )}
+        {/* HEADER: DATE & TIME */}
+        <div className="p-4 flex justify-between items-center border-b border-white/5">
+            <div className="flex flex-col">
+                <span className="text-[10px] font-black tracking-widest text-white">{entry.date}</span>
+                <span className="text-[8px] font-bold text-amber-200/40 uppercase">{entry.time}</span>
             </div>
-            {entry.trend === 'up' 
-                ? <TrendingUp size={18} className="text-green-500 mb-4" /> 
-                : <TrendingDown size={18} className="text-orange-400 mb-4" />
-            }
-          </div>
-          
-          <div className="flex flex-col items-end gap-2">
-            <div className="px-3 py-1 rounded-full bg-slate-100 text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">Ritual</div>
-          </div>
+            {entry.trend === 'up' ? <TrendingUp size={12} className="text-emerald-400" /> : <TrendingDown size={12} className="text-rose-400" />}
         </div>
 
-        {/* IMAGE AREA - RESTORED ORIGINAL STYLING */}
-        <div className="w-full aspect-[1/1.5] rounded-[24px] bg-zinc-100 overflow-hidden relative mb-6 shadow-lg border-4 border-slate-50">
+        {/* FULL IMAGE AREA: Scaled down but not cropped */}
+        <div className="relative w-full aspect-[2/3] bg-slate-950 overflow-hidden">
           {displayImg ? (
             <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url("${displayImg}")` }} />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-slate-300"><ImageIcon size={48} /></div>
+            <div className="absolute inset-0 flex items-center justify-center"><ImageIcon size={24} className="opacity-10" /></div>
           )}
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent text-center">
-            <span className="text-white font-serif italic text-lg">{entry.card}</span>
+          
+          {/* Action Overlay */}
+          <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-all duration-300" />
+          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all">
+             <button onClick={handleDeleteClick} className="p-2 bg-rose-500/20 hover:bg-rose-500 text-white rounded-full backdrop-blur-md transition-all">
+                <Trash2 size={12} />
+             </button>
+          </div>
+
+          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-slate-900 to-transparent">
+              <h4 className="text-[11px] font-serif italic text-amber-100 text-center">{entry.card}</h4>
           </div>
         </div>
-        
-        {/* Mana Graph */}
-        <div className="w-full grid grid-cols-2 gap-4 mb-6">
-          {['Body', 'Soul', 'Mind', 'Heart'].map(l => {
+
+        {/* PILLAR MINI-READOUT */}
+        <div className="p-4 grid grid-cols-2 gap-2 bg-black/20">
+          {['Mind', 'Body', 'Heart', 'Soul'].map(l => {
             const v = entry.pillars?.[l.toLowerCase()] || entry.mana || 0;
             return (
-              <div key={l} className="flex flex-col gap-1.5">
-                <div className="flex justify-between items-center">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">{l}</span>
-                  <span className="text-[9px] font-black text-yellow-600">{v}%</span>
+              <div key={l} className="flex flex-col gap-1">
+                <div className="flex justify-between items-center opacity-40">
+                  <span className="text-[7px] font-black uppercase tracking-widest">{l}</span>
+                  <span className="text-[7px] font-bold">{v}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full" style={{ width: `${v}%`, backgroundColor: THEME.primary }} />
+                <div className="w-full h-0.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-full bg-amber-200/40" style={{ width: `${v}%` }} />
                 </div>
               </div>
             );
           })}
         </div>
-        
-        {/* Message */}
-        <p className="text-sm text-slate-600 italic text-center px-4 line-clamp-3 leading-relaxed font-serif mb-6">
-            "{entry.message || "No reflection recorded."}"
-        </p>
-
-        {/* Branding Footer */}
-        <div className="w-full pt-6 border-t border-slate-100 flex flex-col items-center gap-2">
-            <div className="flex items-center gap-2 opacity-40">
-                <Star size={8} fill={THEME.primary} stroke="none" />
-                <Moon size={12} fill={THEME.primary} stroke="none" />
-                <Star size={8} fill={THEME.primary} stroke="none" />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Moonlight Mana</span>
-        </div>
       </div>
 
-      {/* ACTION BUTTONS: SHARE & DELETE */}
-      <div className="flex justify-center gap-4 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all">
-        
-        {/* Share */}
-        <ShareButton targetRef={cardRef} fileName={`moonlight-${entry.date}.png`} />
-        
-        {/* Delete */}
-        {onDelete && (
-            <button 
-                onClick={handleDeleteClick}
-                className="bg-white/10 hover:bg-rose-500 hover:text-white text-rose-400 border border-rose-500/30 p-4 rounded-full transition-all shadow-lg backdrop-blur-sm"
-                title="Delete Entry"
-            >
-                <Trash2 size={20} />
-            </button>
-        )}
+      {/* SHARE BUTTON: Restored under the card */}
+      <div className="flex justify-center">
+         <ShareButton 
+            targetRef={cardRef} 
+            fileName={`moonlight-mana-${entry.date}.png`}
+            variant="minimal" 
+         />
       </div>
     </div>
   );
 };
 
-const Vault = ({ searchTerm, setSearchTerm, filterHighMana, setFilterHighMana, filteredEntries, setView, isOnline, onDelete }) => {
+const Vault = ({ searchTerm, setSearchTerm, filterHighMana, setFilterHighMana, filteredEntries, setView, isOnline, onDelete, currentTime }) => {
+  
+  const safeDate = currentTime || new Date();
+  const ds = safeDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
+  const ts = safeDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
   return (
-    <div className="min-h-screen w-full flex flex-col p-6 md:p-10 lg:p-16 pb-40 relative overflow-x-hidden font-sans animate-fade-in" style={{ backgroundColor: THEME.bg, color: THEME.secondary }}>
-      <GraphGrid />
-      <div className="w-full flex justify-between items-start mb-8">
-          <StatusHeader isOnline={isOnline} />
+    <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden animate-fade-in pb-40 text-white bg-[#020617]">
+      <CelestialBackground />
+      <div className="fixed inset-0 bg-slate-900/20 pointer-events-none" />
+
+      {/* UNIVERSAL HEADER */}
+      <div className="relative z-20 w-full flex flex-col md:flex-row md:justify-between items-center md:items-start p-6 md:p-10 gap-6 max-w-[1600px] mx-auto">
+        <StatusHeader isOnline={isOnline} />
+        <div className="flex flex-col items-center">
+            <Logo size="text-3xl md:text-4xl" subtitle="THE SACRED ARCHIVE" />
+        </div>
+        <div className="text-center md:text-right text-white drop-shadow-md">
+          <div className="text-4xl md:text-5xl font-serif font-light tracking-tighter text-amber-50">{ts}</div>
+          <div className="text-[11px] uppercase opacity-60 tracking-[0.4em] font-black text-amber-200">{ds}</div>
+        </div>
       </div>
       
-      <div className="w-full flex justify-center mb-8 relative z-10">
-        <Logo size="text-4xl md:text-5xl lg:text-6xl" subtitle="THE SACRED ARCHIVE" />
-      </div>
-      
-      {/* Search & Filter Bar */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto mb-10 space-y-4 px-2">
-          <div className="flex flex-col md:flex-row gap-4">
+    {/* SEARCH & FILTER (Side-by-Side Polish) */}
+      <div className="relative z-10 w-full max-w-5xl mx-auto mb-10 px-6">
+          <div className="flex flex-row items-stretch gap-3">
+              {/* Compact Search Bar */}
               <div className="flex-1 relative group">
-                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 opacity-30 text-slate-400" size={20} />
+                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 opacity-30 text-amber-100" size={16} />
                   <input 
                     type="text" 
-                    placeholder="Search..." 
+                    placeholder="Search archive..." 
                     value={searchTerm} 
                     onChange={(e) => setSearchTerm(e.target.value)} 
-                    className="w-full pl-16 pr-8 py-4 rounded-[24px] bg-white border-2 border-transparent text-slate-900 focus:outline-none focus:border-gold transition-all shadow-lg placeholder:text-slate-400" 
+                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-amber-200/40 transition-all backdrop-blur-md placeholder:text-white/20" 
                   />
               </div>
               
+              {/* Precision Filter Button */}
               <button 
                 onClick={() => setFilterHighMana(!filterHighMana)} 
-                className={`px-6 py-4 rounded-[24px] text-[10px] font-black uppercase tracking-[0.3em] border-2 transition-all shadow-lg ${filterHighMana ? 'bg-gold border-gold text-slate-900' : 'bg-white border-white text-slate-500 hover:text-slate-900'}`} 
-                style={{ backgroundColor: filterHighMana ? THEME.primary : '' }}
+                className={`flex items-center justify-center px-5 rounded-2xl text-[9px] font-black uppercase tracking-widest border transition-all backdrop-blur-md whitespace-nowrap ${
+                  filterHighMana 
+                  ? 'bg-amber-200 border-amber-200 text-slate-900 shadow-[0_0_15px_rgba(251,191,36,0.3)]' 
+                  : 'bg-white/5 border-white/10 text-white/60 hover:text-white'
+                }`}
               >
-                High Mana
+                {filterHighMana ? '★ High' : 'Mana'}
               </button>
           </div>
       </div>
 
-      {/* Grid of Entries */}
-      {filteredEntries.length > 0 ? (
-          <div className="relative z-10 w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 px-2 mb-20">
-              {filteredEntries.map(entry => (
-                 <VaultEntryCard key={entry.id} entry={entry} onDelete={onDelete} />
-              ))}
-          </div>
-      ) : (
-          // Empty State
-          <div className="w-full flex flex-col items-center justify-center py-20 opacity-50">
-            <Ghost size={48} className="mb-4 text-white/20" />
-            <p className="text-white text-lg font-serif italic">The archives are silent...</p>
-            <p className="text-white/40 text-xs uppercase tracking-widest mt-2">No entries found.</p>
-          </div>
-      )}
+      {/* GALLERY GRID */}
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 mb-20">
+          {filteredEntries && filteredEntries.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                  {filteredEntries.map(entry => (
+                     <VaultEntryCard key={entry.id} entry={entry} onDelete={onDelete} />
+                  ))}
+              </div>
+          ) : (
+              <div className="w-full flex flex-col items-center justify-center py-32 opacity-30">
+                <Ghost size={64} className="mb-6" />
+                <p className="text-xl font-serif italic text-amber-50">The vault is silent...</p>
+              </div>
+          )}
+      </div>
 
       <BottomNav view="vault" setView={setView} />
     </div>
