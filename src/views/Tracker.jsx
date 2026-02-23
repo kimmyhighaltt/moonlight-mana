@@ -23,7 +23,7 @@ const Tracker = ({
     { id: 'Sleep', label: 'Moe', sub: 'Rest & Sleep' }
   ];
 
-  // 🕒 Standardized Time Logic (Matching Reflection Page)
+  // 🕒 Standardized Time Logic
   const displayTime = new Date(currentTime);
   const ds = displayTime.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
   const ts = displayTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
@@ -58,10 +58,18 @@ const Tracker = ({
       <CelestialBackground />
       <div className="fixed inset-0 bg-slate-900/20 pointer-events-none" />
 
-      {/* 🚨 THE UNIVERSAL HEADER: Synchronized with Reflection.jsx */}
+      {/* 🌌 UPDATED HEADER: Single Source of Truth */}
       <div className="relative z-20 w-full flex flex-col md:flex-row md:justify-between items-center md:items-start p-6 md:p-10 gap-6 max-w-[1600px] mx-auto">
         <StatusHeader isOnline={isOnline} onBack={onBack} />
-        <div className="md:hidden"><Logo size="text-3xl" subtitle="TRACKER" /></div>
+        
+        {/* 🕯️ RESTORED LOGO: Centered and sized for mobile */}
+        <div className="flex flex-col items-center">
+            <Logo size="text-3xl md:text-4xl" subtitle="MANA TRACKER" />
+        </div>
+
+      
+
+
         <div className="text-center md:text-right text-white drop-shadow-md">
           <div className="text-4xl md:text-5xl font-serif font-light tracking-tighter text-amber-50">{ts}</div>
           <div className="text-[11px] uppercase opacity-60 tracking-[0.4em] font-black text-amber-200">{ds}</div>
@@ -79,12 +87,10 @@ const Tracker = ({
         </div>
       )}
 
-      <div className="w-full flex justify-center mb-8 md:mb-12 relative z-10">
-        <Logo size="text-4xl" subtitle="DAILY MANA TRACKER" />
-      </div>
+      {/* Removed the secondary Logo block from here to fix the double title */}
       
-      {/* PILLAR SLIDERS (GLASS CARDS) */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-16 px-6">
+      {/* PILLAR SLIDERS (Moved up for better UX) */}
+      <div className="relative z-10 w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-16 px-6 mt-4 md:mt-0">
          {Object.entries(PILLAR_INFO).map(([key, pillar]) => (
             <div key={key} className="w-full bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[32px] p-6 shadow-2xl transition-all hover:bg-slate-900/50">
               <div className="flex justify-between items-end mb-4">
