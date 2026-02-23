@@ -76,13 +76,14 @@ const App = () => {
   });
 
   // =========================================
-  // 3. EFFECTS
+  // 3. EFFECTS (Persistence & Logic)
   // =========================================
 
   useEffect(() => {
     localStorage.setItem('moonlight_vault', JSON.stringify(journalEntries));
   }, [journalEntries]);
 
+  // System: Timer & Online Status
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     const splashTimer = setTimeout(() => {
@@ -102,6 +103,33 @@ const App = () => {
       window.removeEventListener('offline', handleConn);
     };
   }, [hasSeenValue, userProfile]);
+
+  // ⚡ STREAK CALCULATION
+  useEffect(() => {
+    const checkStreak = () => {
+      const today = new Date().toDateString();
+      const saved = JSON.parse(localStorage.getItem('moonlight_streak')) || { date: null, count: 0 };
+      
+      if (saved.date === today) {
+        setStreak(saved.count);
+        return;
+      }
+
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      if (saved.date === yesterday.toDateString()) {
+        const newCount = saved.count + 1;
+        setStreak(newCount);
+        localStorage.setItem('moonlight_streak', JSON.stringify({ date: today, count: newCount }));
+      } else {
+        setStreak(1);
+        localStorage.setItem('moonlight_streak', JSON.stringify({ date: today, count: 1 }));
+      }
+    };
+
+    if (userProfile) checkStreak();
+  }, [userProfile]);
 
   // =========================================
   // 4. ACTION HANDLERS
@@ -138,26 +166,17 @@ const App = () => {
     if (!newRitualInput.trim()) return;
     setRituals([...rituals, newRitualInput.trim()]);
     setNewRitualInput('');
-    if (window.navigator?.vibrate) window.navigator.vibrate([30, 50, 30]);
   };
 
   const toggleCheck = (id) => setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   const handleDeleteEntry = (id) => setJournalEntries(prev => prev.filter(e => e.id !== id));
-
-  const getSmartReading = (card, pillars, userReflection) => {
-    const lowestPillar = Object.entries(pillars).reduce((a, b) => a[1] < b[1] ? a : b);
-    const [problemArea] = lowestPillar;
-    if (userReflection && userReflection.trim() !== "") return userReflection;
-    return `Your ${problemArea} energy is low. The ${card.name} suggests you focus on ${card.message.toLowerCase()} to restore balance.`;
-  };
 
   const handleLogMana = () => {
     setIsLogging(true);
     setTimeout(() => {
       const averageMana = Math.round((pillars.mind + pillars.body + pillars.heart + pillars.soul) / 4);
       let entryDateObj = new Date(currentTime);
-      const smartMessage = getSmartReading(selectedCard, pillars, reflection.theMessage);
-
+      
       const newEntry = {
         id: Date.now(),
         date: entryDateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase(),
@@ -166,7 +185,7 @@ const App = () => {
         card: selectedCard.name,
         img: selectedCard.img,
         mana: averageMana,
-        message: smartMessage,
+        message: reflection.theMessage || `A session focusing on ${selectedCard.name}.`,
         pillars: { ...pillars },
         trend: averageMana > 65 ? 'up' : 'down',
         tags: { ...activeTags }
@@ -175,7 +194,6 @@ const App = () => {
       setJournalEntries([newEntry, ...journalEntries]);
       setIsLogging(false);
       setView('vault');
-      if (window.navigator?.vibrate) window.navigator.vibrate([100, 30, 100, 30, 200]);
     }, 1800);
   };
 
