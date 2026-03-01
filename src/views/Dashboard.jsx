@@ -6,6 +6,7 @@ import { THEME, SACRED_TOOLS } from '../constants/index';
 import { StatusHeader, BottomNav } from '../components/UIComponents';
 import CelestialBackground from '../components/CelestialBackground';
 import Shop from './Shop'; 
+import { getLunarPopupContent } from '../utils/lunarLogic';
 
 // ... (ShopModal remains unchanged) ...
 const ShopModal = ({ onClose, user }) => {
@@ -36,6 +37,12 @@ const ShopModal = ({ onClose, user }) => {
 
 const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, userProfile, streak }) => {
   const [showShop, setShowShop] = useState(false);
+  
+  // 1. ADDED: State and content for the Moon Modal
+  const [isMoonModalOpen, setIsMoonModalOpen] = useState(false);
+  // Passing the current date dynamically
+  const lunarContent = getLunarPopupContent(moonData, new Date()); 
+  
   const carouselItems = [...SACRED_TOOLS, ...SACRED_TOOLS];
 
   return (
@@ -50,7 +57,6 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
       {showShop && <ShopModal user={userProfile} onClose={() => setShowShop(false)} />}
 
       {/* --- HEADER ROW --- */}
-      {/* Reduced padding top slightly for desktop */}
       <div className="relative z-10 w-full flex justify-between items-center p-6 pt-12 md:p-8">
         <StatusHeader isOnline={isOnline} />
         <div className="flex items-center gap-3">
@@ -60,15 +66,16 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
                 <span className="text-[10px] font-black tracking-widest text-orange-400 uppercase">{streak} Day</span>
               </div>
             )}
-            <button onClick={toggleHemisphere} className="flex items-center gap-2 px-4 py-2 rounded-full border border-gold/20 bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors">
+            
+           {/* 2. FIXED: Removed background/border so it reads as pure status text, not a button */}
+            <div className="flex items-center gap-1.5 select-none opacity-70">
                 <Globe size={12} color={THEME.primary} />
                 <p className="text-[10px] tracking-[0.2em] uppercase font-black text-amber-100">{hemisphere}</p>
-            </button>
+            </div>
         </div>
       </div>
       
       {/* --- HERO SECTION --- */}
-      {/* TIGHTENED SPACING: Reduced mt-8 to mt-2 on desktop */}
       <header className="flex flex-col items-center mt-4 md:mt-2 px-4 relative z-10 text-center">
         <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-90 mb-2 text-amber-200 drop-shadow-md">
             {userProfile ? `${userProfile.sign} Sun • Life Path ${userProfile.lifePath}` : "Daily Ritual System"}
@@ -80,15 +87,15 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
       </header>
 
       {/* --- MOON CARD (GLASS ALTAR) --- */}
-      {/* TIGHTENED SPACING: Reduced mt-10 to mt-6 on desktop */}
       <main className="relative z-10 flex flex-col items-center w-full max-w-2xl mx-auto mt-6 md:mt-6 px-6">
         
-        {/* THE BACKLIGHT - Boosted opacity/size for Desktop so it glows more */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-500/10 md:bg-indigo-500/20 rounded-full blur-[80px] md:blur-[100px] pointer-events-none" />
 
-        {/* Card: Reduced padding on desktop from p-10 to p-8 to save vertical space */}
-        <div className="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-[40px] md:rounded-[50px] p-8 md:p-8 flex flex-col items-center shadow-[0_0_50px_rgba(0,0,0,0.5)] group cursor-pointer hover:bg-white/10 transition-all ring-1 ring-white/10 hover:ring-white/30 relative z-10">
-          
+        {/* 3. FIXED: Added the onClick to trigger the Moon Modal */}
+        <div 
+          onClick={() => setIsMoonModalOpen(true)}
+          className="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-[40px] md:rounded-[50px] p-8 md:p-8 flex flex-col items-center shadow-[0_0_50px_rgba(0,0,0,0.5)] group cursor-pointer hover:bg-white/10 transition-all ring-1 ring-white/10 hover:ring-white/30 relative z-10"
+        >
           <div className="relative mb-6 md:mb-6 z-10">
             <div className="w-32 h-32 md:w-36 md:h-36 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center animate-spin-slow bg-white/5 backdrop-blur-sm shadow-[0_0_30px_rgba(255,255,255,0.05)]">
               <Moon size={60} className={`text-amber-100 md:w-[64px] md:h-[64px] ${hemisphere === 'Northern' ? 'rotate-180' : ''} drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]`} />
@@ -109,7 +116,7 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
       </main>
 
       {/* --- CAROUSEL (Shop) --- */}
-      {/* TIGHTENED SPACING: Reduced mt-12 to mt-8 on desktop */}
+      {/* Rest of the carousel stays exactly the same... */}
       <section className="relative z-10 w-full mt-12 md:mt-8 overflow-hidden pb-10">
         <div className="max-w-2xl mx-auto flex items-center justify-between mb-4 px-6">
             <div className="flex items-center gap-3">
@@ -155,9 +162,49 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
 
       <BottomNav view="dashboard" setView={setView} />
       
+    {/* 4. ADDED: The actual Moon Phase Pop-Up UI */}
+      {isMoonModalOpen && (
+        <div 
+          /* Changed to items-center and added px-4 to make it a floating centered box */
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center px-4 z-[100] animate-in fade-in duration-300"
+          onClick={() => setIsMoonModalOpen(false)}
+        >
+          <div 
+            /* Changed rounded-t-3xl to rounded-3xl so all corners are smooth, and added overflow-y-auto so tiny screens can scroll */
+            className="bg-slate-900/90 backdrop-blur-xl border border-white/10 w-full md:max-w-lg rounded-3xl p-6 md:p-8 text-white shadow-2xl animate-in slide-in-from-bottom-10 duration-500 max-h-[85vh] overflow-y-auto relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+               <h3 className="text-xl font-serif text-amber-100 drop-shadow-md">{lunarContent.title}</h3>
+               <button 
+                  onClick={() => setIsMoonModalOpen(false)} 
+                  className="p-2 bg-black/20 rounded-full hover:bg-white/10 transition-colors border border-white/5 flex-shrink-0 ml-4"
+               >
+                 <X size={20} className="text-white/70" />
+               </button>
+            </div>
+            
+            <p className="text-sm text-white/80 leading-relaxed mb-6">{lunarContent.body}</p>
+            
+            <div className="bg-white/5 border border-white/10 p-4 rounded-2xl mb-6 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-amber-400"></div>
+              <span className="font-black text-[10px] uppercase tracking-[0.2em] text-amber-200/90 mb-2 block">Tracking Tip</span>
+              <p className="text-xs text-white/70 leading-relaxed">{lunarContent.tip}</p>
+            </div>
+            
+            <button 
+              className="w-full bg-gradient-to-r from-amber-200 to-amber-100 text-slate-900 font-black uppercase tracking-widest text-[12px] py-4 rounded-full hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all hover:scale-[1.02] active:scale-[0.98]"
+              onClick={() => setIsMoonModalOpen(false)}
+            >
+              Close Insight
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Styles remain same */}
       <style>{`
-        .animate-slide-up { animation: slideUp 0.8s ease-out; }
+        .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
         .animate-spin-slow { animation: spin 20s linear infinite; }
         .animate-marquee { animation: scroll 30s linear infinite; }
         .hover\\:pause:hover { animation-play-state: paused; }
@@ -165,8 +212,10 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        
+        /* Added the slide-up animation for the modal */
+        @keyframes slide-up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </div>

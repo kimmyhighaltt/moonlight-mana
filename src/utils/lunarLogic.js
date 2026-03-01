@@ -34,3 +34,35 @@ export const getMoonPhase = (date = new Date()) => {
     isWaxing: currentCycle < 0.5 // Helpful if you want to show growing/shrinking icons later
   };
 };
+
+// --- NEW POP-UP LOGIC BELOW ---
+
+export const getLunarPopupContent = (moonData, date = new Date()) => {
+  const currentMonth = date.getUTCMonth() + 1; // JS months start at 0
+  const currentDate = date.getUTCDate();
+
+  // 1. The Eclipse Portal (March 3rd UTC)
+  if (currentMonth === 3 && currentDate === 3) {
+    return {
+      title: "Total Lunar Eclipse Energy 🌑🩸",
+      body: "The Blood Moon portal is officially open. The energetic ripple of a Total Lunar Eclipse is massive. This is a time of sudden endings, karmic resets, and heavy emotional static.",
+      tip: "Do not force productivity or attempt heavy manifestation right now. Ground yourself, stay hydrated, and allow the eclipse to clear out what no longer serves you."
+    };
+  } 
+  
+  // 2. Post-Eclipse Recovery (March 4th and 5th UTC)
+  if (currentMonth === 3 && (currentDate === 4 || currentDate === 5)) {
+    return {
+      title: "The Dust is Settling 🌖",
+      body: "The heavy eclipse portal is finally closing. The energetic static is clearing out. Now is the time to rest, recover, and integrate any sudden shifts.",
+      tip: "Your spiritual battery might still be in the red. Prioritize gentle routines today and monitor how quickly your baseline energy is bouncing back."
+    };
+  }
+
+  // 3. Dynamic Default (Uses your math logic for the rest of the year!)
+  return {
+    title: `Current Energy: ${moonData.label} ✨`,
+    body: `The moon is currently in the ${moonData.label} phase with ${moonData.percentage}% illumination. Notice how this specific light and gravity shift is affecting your energetic baseline today.`,
+    tip: "Use today's check-in to notice where you feel resistance. Are you holding onto anything that needs to be released or adjusted as the moon shifts?"
+  };
+};

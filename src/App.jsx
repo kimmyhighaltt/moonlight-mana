@@ -83,12 +83,12 @@ const App = () => {
     localStorage.setItem('moonlight_vault', JSON.stringify(journalEntries));
   }, [journalEntries]);
 
-  // System: Timer & Online Status
+ // System: Timer & Online Status
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     const splashTimer = setTimeout(() => {
-      if (!hasSeenValue) setView('value');
-      else if (!userProfile) setView('onboarding');
+      // By removing the value check, we bypass the text-heavy intro entirely.
+      if (!userProfile) setView('onboarding'); 
       else setView('dashboard');
     }, 1200);
 
