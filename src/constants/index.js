@@ -249,101 +249,168 @@ export const INITIAL_MOCK_ENTRIES = [
 ];
 
 export const SACRED_TOOLS = [
-  // --- HIGH CONVERSION CONSUMABLES (The Money Makers) ---
+  // ==========================================
+  // CATEGORY 1: ENERGY SHIELDING & CLEANSING
+  // ==========================================
   {
-    id: 'free-audible-trial',
-    name: 'Free Audiobook (Audible)',
-    desc: 'Listen to "The Power of Now" or any spiritual book for free.',
-    price: 'FREE', // Visual trigger for users
-    link: 'https://amzn.to/4a5lJ2E', 
-    img: 'https://m.media-amazon.com/images/I/516kmKfROhL._SX342_.jpg' 
+    id: 'obsidian-kit',
+    category: 'Energy Shielding',
+    name: 'Raw Obsidian Shielding Kit',
+    desc: 'Tourmaline & Obsidian for ultimate energy protection.',
+    price: 'View Collection',
+    link: 'https://www.amazon.com/Anima-Premium-Protection-Crystals-Shielding/dp/B0F6CTMCBB?tag=moonlightmana-20',
+    img: 'https://m.media-amazon.com/images/I/814z9E8cMUL._AC_SL1500_.jpg',
+    ritualAdvice: 'Keep this near your entryway to absorb heavy static and protect your Hinengaro (Mind) from draining external forces.'
+  },
+  {
+    id: 'smokeless-smudge',
+    category: 'Energy Cleansing',
+    name: 'Smokeless Palo Santo Spray',
+    desc: 'Clear stagnant energy without the smoke.',
+    price: 'View Collection',
+    link: 'https://www.amazon.com/Essential-Aromatherapy-fresheners-Meditation-Accessories/dp/B0D5LZM1MR?tag=moonlightmana-20',
+    img: 'https://m.media-amazon.com/images/I/51Ixm0ESfPL._AC_SL1080_.jpg', 
+    ritualAdvice: 'Mist this around your aura right before hitting the "Seal This Entry" button to clear any lingering negativity.'
+  },
+  {
+    id: 'crystal-amulet',
+    category: 'Energy Shielding',
+    name: '7 Chakra Crystal Amulet',
+    desc: 'Wearable daily energy shielding.',
+    price: 'View Collection',
+    link: 'https://www.amazon.com/Jovivi-Gemstone-Wrapped-Natural-Necklace/dp/B078185CLY?tag=moonlightmana-20',
+    img: 'https://m.media-amazon.com/images/I/61A5x1gQ02L._AC_SY535_.jpg', 
+    ritualAdvice: 'Wear this on high-stress days to keep your personal mana contained and protected from energetic vampires.'
+  },
+  {
+    id: 'witch-bells',
+    category: 'Energy Cleansing',
+    name: 'Altar Cleansing Bells',
+    desc: 'Handmade bells for home protection.',
+    price: 'View Collection',
+    link: 'https://www.amazon.com/Protection-Handmade-Doorknob-Witchcraft-Decorations/dp/B09H78SC8Y?tag=moonlightmana-20',
+    img: 'https://m.media-amazon.com/images/I/71kzpPVH0SL._AC_SL1500_.jpg', 
+    ritualAdvice: 'Hang these on your door to sonically cleanse the energy entering your sacred space.'
   },
   {
     id: 'sage-1',
+    category: 'Energy Cleansing',
     name: 'White Sage Bundle',
     desc: '6 Pack White Sage ~ Clear negative energy instantly.',
     price: '$11.97',
     link: 'https://amzn.to/4t5yOl8', 
-    img: 'https://m.media-amazon.com/images/I/81qkJ2mMSbL._AC_SX679_.jpg'
-  },
-  {
-    id: 'ritual-candle', // SWAPPED: Replaces Salt Lamp
-    name: 'Chakra Ritual Candles',
-    desc: 'Set of colored candles for spellwork and manifestation.',
-    price: '$15.99',
-    link: 'https://amzn.to/4tfy7FW', 
-    img: 'https://m.media-amazon.com/images/I/81i2uGn4l8L._AC_SX679_.jpg'
-  },
-  {
-    id: 'bath-salts', // SWAPPED: Replaces Singing Bowl
-    name: 'Aura Cleansing Salts',
-    desc: 'Lavender & Epsom salts to wash away heavy emotions.',
-    price: '$3.54',
-    link: 'https://amzn.to/3ZeqSAs', 
-    img: 'https://m.media-amazon.com/images/I/81RPtbwDwNL._SX679_.jpg'
+    img: 'https://m.media-amazon.com/images/I/81qkJ2mMSbL._AC_SX679_.jpg',
+    ritualAdvice: 'Light this during the Waning Moon to banish blockages in your Wairua (Spirit).'
   },
 
-  // --- THE BEST SELLERS (Decks & Journals) ---
+  // ==========================================
+  // CATEGORY 2: THE SACRED ALTAR
+  // ==========================================
+  {
+    id: 'grey-salt-lamp',
+    category: 'Sacred Altar',
+    name: 'Obsidian-Tone Salt Lamp',
+    desc: 'Dark grey salt to purify your physical space.',
+    price: 'View Collection',
+    link: 'https://www.amazon.com/Himalayan-Glow-1041-Natural-Listed/dp/B07CH2KDSG?tag=moonlightmana-20',
+    img: 'https://m.media-amazon.com/images/I/61fnifPLOFL._AC_SL1500_.jpg', 
+    ritualAdvice: 'Turn this on before drawing your daily Tarot card to set a grounded, moody atmosphere.'
+  },
+  {
+    id: 'candle-warmer',
+    category: 'Sacred Altar',
+    name: 'Lotus Wax Warmer Lamp',
+    desc: 'Melt ritual candles slowly and safely.',
+    price: 'View Collection',
+    link: 'https://www.amazon.com/Dimmable-Electric-Birthday-Christmas-Aromatic/dp/B0C27FG8L9?tag=moonlightmana-20',
+    img: 'https://m.media-amazon.com/images/I/71l9egP7MWL._AC_SL1500_.jpg',
+    ritualAdvice: 'The amber light doubles as a calming visual anchor during your guided journaling sessions.'
+  },
+  {
+    id: 'brass-holders',
+    category: 'Sacred Altar',
+    name: 'Vintage Brass Candle Holders',
+    desc: 'Set of 6 taper holders for spellwork.',
+    price: 'View Collection',
+    link: 'https://www.amazon.com/Nuptio-Candlestick-Decorative-Centerpiece-Housewarming/dp/B08MLGXSPH?tag=moonlightmana-20',
+    img: 'https://m.media-amazon.com/images/I/61yjFs5uUfL._AC_SX679_.jpg',
+    ritualAdvice: 'Use these to hold your intention candles during New Moon rituals.'
+  },
+  {
+    id: 'match-cloche',
+    category: 'Sacred Altar',
+    name: 'Aesthetic Match Cloche',
+    desc: 'Glass display dome for ritual matches.',
+    price: 'View Collection',
+    link: 'https://www.amazon.com/Cinnvoice-Matches-Decorative-Fireplace-Display/dp/B0DNFPWZYC?tag=moonlightmana-20',
+    img: 'https://m.media-amazon.com/images/I/71w7u+WIjlL._AC_SL1500_.jpg',
+    ritualAdvice: 'Elevate the simple act of lighting your altar candle into a mindful, deliberate action.'
+  },
+  {
+    id: 'incense-waterfall',
+    category: 'Sacred Altar',
+    name: 'Moon Backflow Incense',
+    desc: 'Mesmerizing smoke waterfall for meditation.',
+    price: 'View Collection',
+    link: 'https://www.amazon.com/XINGZUAN-Backflow-Incense-Waterfall-Fountain/dp/B0CYPNN5J4?tag=moonlightmana-20',
+    img: 'https://m.media-amazon.com/images/I/71f8OfVVjmL._AC_SL1500_.jpg',
+    ritualAdvice: 'Watch the smoke flow downward to visually practice grounding your erratic thoughts.'
+  },
+
+  // ==========================================
+  // CATEGORY 3: SHADOW WORK & RESET
+  // ==========================================
+  {
+    id: 'leather-journal',
+    category: 'Shadow Work',
+    name: 'Vintage Leather Grimoire',
+    desc: 'Blank pages for deep shadow work.',
+    price: 'View Collection',
+    link: 'https://www.amazon.com/Journals-Notebooks-Refillable-Notebook-Sketchbook/dp/B088R5S5TG?tag=moonlightmana-20',
+    img: 'https://m.media-amazon.com/images/I/71+7PU8VyEL._AC_SL1500_.jpg', 
+    ritualAdvice: 'Use this physical journal to free-flow your raw thoughts before logging your finalized reflections into the app.'
+  },
+  {
+    id: 'cast-iron-teapot',
+    category: 'Sunday Reset',
+    name: 'Cast Iron Tetsubin Teapot',
+    desc: 'Heavy iron pot for herbal grounding blends.',
+    price: 'View Collection',
+    link: 'https://www.amazon.com/Workshop-Japanese-Tetsubin-Stainless-Infuser/dp/B01N5JTAAD?tag=moonlightmana-20',
+    img: 'https://m.media-amazon.com/images/I/71oSXJ-IhFL._AC_SL1500_.jpg', 
+    ritualAdvice: 'Brew a loose-leaf blend in this heavy pot to ground your Tinana (Body) after a high-energy day.'
+  },
   {
     id: 'deck-modern',
+    category: 'Shadow Work',
     name: 'Modern Witch Tarot',
-    desc: 'A stylish, contemporary take on tarot. #1 Bestseller.',
+    desc: 'A stylish, contemporary take on tarot.',
     price: '$18.45', 
     link: 'https://amzn.to/4as2qBQ',
-    img: 'https://m.media-amazon.com/images/I/81bvT2YcWiL._SY342_.jpg' 
-  },
-  {
-    id: 'deck-classic',
-    name: 'The Rider Waite Tarot',
-    desc: 'The essential deck for all readers.',
-    price: '$19.54',
-    link: 'https://amzn.to/4qdayLm', 
-    img: 'https://m.media-amazon.com/images/I/71YMG6rKgnL._SL1404_.jpg' 
-  },
-  {
-    id: 'oracle-light',
-    name: 'Work Your Light Oracle',
-    desc: 'Gentle guidance for your soul journey.',
-    price: '$16.14',
-    link: 'https://amzn.to/3ZK8Lm3',
-    img: 'https://m.media-amazon.com/images/I/8123LkyQThL._SL1400_.jpg'
+    img: 'https://m.media-amazon.com/images/I/81bvT2YcWiL._SY342_.jpg',
+    ritualAdvice: 'A highly intuitive deck perfect for translating your daily pulls into actionable modern advice.'
   },
   {
     id: 'journal-moon',
+    category: 'Shadow Work',
     name: 'Moonology Diary 2026',
     desc: 'Align your life with the lunar cycles.',
     price: '$16.10',
     link: 'https://amzn.to/4tfyMao',
-    img: 'https://m.media-amazon.com/images/I/71djIm0c9DL._SL1500_.jpg'
-  },
-
-  // --- HIGH TICKET / GIFTS (Keep these for specific cards) ---
-  {
-    id: 'cleansing-selenite',
-    name: 'Selenite Cleansing Stick',
-    desc: 'Clear negative energy instantly.',
-    price: '$9.99',
-    link: 'https://amzn.to/4afhvpb',
-    img: 'https://m.media-amazon.com/images/I/81282kmUtKL._AC_SX679_PIbundle-12,TopRight,0,0_SH20_.jpg'
+    img: 'https://m.media-amazon.com/images/I/71djIm0c9DL._SL1500_.jpg',
+    ritualAdvice: 'Pair this with our digital lunar tracker to master your manifestation timing.'
   },
   {
-    id: 'crystal-set',
-    name: 'Chakra Healing Crystals',
-    desc: '7 stones for balancing your energy.',
-    price: '$21.99',
-    link: 'https://amzn.to/4qhF6vo',
-    img: 'https://m.media-amazon.com/images/I/81eyC6EOThL._AC_SL1500_.jpg'
-  },
-  {
-    id: 'decor-lamp',
-    name: '3D Moon Lamp',
-    desc: 'Bring the full moon into your room.',
-    price: '$17.99',
-    link: 'https://amzn.to/3ZfcIir',
-    img: 'https://m.media-amazon.com/images/I/71F4ab7Sx8L._AC_SL1500_.jpg'
+    id: 'free-audible-trial',
+    category: 'Sunday Reset',
+    name: 'Free Audiobook (Audible)',
+    desc: 'Listen to any spiritual book for free.',
+    price: 'FREE',
+    link: 'https://amzn.to/4a5lJ2E', 
+    img: 'https://m.media-amazon.com/images/I/516kmKfROhL._SX342_.jpg',
+    ritualAdvice: 'If your eyes are tired from screens, rest your body and absorb spiritual wisdom through audio instead.'
   }
 ];
-
 export const WHAKATAUKI = [
   { 
     maori: 'Tama tū tama ora, tama noho tama mate.', 
