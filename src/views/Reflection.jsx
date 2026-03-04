@@ -71,8 +71,8 @@ const Reflection = ({
     let wisdom = MAJOR_ARCANA[selectedCard.name] || getMinorArcanaMeaning(selectedCard.name);
     
     // 2. Fetch Affiliate Product Data
-    const tool = getRecommendationForCard(selectedCard.name); // Returns { name, link, etc }
-    const ritualAdvice = getRitualAdvice(tool); // Returns string mentioning the tool
+    const tool = getRecommendationForCard(selectedCard.name);
+    const ritualAdvice = getRitualAdvice(tool); 
     
     const greeting = userProfile ? `${userProfile.name}, ` : "";
     
@@ -138,7 +138,16 @@ const Reflection = ({
         <div className="flex flex-col items-center justify-center w-full relative">
           <div ref={cardRef} className={`relative w-full max-w-[300px] md:max-w-[340px] aspect-[2/3] perspective-1000 z-10 ${!isFlipped ? 'cursor-pointer animate-pulse' : ''}`} onClick={() => !isFlipped && handleCardPull()}>
             <div className={`relative w-full h-full transition-all duration-1000 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-              <div className="absolute inset-0 backface-hidden rounded-[32px] border border-amber-200/40 bg-slate-900/60 flex items-center justify-center"><Sun size={60} className="opacity-40 text-amber-100" /></div>
+              
+              {/* ✨ FIXED: Added explicit CTA button to the unflipped back of the card */}
+              <div className="absolute inset-0 backface-hidden rounded-[32px] border border-amber-200/40 bg-slate-900/60 flex flex-col items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.05)] hover:shadow-[0_0_50px_rgba(212,175,55,0.15)] transition-shadow">
+                <Sun size={60} className="opacity-40 text-amber-100 mb-8" />
+                <div className="flex items-center gap-2 px-6 py-3 rounded-full bg-amber-500/10 border border-amber-200/30">
+                  <Stars size={14} className="text-amber-200" />
+                  <span className="text-[10px] font-black tracking-widest text-amber-100 uppercase drop-shadow-md">Draw Daily Card</span>
+                </div>
+              </div>
+
               <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-[32px] bg-zinc-900 border-2 border-amber-200/40 overflow-hidden flex flex-col shadow-[0_0_50px_rgba(212,175,55,0.2)]">
                 <div className="flex-1 bg-cover bg-center" style={{ backgroundImage: `url("${selectedCard.img}")` }} />
                 <div className="p-4 text-center bg-zinc-950/95 border-t border-white/10"><h4 className="text-md font-serif uppercase tracking-widest text-amber-200">{selectedCard.name}</h4></div>
