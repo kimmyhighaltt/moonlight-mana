@@ -35,6 +35,8 @@ export const getMoonPhase = (date = new Date()) => {
   };
 };
 
+
+
 // --- NEW POP-UP LOGIC BELOW ---
 
 export const getLunarPopupContent = (moonData, date = new Date()) => {
@@ -65,4 +67,51 @@ export const getLunarPopupContent = (moonData, date = new Date()) => {
     body: `The moon is currently in the ${moonData.label} phase with ${moonData.percentage}% illumination. Notice how this specific light and gravity shift is affecting your energetic baseline today.`,
     tip: "Use today's check-in to notice where you feel resistance. Are you holding onto anything that needs to be released or adjusted as the moon shifts?"
   };
+};
+/**
+ * Calculates a 'Power Level' based on the moon phase and the user's element.
+ */
+export const calculatePowerLevel = (phase, element) => {
+  let power = 50; // Base energy level
+
+  const phaseBoosts = {
+    'New Moon': { Earth: 30, Air: 20, Water: 10, Fire: 5 },
+    'Waxing Crescent': { Fire: 15, Air: 25 },
+    'First Quarter': { Fire: 25, Earth: 15 },
+    'Waxing Gibbous': { Fire: 30, Water: 10 },
+    'Full Moon': { Water: 45, Fire: 40, Air: 20, Earth: 10 },
+    'Waning Gibbous': { Water: 20, Earth: 25 },
+    'Last Quarter': { Air: 30, Earth: 20 },
+    'Waning Crescent': { Water: 30, Earth: 30 }
+  };
+
+  const boost = phaseBoosts[phase]?.[element] || 10;
+  return Math.min(power + boost, 100); 
+};
+/**
+ * Returns current status of major planets for UI indicators
+ */
+export const getPlanetaryTransits = (date = new Date()) => {
+  const day = date.getUTCDate();
+  const month = date.getUTCMonth() + 1; // Jan is 1
+  const year = date.getUTCFullYear();
+
+  // 2026 Mercury Retrograde example dates: Feb 25 - Mar 20
+  const isMercuryRetrograde = (year === 2026 && month === 3 && day <= 20);
+  
+  // 2026 Mars is Direct in March
+  const isMarsDirect = true; 
+
+  return [
+    { 
+      name: "Mercury", 
+      status: isMercuryRetrograde ? "Retrograde" : "Direct", 
+      color: isMercuryRetrograde ? "bg-red-400" : "bg-blue-400" 
+    },
+    { 
+      name: "Mars", 
+      status: isMarsDirect ? "Direct" : "Retrograde", 
+      color: "bg-orange-500" 
+    }
+  ];
 };
