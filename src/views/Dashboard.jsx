@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // FIXED: Added useEffect
 import { 
   Globe, Moon, ShoppingBag, ExternalLink, Flame, X, ChevronRight 
 } from 'lucide-react';
@@ -8,8 +8,8 @@ import CelestialBackground from '../components/CelestialBackground';
 import Shop from './Shop'; 
 import { getLunarPopupContent } from '../utils/lunarLogic';
 
-// ... (ShopModal remains unchanged) ...
-const ShopModal = ({ onClose, user }) => {
+// FIXED: Added autoOpenId prop to pass into the Shop component
+const ShopModal = ({ onClose, user, autoOpenId }) => {
   return (
     <div 
       className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"
@@ -28,33 +28,62 @@ const ShopModal = ({ onClose, user }) => {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto pt-16 px-4 custom-scrollbar">
-            <Shop user={user} />
+            {/* FIXED: Passing initialProductId so the Shop knows to open the ritual */}
+            <Shop user={user} initialProductId={autoOpenId} />
         </div>
       </div>
     </div>
   );
 };
 
-const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, userProfile, streak }) => {
+const Dashboard = ({ 
+  hemisphere, 
+  toggleHemisphere, 
+  setView, 
+  isOnline, 
+  moonData, 
+  userProfile, 
+  streak,
+  autoOpenProductId, 
+  clearAutoOpen      
+}) => {
   const [showShop, setShowShop] = useState(false);
-  
-  // 1. ADDED: State and content for the Moon Modal
   const [isMoonModalOpen, setIsMoonModalOpen] = useState(false);
-  // Passing the current date dynamically
-  const lunarContent = getLunarPopupContent(moonData, new Date()); 
   
+  // FIXED: Logic to trigger the shop when an ID is passed from App.js
+  useEffect(() => {
+    if (autoOpenProductId) {
+      const tool = SACRED_TOOLS.find(t => t.id === autoOpenProductId);
+      if (tool) {
+        setShowShop(true); 
+      }
+    }
+  }, [autoOpenProductId]);
+
+  // Helper to close shop and clear the global navigation state
+  const handleCloseShop = () => {
+    setShowShop(false);
+    if (clearAutoOpen) clearAutoOpen();
+  };
+
+  const lunarContent = getLunarPopupContent(moonData, new Date()); 
   const carouselItems = [...SACRED_TOOLS, ...SACRED_TOOLS];
 
   return (
     <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden animate-slide-up pb-24 md:pb-0 text-white">
       
-      {/* 1. THE ATMOSPHERE */}
       <CelestialBackground />
 
-      {/* 2. THE AMBIENT LIGHT (Brighter on Desktop) */}
       <div className="fixed inset-0 z-0 bg-gradient-to-b from-indigo-900/10 via-slate-900/0 to-slate-900/20 pointer-events-none mix-blend-screen" />
 
-      {showShop && <ShopModal user={userProfile} onClose={() => setShowShop(false)} />}
+      {/* FIXED: Added autoOpenId and handleCloseShop */}
+      {showShop && (
+        <ShopModal 
+          user={userProfile} 
+          onClose={handleCloseShop} 
+          autoOpenId={autoOpenProductId} 
+        />
+      )}
 
       {/* --- HEADER ROW --- */}
       <div className="relative z-10 w-full flex justify-between items-center p-6 pt-12 md:p-8">
@@ -67,7 +96,6 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
               </div>
             )}
             
-           {/* 2. FIXED: Removed background/border so it reads as pure status text, not a button */}
             <div className="flex items-center gap-1.5 select-none opacity-70">
                 <Globe size={12} color={THEME.primary} />
                 <p className="text-[10px] tracking-[0.2em] uppercase font-black text-amber-100">{hemisphere}</p>
@@ -91,7 +119,6 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
         
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-500/10 md:bg-indigo-500/20 rounded-full blur-[80px] md:blur-[100px] pointer-events-none" />
 
-        {/* 3. FIXED: Added the onClick to trigger the Moon Modal */}
         <div 
           onClick={() => setIsMoonModalOpen(true)}
           className="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-[40px] md:rounded-[50px] p-8 md:p-8 flex flex-col items-center shadow-[0_0_50px_rgba(0,0,0,0.5)] group cursor-pointer hover:bg-white/10 transition-all ring-1 ring-white/10 hover:ring-white/30 relative z-10"
@@ -116,7 +143,6 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
       </main>
 
       {/* --- CAROUSEL (Shop) --- */}
-      {/* Rest of the carousel stays exactly the same... */}
       <section className="relative z-10 w-full mt-12 md:mt-8 overflow-hidden pb-10">
         <div className="max-w-2xl mx-auto flex items-center justify-between mb-4 px-6">
             <div className="flex items-center gap-3">
@@ -162,15 +188,12 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
 
       <BottomNav view="dashboard" setView={setView} />
       
-    {/* 4. ADDED: The actual Moon Phase Pop-Up UI */}
       {isMoonModalOpen && (
         <div 
-          /* Changed to items-center and added px-4 to make it a floating centered box */
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center px-4 z-[100] animate-in fade-in duration-300"
           onClick={() => setIsMoonModalOpen(false)}
         >
           <div 
-            /* Changed rounded-t-3xl to rounded-3xl so all corners are smooth, and added overflow-y-auto so tiny screens can scroll */
             className="bg-slate-900/90 backdrop-blur-xl border border-white/10 w-full md:max-w-lg rounded-3xl p-6 md:p-8 text-white shadow-2xl animate-in slide-in-from-bottom-10 duration-500 max-h-[85vh] overflow-y-auto relative"
             onClick={(e) => e.stopPropagation()}
           >
@@ -202,7 +225,6 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
         </div>
       )}
 
-      {/* Styles remain same */}
       <style>{`
         .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
         .animate-spin-slow { animation: spin 20s linear infinite; }
@@ -212,8 +234,6 @@ const Dashboard = ({ hemisphere, toggleHemisphere, setView, isOnline, moonData, 
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-        
-        /* Added the slide-up animation for the modal */
         @keyframes slide-up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

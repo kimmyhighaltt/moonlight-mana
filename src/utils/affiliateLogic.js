@@ -1,9 +1,11 @@
-// src/utils/affiliateLogic.js
 import { SACRED_TOOLS } from '../constants/index';
 
-// Helper to safely find a tool by ID
+/**
+ * Helper to safely find a tool by ID. 
+ * If the ID is missing or mistyped, it defaults to the Modern Witch Tarot.
+ */
 const findTool = (id) => {
-  return SACRED_TOOLS.find(t => t.id === id) || SACRED_TOOLS[0];
+  return SACRED_TOOLS.find(t => t.id === id) || SACRED_TOOLS.find(t => t.id === 'deck-modern');
 };
 
 // ==========================================
@@ -11,73 +13,67 @@ const findTool = (id) => {
 // ==========================================
 
 export const getRecommendationForCard = (cardName) => {
-  if (!cardName) return findTool('deck-classic');
+  if (!cardName) return findTool('deck-modern');
 
   // --- SPECIFIC MAJOR ARCANA MAPPINGS ---
   
-  // High Intuition Cards -> Moon Diary
-  if (['The Moon', 'The High Priestess', 'Wheel of Fortune', 'Nine of Cups', 'Two of Pentacles'].some(c => cardName.includes(c))) {
+  // High Intuition & Cycles -> Moonology Diary
+  if (['The Moon', 'The High Priestess', 'Wheel of Fortune', 'Nine of Cups'].some(c => cardName.includes(c))) {
     return findTool('journal-moon');
   }
   
-  // Heavy Energy/Release Cards -> Cleansing Stick
-  if (['The Tower', 'Death', 'Judgement', 'Ten of Swords', 'Five of Pentacles', 'The Devil'].some(c => cardName.includes(c))) {
-    return findTool('cleansing-selenite');
+  // Heavy Energy & Release -> Obsidian Shielding Kit
+  if (['The Tower', 'Death', 'Judgement', 'Ten of Swords', 'The Devil'].some(c => cardName.includes(c))) {
+    return findTool('obsidian-kit');
   }
   
-  // Guidance/Spirit Cards -> Oracle Deck
-  if (['The Star', 'Temperance', 'The Hierophant', 'Six of Cups'].some(c => cardName.includes(c))) {
-    return findTool('oracle-light');
-  }
-  
-  // Solitude/Inner Light -> Moon Lamp
+  // Solitude & Inner Light -> Lunar Aura Salt Lamp
   if (['The Hermit', 'The Hanged Man', 'The Fool', 'Four of Swords'].some(c => cardName.includes(c))) {
-    return findTool('decor-lamp');
+    return findTool('lunar-salt-lamp');
   }
   
-  // Manifestation/Power -> Modern Witch Deck
-  if (['The Magician', 'Queen of Wands', 'King of Wands', 'Ace of Wands'].some(c => cardName.includes(c))) {
+  // Manifestation & Action -> Modern Witch Deck
+  if (['The Magician', 'The Sun', 'Queen of Wands', 'King of Wands', 'Ace of Wands'].some(c => cardName.includes(c))) {
     return findTool('deck-modern');
   }
 
-  // --- ELEMENTAL FALLBACKS (Using your new swapped items) ---
+  // --- ELEMENTAL FALLBACKS ---
 
-  // Earth (Pentacles) -> Crystals
+  // Earth (Pentacles) -> Moss Agate
   if (cardName.includes('Pentacles') || cardName.includes('Emperor') || cardName.includes('World')) {
-    return findTool('crystal-set');
+    return findTool('element-earth-crystal');
   }
 
-  // Air (Swords) -> Sage Bundle (Mental Clarity)
+  // Air (Swords) -> Sage Bundle (Clearing the mind)
   if (cardName.includes('Swords')) {
     return findTool('sage-1');
   }
 
-  // Water (Cups) -> Bath Salts (Emotional Cleansing)
-  // *Replaced old 'singing bowl' logic with your new Bath Salts*
+  // Water (Cups) -> Teapot (Nurturing the emotional body)
   if (cardName.includes('Cups') || cardName.includes('Empress')) {
-    return findTool('bath-salts');
+    return findTool('cast-iron-teapot');
   }
 
-  // Fire (Wands) -> Ritual Candles (Action/Passion)
-  // *Replaced old 'salt lamp' logic with your new Candles*
-  if (cardName.includes('Wands') || cardName.includes('Sun') || cardName.includes('Chariot')) {
-    return findTool('ritual-candle');
+  // Fire (Wands) -> Brass Holders (Channeling passion)
+  if (cardName.includes('Wands') || cardName.includes('Chariot')) {
+    return findTool('brass-holders');
   }
 
   // Default Catch-All
-  return findTool('deck-classic');
+  return findTool('deck-modern');
 };
 
+/**
+ * Grabs the specific ritual advice we wrote for each tool.
+ */
 export const getRitualAdvice = (tool) => {
-  if (!tool) return "Connect with your inner self.";
-  // Uses the description you already wrote in index.js
-  return tool.desc; 
+  if (!tool) return "Take a moment to center your energy.";
+  return tool.ritualAdvice || tool.desc; 
 };
 
 // ==========================================
 // 2. ZODIAC ELEMENT RECOMMENDATIONS
 // ==========================================
-// (Kept separate because these specific items might not be in your main shop list)
 
 export const getElementBySign = (sign) => {
   const fire = ['Aries', 'Leo', 'Sagittarius'];
@@ -94,72 +90,24 @@ export const getShopRecommendations = (element) => {
   switch(element) {
     case 'Fire':
       return {
-        crystal: { 
-            name: "Raw Carnelian Flame", 
-            desc: "Ignites passion and restores vitality.", 
-            price: "$28.99", 
-            img: "https://m.media-amazon.com/images/I/616CDvG6BTL._AC_SL1500_.jpg",
-            link: "https://amzn.to/3ZraBIA" 
-        },
-        tea: { 
-            name: "Ceylon Cinnamon Capsules", 
-            desc: "Warming herbs to fuel your inner fire.", 
-            price: "$15.95", 
-            img: "https://m.media-amazon.com/images/I/816P+7NySIL._AC_SL1500_.jpg",
-            link: "https://amzn.to/4c3AmpZ" 
-        }
+        crystal: findTool('element-fire-crystal'),
+        tea: findTool('element-fire-tea') // Now this exists!
       };
     case 'Earth':
       return {
-        crystal: { 
-            name: "Green Moss Agate", 
-            desc: "For grounding and new beginnings.", 
-            price: "$26.99", 
-            img: "https://m.media-amazon.com/images/I/81sQJ53nBxL._AC_SL1500_.jpg",
-            link: "https://amzn.to/4qvwpxM" 
-        },
-        tea: { 
-            name: "Dandelion Herbal Tea", 
-            desc: "Deeply rooting herbs for stability.", 
-            price: "$18.99", 
-            img: "https://m.media-amazon.com/images/I/81rPe-3SltL._SL1500_.jpg",
-            link: "https://amzn.to/3O1TAlP" 
-        }
+        crystal: findTool('element-earth-crystal'),
+        tea: findTool('element-earth-tea')
       };
     case 'Air':
       return {
-        crystal: { 
-            name: "Clear Quartz Wand", 
-            desc: "Amplifies thought and mental clarity.", 
-            price: "$13.99", 
-            img: "https://m.media-amazon.com/images/I/71t5kM59-2L._AC_SL1400_.jpg",
-            link: "https://amzn.to/4bLjy6P" 
-        },
-        tea: { 
-            name: "Energy Mints", 
-            desc: "Bright herbs to clear the mental fog.", 
-            price: "$21.99", 
-            img: "https://m.media-amazon.com/images/I/71kcJRYBEIL._AC_SL1500_.jpg",
-            link: "https://amzn.to/46HBprR" 
-        }
+        crystal: findTool('element-air-crystal'),
+        tea: findTool('element-air-tea') // Now this exists!
       };
     case 'Water':
     default:
       return {
-        crystal: { 
-            name: "Rainbow Moonstone", 
-            desc: "Enhances intuition and emotional flow.", 
-            price: "$19.99", 
-            img: "https://m.media-amazon.com/images/I/61O98XE8tIL._AC_SL1500_.jpg",
-            link: "https://amzn.to/4tyxbNh" 
-        },
-        tea: { 
-            name: "Organic Chamomile Tea", 
-            desc: "Soothing flowers for deep emotional rest.", 
-            price: "$19.99", 
-            img: "https://m.media-amazon.com/images/I/71SFHFgKwVL._SL1500_.jpg",
-            link: "https://amzn.to/3O3QwFL" 
-        }
+        crystal: findTool('element-water-crystal'),
+        tea: findTool('element-water-tea') // Now this exists!
       };
   }
 };

@@ -7,7 +7,7 @@ import CelestialBackground from './components/CelestialBackground';
 
 // --- Views ---
 import Splash from './views/Splash';
-import ValuePage from './views/ValuePage'; 
+import ValuePage from './views/ValuePage';
 import Dashboard from './views/Dashboard';
 import Reflection from './views/Reflection';
 import Tracker from './views/Tracker';
@@ -20,7 +20,7 @@ import { getMoonPhase } from './utils/lunarLogic';
 import { THEME, PILLAR_INFO, TAROT_DECK, INITIAL_MOCK_ENTRIES } from './constants/index';
 
 const App = () => {
-  
+
   // =========================================
   // 1. STATE MANAGEMENT
   // =========================================
@@ -47,7 +47,7 @@ const App = () => {
       return INITIAL_MOCK_ENTRIES;
     }
   });
-
+  const [selectedProductId, setSelectedProductId] = useState(null);
   const [streak, setStreak] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [selectedCard, setSelectedCard] = useState(TAROT_DECK[0]);
@@ -66,7 +66,7 @@ const App = () => {
   // =========================================
   // 2. COMPUTED DATA
   // =========================================
- 
+
   const moonData = getMoonPhase(currentTime);
   const filteredEntries = journalEntries.filter(entry => {
     const matchesSearch = entry.card.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -83,12 +83,12 @@ const App = () => {
     localStorage.setItem('moonlight_vault', JSON.stringify(journalEntries));
   }, [journalEntries]);
 
- // System: Timer & Online Status
+  // System: Timer & Online Status
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     const splashTimer = setTimeout(() => {
       // By removing the value check, we bypass the text-heavy intro entirely.
-      if (!userProfile) setView('onboarding'); 
+      if (!userProfile) setView('onboarding');
       else setView('dashboard');
     }, 1200);
 
@@ -109,7 +109,7 @@ const App = () => {
     const checkStreak = () => {
       const today = new Date().toDateString();
       const saved = JSON.parse(localStorage.getItem('moonlight_streak')) || { date: null, count: 0 };
-      
+
       if (saved.date === today) {
         setStreak(saved.count);
         return;
@@ -117,7 +117,7 @@ const App = () => {
 
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      
+
       if (saved.date === yesterday.toDateString()) {
         const newCount = saved.count + 1;
         setStreak(newCount);
@@ -149,7 +149,7 @@ const App = () => {
   };
 
   const toggleHemisphere = () => setHemisphere(prev => prev === 'Southern' ? 'Northern' : 'Southern');
-  
+
   const handleCardPull = () => {
     if (!isFlipped) {
       const randomIndex = Math.floor(Math.random() * TAROT_DECK.length);
@@ -176,7 +176,7 @@ const App = () => {
     setTimeout(() => {
       const averageMana = Math.round((pillars.mind + pillars.body + pillars.heart + pillars.soul) / 4);
       let entryDateObj = new Date(currentTime);
-      
+
       const newEntry = {
         id: Date.now(),
         date: entryDateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase(),
@@ -200,14 +200,17 @@ const App = () => {
   // =========================================
   // 5. RENDER LOGIC
   // =========================================
-
+  const handleNavigateToProduct = (productId) => {
+    setSelectedProductId(productId);
+    setView('dashboard');
+  };
   return (
     <div className="relative min-h-screen w-full bg-[#020617] overflow-x-hidden">
       <CelestialBackground />
 
       <div className="relative z-10 w-full h-full">
         {view === 'splash' && <Splash />}
-        
+
         {view === 'value' && <ValuePage onContinue={handleValueComplete} />}
 
         {(!userProfile || view === 'onboarding') && view !== 'splash' && view !== 'value' && (
@@ -216,33 +219,72 @@ const App = () => {
 
         {userProfile && (
           <>
+           // Inside the App.jsx return statement
             {view === 'dashboard' && (
-              <Dashboard hemisphere={hemisphere} toggleHemisphere={toggleHemisphere} setView={setView} isOnline={isOnline} moonData={moonData} userProfile={userProfile} streak={streak} currentTime={currentTime} />
+              <Dashboard
+                hemisphere={hemisphere}
+                toggleHemisphere={toggleHemisphere}
+                setView={setView}
+                isOnline={isOnline}
+                moonData={moonData}
+                userProfile={userProfile}
+                streak={streak}
+                currentTime={currentTime}
+                // ADD THESE TWO PROPS
+                autoOpenProductId={selectedProductId}
+                clearAutoOpen={() => setSelectedProductId(null)}
+              />
             )}
             {view === 'reflection' && (
-              <Reflection 
-                currentTime={currentTime} hemisphere={hemisphere} isFlipped={isFlipped} 
-                selectedCard={selectedCard} handleCardPull={handleCardPull} rituals={rituals} 
-                checkedItems={checkedItems} toggleCheck={toggleCheck} pillars={pillars} 
-                setPillars={setPillars} newRitualInput={newRitualInput} 
-                setNewRitualInput={setNewRitualInput} addRitual={addRitual} 
-                reflection={reflection} setReflection={setReflection} setView={setView} 
-                isOnline={isOnline} onBack={() => setView('dashboard')} userProfile={userProfile} 
+              <Reflection
+                currentTime={currentTime}
+                hemisphere={hemisphere}
+                isFlipped={isFlipped}
+                selectedCard={selectedCard}
+                handleCardPull={handleCardPull}
+                rituals={rituals}
+                checkedItems={checkedItems}
+                toggleCheck={toggleCheck}
+                pillars={pillars}
+                setPillars={setPillars}
+                newRitualInput={newRitualInput}
+                setNewRitualInput={setNewRitualInput}
+                addRitual={addRitual}
+                reflection={reflection}
+                setReflection={setReflection}
+                setView={setView}
+                isOnline={isOnline}
+                onBack={() => setView('dashboard')}
+                userProfile={userProfile}
+                // ADD THIS LINE BELOW
+                onNavigateToProduct={handleNavigateToProduct}
               />
             )}
             {view === 'tracker' && (
-              <Tracker 
-                isLogging={isLogging} currentTime={currentTime} pillars={pillars} 
-                setPillars={setPillars} activeTags={activeTags} setActiveTags={setActiveTags} 
-                handleLogMana={handleLogMana} isOnline={isOnline} setView={setView} 
-                onBack={() => setView('reflection')} 
+              <Tracker
+                isLogging={isLogging} currentTime={currentTime} pillars={pillars}
+                setPillars={setPillars} activeTags={activeTags} setActiveTags={setActiveTags}
+                handleLogMana={handleLogMana} isOnline={isOnline} setView={setView}
+                onBack={() => setView('reflection')}
               />
             )}
             {view === 'vault' && (
               <Vault currentTime={currentTime} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterHighMana={filterHighMana} setFilterHighMana={setFilterHighMana} filteredEntries={filteredEntries} setView={setView} isOnline={isOnline} onDelete={handleDeleteEntry} onBack={() => setView('dashboard')} />
             )}
             {view === 'planner' && (
-              <Planner currentTime={currentTime} hemisphere={hemisphere} toggleHemisphere={toggleHemisphere} selectedCalendarDay={selectedCalendarDay} setSelectedCalendarDay={setSelectedCalendarDay} setView={setView} isOnline={isOnline} onBack={() => setView('dashboard')} />
+              <Planner
+                currentTime={currentTime}
+                hemisphere={hemisphere}
+                toggleHemisphere={toggleHemisphere}
+                selectedCalendarDay={selectedCalendarDay}
+                setSelectedCalendarDay={setSelectedCalendarDay}
+                setView={setView}
+                isOnline={isOnline}
+                onBack={() => setView('dashboard')}
+                // ADD THESE TWO PROPS
+                autoOpenProductId={selectedProductId}
+                clearAutoOpen={() => setSelectedProductId(null)}
+              />
             )}
           </>
         )}

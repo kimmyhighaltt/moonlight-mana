@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Sun, Moon, CheckCircle2, Plus, Stars, Loader2, Mic, MicOff } from 'lucide-react';
 import { Logo, StatusHeader, BottomNav } from '../components/UIComponents';
 import CelestialBackground from '../components/CelestialBackground';
-import ShareButton from '../components/ShareButton'; 
+import ShareButton from '../components/ShareButton';
 import { getMoonPhase } from '../utils/lunarLogic';
 import { MAJOR_ARCANA, getMinorArcanaMeaning } from '../utils/tarotLogic';
 import { getRecommendationForCard, getRitualAdvice } from '../utils/affiliateLogic';
@@ -12,12 +12,13 @@ const Reflection = ({
   currentTime, hemisphere, isFlipped, selectedCard, handleCardPull,
   rituals, checkedItems, toggleCheck, newRitualInput, setNewRitualInput,
   addRitual, reflection, setReflection, setView, isOnline,
-  onBack, userProfile
+  onBack, userProfile,
+  onNavigateToProduct
 }) => {
 
   const [isGuided, setIsGuided] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
-  const [aiState, setAiState] = useState('idle'); 
+  const [aiState, setAiState] = useState('idle');
   const [streamedText, setStreamedText] = useState('');
   const cardRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -66,16 +67,16 @@ const Reflection = ({
   // --- ✨ Updated Wisdom Logic (Restored Affiliate Injection) ---
   const handleChannelWisdom = () => {
     setAiState('loading');
-    
+
     // 1. Get Base Wisdom
     let wisdom = MAJOR_ARCANA[selectedCard.name] || getMinorArcanaMeaning(selectedCard.name);
-    
+
     // 2. Fetch Affiliate Product Data
     const tool = getRecommendationForCard(selectedCard.name);
-    const ritualAdvice = getRitualAdvice(tool); 
-    
+    const ritualAdvice = getRitualAdvice(tool);
+
     const greeting = userProfile ? `${userProfile.name}, ` : "";
-    
+
     // 3. Construct Full Message including the Product mention
     const fullMessage = `${greeting}${selectedCard.name} has appeared. ${wisdom} To deepen this alignment, I recommend using the ${tool.name}. ${ritualAdvice}`;
 
@@ -85,12 +86,12 @@ const Reflection = ({
       const interval = setInterval(() => {
         setStreamedText(fullMessage.slice(0, i));
         i++;
-        if (i > fullMessage.length) { 
-          clearInterval(interval); 
-          setAiState('complete'); 
+        if (i > fullMessage.length) {
+          clearInterval(interval);
+          setAiState('complete');
         }
-      }, 30); 
-    }, 1500); 
+      }, 30);
+    }, 1500);
   };
 
   const PROMPTS = {
@@ -108,7 +109,7 @@ const Reflection = ({
       <div className="relative z-20 w-full flex flex-col md:flex-row md:justify-between items-center md:items-start p-6 md:p-10 gap-6 max-w-[1600px] mx-auto">
         <StatusHeader isOnline={isOnline} onBack={onBack} />
         <div className="flex flex-col items-center">
-            <Logo size="text-3xl md:text-4xl" subtitle="DAILY REFLECTION" />
+          <Logo size="text-3xl md:text-4xl" subtitle="DAILY REFLECTION" />
         </div>
         <div className="text-center md:text-right">
           <div className="text-4xl md:text-5xl font-serif font-light text-amber-50">{ts}</div>
@@ -138,7 +139,7 @@ const Reflection = ({
         <div className="flex flex-col items-center justify-center w-full relative">
           <div ref={cardRef} className={`relative w-full max-w-[300px] md:max-w-[340px] aspect-[2/3] perspective-1000 z-10 ${!isFlipped ? 'cursor-pointer animate-pulse' : ''}`} onClick={() => !isFlipped && handleCardPull()}>
             <div className={`relative w-full h-full transition-all duration-1000 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-              
+
               {/* ✨ FIXED: Added explicit CTA button to the unflipped back of the card */}
               <div className="absolute inset-0 backface-hidden rounded-[32px] border border-amber-200/40 bg-slate-900/60 flex flex-col items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.05)] hover:shadow-[0_0_50px_rgba(212,175,55,0.15)] transition-shadow">
                 <Sun size={60} className="opacity-40 text-amber-100 mb-8" />
@@ -164,7 +165,15 @@ const Reflection = ({
                   <div className="p-6 bg-slate-900/60 backdrop-blur-xl border border-amber-200/30 rounded-2xl relative shadow-xl">
                     {aiState === 'loading' ? <div className="flex justify-center py-4"><Loader2 className="animate-spin text-amber-200" size={20} /></div> : <p className="text-sm font-serif italic text-white/90 leading-relaxed">"{streamedText}"</p>}
                   </div>
-                  {aiState === 'complete' && <div className="flex flex-col items-center gap-6 animate-fade-in"><ShareButton targetRef={cardRef} fileName={`reflection-${selectedCard.name}.png`} /><RecommendedTool cardName={selectedCard.name} /></div>}
+                  {aiState === 'complete' && (
+                    <div className="flex flex-col items-center gap-6 animate-fade-in">
+                      <ShareButton targetRef={cardRef} fileName={`reflection-${selectedCard.name}.png`} />
+                      <RecommendedTool
+                        cardName={selectedCard.name}
+                        onNavigate={onNavigateToProduct} // <--- ADD THIS PROP HERE
+                      />
+                    </div>
+                  )}
                 </>
               )}
             </div>

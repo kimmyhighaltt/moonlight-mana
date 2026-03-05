@@ -1,17 +1,15 @@
 import React from 'react';
-import { Moon, Calendar as CalendarIcon, ChevronLeft, ChevronRight, X, Waves, ShoppingBag, ExternalLink, ChevronRight as ChevronRightSmall } from 'lucide-react';
-import { THEME, SACRED_TOOLS } from '../constants/index';
+import { Moon, Calendar as CalendarIcon, ChevronLeft, ChevronRight, X, Waves, ChevronRight as ChevronRightSmall } from 'lucide-react';
+import { THEME } from '../constants/index';
 import { getMoonPhase } from '../utils/lunarLogic';
 import { Logo, StatusHeader, BottomNav } from '../components/UIComponents';
-import CelestialBackground from '../components/CelestialBackground'; // 🌌 THE MAGIC
+import CelestialBackground from '../components/CelestialBackground';
 
 const Planner = ({ 
   currentTime, hemisphere, toggleHemisphere, selectedCalendarDay, setSelectedCalendarDay, setView, isOnline, onBack
 }) => {
   
-  const carouselItems = [...SACRED_TOOLS, ...SACRED_TOOLS];
-
-  // 🕒 Standardized Time Logic (Matches Reflection & Tracker)
+  // 🕒 Standardized Time Logic
   const displayTime = new Date(currentTime);
   const ds = displayTime.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
   const ts = displayTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
@@ -113,7 +111,7 @@ const Planner = ({
       <CelestialBackground />
       <div className="fixed inset-0 bg-slate-900/20 pointer-events-none" />
 
-      {/* 🚨 UNIVERSAL HEADER: Standardized Branding & Time */}
+      {/* UNIVERSAL HEADER */}
       <div className="relative z-20 w-full flex flex-col md:flex-row md:justify-between items-center md:items-start p-6 md:p-10 gap-6 max-w-[1600px] mx-auto">
         <StatusHeader isOnline={isOnline} onBack={onBack} />
         <div className="flex flex-col items-center">
@@ -149,43 +147,7 @@ const Planner = ({
         </div>
       </div>
 
-      {/* SACRED TOOLS CAROUSEL (Apothecary Style) */}
-      <section className="relative z-10 w-full mt-10 mb-10 overflow-hidden">
-        <div className="max-w-2xl mx-auto flex items-center justify-between mb-6 px-6">
-            <div className="flex items-center gap-3">
-                <ShoppingBag size={14} className="text-amber-200/40" />
-                <div className="flex flex-col">
-                    <h3 className="text-[10px] font-black tracking-[0.3em] uppercase text-white">The Apothecary</h3>
-                    <span className="text-[8px] text-amber-200/60 tracking-widest uppercase font-bold">Recommended for Rituals</span>
-                </div>
-            </div>
-            <button className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-amber-200/40 hover:text-white transition-colors">
-                View All <ChevronRightSmall size={10} />
-            </button>
-        </div>
-        
-        <div className="flex w-full overflow-hidden mask-fade">
-            <div className="flex gap-4 md:gap-6 animate-marquee hover:pause pl-4">
-                {carouselItems.map((tool, index) => (
-                    <div 
-                        key={`${tool.id}-${index}`} 
-                        className="flex-shrink-0 w-56 md:w-64 bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[24px] md:rounded-[32px] overflow-hidden hover:bg-slate-900/60 transition-all group cursor-pointer"
-                    >
-                        <div className="h-28 md:h-32 bg-cover bg-center opacity-70 group-hover:opacity-100 transition-all duration-500" style={{ backgroundImage: `url(${tool.img})` }} />
-                        <div className="p-4 md:p-5 flex flex-col gap-2">
-                            <div className="flex justify-between items-start">
-                                <h4 className="text-sm font-bold text-white leading-tight">{tool.name}</h4>
-                                <ExternalLink size={12} className="opacity-40 text-white mt-1" />
-                            </div>
-                            <span className="text-[10px] font-black mt-1 text-amber-200">{tool.price}</span>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-      </section>
-
-      {/* CALENDAR POPUP: Glass Modal Style */}
+      {/* CALENDAR POPUP */}
       {selectedCalendarDay && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setSelectedCalendarDay(null)}>
           <div className="w-full max-w-sm bg-slate-900/90 backdrop-blur-2xl border border-white/10 p-8 rounded-[40px] shadow-2xl animate-in zoom-in-95 duration-300 relative" onClick={e => e.stopPropagation()}>
@@ -235,17 +197,10 @@ const Planner = ({
 
       <BottomNav view="planner" setView={setView} />
       
-      <style>{`
-        .animate-marquee { animation: scroll 30s linear infinite; }
-        .mask-fade { mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent); }
-        .hover\\:pause:hover { animation-play-state: paused; }
-        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-      `}</style>
     </div>
   );
 };
 
-// Simple Quote helper for the modal
 const Quote = (props) => (
     <svg {...props} viewBox="0 0 24 24" stroke="none"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H16.017C14.9124 8 14.017 7.10457 14.017 6V3H21.017C21.5693 3 22.017 3.44772 22.017 4V15C22.017 18.3137 19.3307 21 16.017 21H14.017ZM3 21L3 18C3 16.8954 3.89543 16 5 16H8C8.55228 16 9 15.5523 9 15V9C9 8.44772 8.55228 8 8 8H5C3.89543 8 3 7.10457 3 6V3H10C10.5523 3 11 3.44772 11 4V15C11 18.3137 8.31371 21 5 21H3Z"/></svg>
 );
