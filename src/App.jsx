@@ -219,7 +219,6 @@ const App = () => {
 
         {userProfile && (
           <>
-           // Inside the App.jsx return statement
             {view === 'dashboard' && (
               <Dashboard
                 hemisphere={hemisphere}

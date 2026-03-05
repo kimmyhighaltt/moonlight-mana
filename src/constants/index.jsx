@@ -1037,3 +1037,12 @@ export const WHAKATAUKI = [
     english: 'Seek out distant horizons, and cherish those that you attain.' 
   }
 ];
+// --- PWA SERVICE WORKER REGISTRATION ---
+// This allows the "Add to Home Screen" / Install option to appear on mobile.
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Moonlight Mana: Service Worker Active', reg.scope))
+      .catch(err => console.log('Moonlight Mana: Service Worker Setup Error', err));
+  });
+}
