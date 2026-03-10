@@ -201,42 +201,73 @@ const Reflection = ({
           </div>
         </div>
       </div>
-
-      {/* REFLECTION SECTION */}
+{/* REFLECTION SECTION */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 mb-20 w-full">
-        <div className="flex justify-between items-end mb-10 border-b border-white/5 pb-6">
+        {/* Toggle Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 border-b border-white/5 pb-6 gap-6">
           <h2 className="text-3xl font-serif text-amber-50">Deep Reflection</h2>
-          <button onClick={() => setIsGuided(!isGuided)} className={`px-6 py-2 rounded-full text-[9px] font-black tracking-widest border transition-all ${isGuided ? 'bg-white/5 border-white/10' : 'bg-amber-200 text-slate-900'}`}>{isGuided ? 'GUIDED' : 'FREE FLOW'}</button>
+          
+          {/* New Clean Toggle */}
+          <div className="flex gap-2 bg-white/5 p-1.5 rounded-full border border-white/10 shadow-inner">
+            <button 
+              onClick={() => setIsGuided(true)} 
+              className={`px-8 py-3 rounded-full text-[10px] font-black tracking-[0.2em] transition-all ${isGuided ? 'bg-amber-200 text-slate-900 shadow-lg' : 'text-white/50 hover:text-white'}`}
+            >
+              JOURNAL
+            </button>
+            <button 
+              onClick={() => setIsGuided(false)} 
+              className={`px-8 py-3 rounded-full text-[10px] font-black tracking-[0.2em] transition-all ${!isGuided ? 'bg-amber-200 text-slate-900 shadow-lg' : 'text-white/50 hover:text-white'}`}
+            >
+              VOICE NOTE
+            </button>
+          </div>
         </div>
 
         {isGuided ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {Object.keys(PROMPTS).map((id) => (
-              <div key={id} className="flex flex-col gap-3">
-                <h5 className="text-[10px] font-black tracking-widest text-amber-200 uppercase">{PROMPTS[id].guidedLabel}</h5>
-                <div className="bg-slate-950/60 backdrop-blur-md rounded-[32px] border border-white/10 p-2 focus-within:border-amber-200/30 transition-all">
-                  <textarea value={reflection[id]} onChange={(e) => setReflection({ ...reflection, [id]: e.target.value })} className="w-full p-4 bg-transparent border-none text-sm text-white h-48 resize-none focus:outline-none" placeholder={PROMPTS[id].placeholder} />
-                </div>
-              </div>
-            ))}
+          /* JOURNAL MODE: One beautifully open, breathable text box */
+          <div className="bg-slate-950/60 backdrop-blur-md rounded-[40px] border border-white/10 p-4 focus-within:border-amber-200/30 transition-all shadow-2xl">
+            <textarea 
+              value={reflection.theMessage} 
+              onChange={(e) => setReflection({ ...reflection, theMessage: e.target.value })} 
+              className="w-full p-8 bg-transparent border-none text-xl font-serif italic text-white min-h-[300px] resize-none focus:outline-none leading-relaxed" 
+              placeholder="What is coming through for you today?..." 
+            />
           </div>
         ) : (
-          <div className="relative group">
-            {/* 🎤 VOICE BUTTON INSIDE FREE FLOW */}
-            <div className="absolute top-6 right-8 z-30">
-              <button onClick={toggleVoiceReflection} className={`flex items-center gap-3 px-6 py-3 rounded-full text-[10px] font-black tracking-widest border shadow-2xl transition-all ${isRecording ? 'bg-rose-600 border-rose-400 animate-pulse text-white' : 'bg-amber-200/10 border-amber-200/20 text-amber-200'}`}>
-                {isRecording ? <Mic size={16} /> : <MicOff size={16} className="opacity-40" />}
-                {isRecording ? 'LISTENING...' : 'VOICE CHANNEL'}
-              </button>
-            </div>
-            <textarea value={reflection.theMessage} onChange={(e) => setReflection({ ...reflection, theMessage: e.target.value })} className="w-full p-10 pt-24 bg-slate-950/60 backdrop-blur-xl rounded-[40px] border border-amber-200/20 text-xl font-serif italic text-white min-h-[450px] resize-none focus:outline-none text-center leading-relaxed" placeholder="Speak your truth..." />
-            {isRecording && <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2"><div className="w-2 h-2 bg-rose-500 rounded-full animate-bounce" /><span className="text-[10px] text-rose-400 font-black tracking-[0.2em] uppercase">Recording Voice to Text</span></div>}
+          /* VOICE MODE: Clean, focused microphone UI */
+          <div className="relative group flex flex-col items-center justify-center min-h-[300px] bg-slate-950/60 backdrop-blur-xl rounded-[40px] border border-amber-200/10 shadow-2xl p-10">
+            <button 
+              onClick={toggleVoiceReflection} 
+              className={`mb-8 flex items-center justify-center w-24 h-24 rounded-full border shadow-2xl transition-all ${isRecording ? 'bg-rose-600 border-rose-400 animate-pulse text-white' : 'bg-amber-200/10 border-amber-200/20 text-amber-200 hover:bg-amber-200/20'}`}
+            >
+              {isRecording ? <Mic size={40} /> : <MicOff size={40} className="opacity-60" />}
+            </button>
+            
+            {isRecording ? (
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-2.5 h-2.5 bg-rose-500 rounded-full animate-bounce" />
+                <span className="text-[10px] text-rose-400 font-black tracking-[0.2em] uppercase">Recording your truth...</span>
+              </div>
+            ) : (
+              <span className="text-[10px] text-amber-200/60 font-black tracking-[0.2em] uppercase mb-6">Tap to speak your reflection</span>
+            )}
+
+            <textarea 
+              value={reflection.theMessage} 
+              onChange={(e) => setReflection({ ...reflection, theMessage: e.target.value })} 
+              className="w-full bg-transparent border-none text-xl font-serif italic text-white/90 resize-none focus:outline-none text-center leading-relaxed mt-4" 
+              placeholder={isRecording ? "Listening..." : "Your transcribed wisdom will appear here..."}
+              rows={4}
+            />
           </div>
         )}
       </section>
 
       <div className="relative z-10 flex justify-center mb-10">
-        <button onClick={() => setView('tracker')} className="px-20 py-7 rounded-full font-black uppercase tracking-widest text-[12px] bg-gradient-to-r from-amber-200 to-amber-100 text-slate-900 shadow-xl">Seal This Entry</button>
+        <button onClick={() => setView('tracker')} className="px-20 py-7 rounded-full font-black uppercase tracking-widest text-[12px] bg-gradient-to-r from-amber-200 to-amber-100 text-slate-900 shadow-xl hover:scale-105 transition-transform">
+          Anchor Your Energy
+        </button>
       </div>
       <BottomNav view="reflection" setView={setView} />
       <style>{`.perspective-1000 { perspective: 1000px; } .transform-style-3d { transform-style: preserve-3d; } .backface-hidden { backface-visibility: hidden; } .rotate-y-180 { transform: rotateY(180deg); }`}</style>
