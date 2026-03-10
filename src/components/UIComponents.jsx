@@ -1,8 +1,9 @@
 import React from 'react';
 import { 
-  Moon, Star, Cloud, ShieldCheck, Home, BookOpen, ChevronLeft 
+  Moon, Star, Cloud, ShieldCheck, Home, BookOpen, ChevronLeft, ShoppingBag
 } from 'lucide-react';
 import { THEME } from '../constants/index';
+
 
 export const Logo = ({ size = "text-xl", subtitle = "DAILY TAROT REFLECTION", showStars = true, color = THEME.primary }) => (
   <div className="flex flex-col items-center select-none text-center relative z-10 animate-fade-in py-4">
@@ -55,6 +56,18 @@ export const BottomNav = ({ view, setView }) => (
       <BookOpen size={24} fill={view === 'vault' ? 'currentColor' : 'none'} />
       <span className="text-[8px] font-black uppercase tracking-widest">Vault</span>
     </button>
+ {/* THE APOTHECARY TAB */}
+<button 
+  onClick={() => setView('apothecary')} 
+  className={`flex flex-col items-center gap-1.5 transition-all p-2 ${
+    view === 'apothecary' 
+      ? 'text-slate-900 scale-110 drop-shadow-md' 
+      : 'text-slate-400 hover:text-slate-600'
+  }`}
+>
+  <ShoppingBag size={22} strokeWidth={view === 'apothecary' ? 2.5 : 2} />
+  <span className="text-[9px] font-black tracking-widest uppercase">Shop</span>
+</button>
     <button onClick={() => setView('planner')} className={`flex flex-col items-center gap-1 transition-all ${view === 'planner' ? 'text-slate-900 scale-110' : 'text-gray-400 hover:text-gray-600'}`}>
       <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${view === 'planner' ? 'bg-gold shadow-lg shadow-gold/30' : 'bg-gray-100'}`} style={{ backgroundColor: view === 'planner' ? THEME.primary : '' }}>
         <Moon size={14} fill="white" color="white" />

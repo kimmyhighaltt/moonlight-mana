@@ -143,7 +143,7 @@ const Dashboard = ({
       </main>
 
       {/* --- CAROUSEL (Shop) --- */}
-      <section className="relative z-10 w-full mt-12 md:mt-8 overflow-hidden pb-10">
+      {/*<section className="relative z-10 w-full mt-12 md:mt-8 overflow-hidden pb-10">
         <div className="max-w-2xl mx-auto flex items-center justify-between mb-4 px-6">
             <div className="flex items-center gap-3">
                 <div className="relative">
@@ -184,7 +184,7 @@ const Dashboard = ({
                 ))}
             </div>
         </div>
-      </section>
+      </section>*/}
 
       <BottomNav view="dashboard" setView={setView} />
       

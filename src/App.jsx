@@ -13,6 +13,7 @@ import Reflection from './views/Reflection';
 import Tracker from './views/Tracker';
 import Vault from './views/Vault';
 import Planner from './views/Planner';
+import Apothecary from './views/Apothecary';
 
 // --- Logic & Data ---
 import { getZodiacSign, getLifePathNumber } from './utils/cosmicLogic';
@@ -283,6 +284,14 @@ const App = () => {
                 // ADD THESE TWO PROPS
                 autoOpenProductId={selectedProductId}
                 clearAutoOpen={() => setSelectedProductId(null)}
+              />
+            )}
+            {/* ADD THIS NEW APOTHECARY BLOCK HERE */}
+            {view === 'apothecary' && (
+              <Apothecary 
+                setView={setView} 
+                isOnline={isOnline} 
+                userProfile={userProfile}
               />
             )}
           </>

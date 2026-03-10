@@ -20,7 +20,7 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
   useEffect(() => {
     if (initialProductId) {
       // 1. Find which category contains this tool
-      const categoryKey = Object.keys(categories).find(key => 
+      const categoryKey = Object.keys(categories).find(key =>
         categories[key].items.some(item => item.id === initialProductId)
       );
 
@@ -28,7 +28,7 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
       if (categoryKey) {
         setActiveTab(categoryKey);
         setExpandedId(initialProductId);
-        
+
         // 3. Optional: Scroll to it after a tiny delay to allow tab switch
         setTimeout(() => {
           const el = document.getElementById(`tool-${initialProductId}`);
@@ -57,6 +57,33 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
     e.stopPropagation();
     setExpandedId(expandedId === id ? null : id);
   };
+  // Add this right above your categories object!
+  const ascensionCollection = [
+    {
+      id: 'art-1',
+      title: 'The Pink Bloom',
+      category: 'Museum Grade Print',
+      price: '$45.00',
+      img: '/images/pink-bloom.jpg',
+      fullReview: "The first piece of the Ascension Triptych. This museum-grade Giclée print serves as a physical anchor for your daily space, reminding you of the breakthrough after the void."
+    },
+    {
+      id: 'art-2',
+      title: 'The Orange Beacons',
+      category: 'Museum Grade Print',
+      price: '$45.00',
+      img: '/images/orange-beacons.jpg',
+      fullReview: "The second piece of the Ascension Triptych. A warm, tactile reminder that your energy is returning and your Mana is restoring."
+    },
+    {
+      id: 'art-3',
+      title: 'The Light',
+      category: 'Museum Grade Print',
+      price: '$45.00',
+      img: '/images/the-light.jpg',
+      fullReview: "The final piece of the Ascension Triptych. The ultimate physical anchor representing clarity, flow, and the integration of your shadow work."
+    },
+  ];
 
   const categories = {
     personal: {
@@ -76,6 +103,10 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
           icon: getElementIcon()
         }
       ]
+    },
+    art: {
+      label: 'Fine Art',
+      items: ascensionCollection
     },
     shielding: {
       label: 'Shielding',
@@ -115,8 +146,8 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
                 <button
                   onClick={(e) => toggleExpand(e, item.id)}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all border ${isExpanded
-                      ? 'bg-amber-200 text-slate-900 border-amber-200'
-                      : 'bg-white/5 text-amber-200 border-white/10 hover:border-amber-200/50'
+                    ? 'bg-amber-200 text-slate-900 border-amber-200'
+                    : 'bg-white/5 text-amber-200 border-white/10 hover:border-amber-200/50'
                     }`}
                 >
                   <BookOpen size={10} />
@@ -191,10 +222,10 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
               key={key}
               onClick={() => setActiveTab(key)}
               className={`whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${isActive
-                  ? 'bg-amber-200 text-slate-900 shadow-[0_0_15px_rgba(251,191,36,0.4)]'
-                  : isSpecial
-                    ? 'bg-amber-500/10 text-amber-200 border border-amber-500/30'
-                    : 'bg-white/5 text-white/60 border border-white/10'
+                ? 'bg-amber-200 text-slate-900 shadow-[0_0_15px_rgba(251,191,36,0.4)]'
+                : isSpecial
+                  ? 'bg-amber-500/10 text-amber-200 border border-amber-500/30'
+                  : 'bg-white/5 text-white/60 border border-white/10'
                 }`}
             >
               {isSpecial && <Sparkles size={12} />}
