@@ -104,10 +104,10 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
         }
       ]
     },
-    art: {
-      label: 'Fine Art',
-      items: ascensionCollection
-    },
+    //art: {
+    //  label: 'Fine Art',
+    //  items: ascensionCollection
+  //  },
     shielding: {
       label: 'Shielding',
       items: SACRED_TOOLS.filter(t => t.category === 'Energy Shielding' || t.category === 'Energy Cleansing')
