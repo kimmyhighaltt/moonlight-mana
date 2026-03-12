@@ -4,7 +4,6 @@ import {
 } from 'lucide-react';
 import { THEME } from '../constants/index';
 
-
 export const Logo = ({ size = "text-xl", subtitle = "DAILY TAROT REFLECTION", showStars = true, color = THEME.primary }) => (
   <div className="flex flex-col items-center select-none text-center relative z-10 animate-fade-in py-4">
     {showStars && (
@@ -57,20 +56,28 @@ export const BottomNav = ({ view, setView }) => (
       <span className="text-[8px] font-black uppercase tracking-widest">Vault</span>
     </button>
  {/* THE APOTHECARY TAB */}
-<button 
-  onClick={() => setView('apothecary')} 
-  className={`flex flex-col items-center gap-1.5 transition-all p-2 ${
-    view === 'apothecary' 
-      ? 'text-slate-900 scale-110 drop-shadow-md' 
-      : 'text-slate-400 hover:text-slate-600'
-  }`}
->
-  <ShoppingBag size={22} strokeWidth={view === 'apothecary' ? 2.5 : 2} />
-  <span className="text-[9px] font-black tracking-widest uppercase">Shop</span>
-</button>
+ <button 
+   onClick={() => setView('apothecary')} 
+   className={`flex flex-col items-center gap-1.5 transition-all p-2 ${
+     view === 'apothecary' 
+       ? 'text-slate-900 scale-110 drop-shadow-md' 
+       : 'text-slate-400 hover:text-slate-600'
+   }`}
+ >
+   <ShoppingBag size={22} strokeWidth={view === 'apothecary' ? 2.5 : 2} />
+   <span className="text-[9px] font-black tracking-widest uppercase">Shop</span>
+ </button>
+    
     <button onClick={() => setView('planner')} className={`flex flex-col items-center gap-1 transition-all ${view === 'planner' ? 'text-slate-900 scale-110' : 'text-gray-400 hover:text-gray-600'}`}>
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${view === 'planner' ? 'bg-gold shadow-lg shadow-gold/30' : 'bg-gray-100'}`} style={{ backgroundColor: view === 'planner' ? THEME.primary : '' }}>
+      {/* ✨ ADDED 'relative' TO THIS DIV ✨ */}
+      <div className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-all ${view === 'planner' ? 'bg-gold shadow-lg shadow-gold/30' : 'bg-gray-100'}`} style={{ backgroundColor: view === 'planner' ? THEME.primary : '' }}>
         <Moon size={14} fill="white" color="white" />
+        
+        {/* ✨ PULSING NOTIFICATION DOT ✨ */}
+        <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
+        </span>
       </div>
     </button>
   </nav>

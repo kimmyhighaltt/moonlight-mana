@@ -11,18 +11,67 @@ import {
   Droplets,
   Wind,
   Anchor
-} from 'lucide-react'; // Added Element Icons
+} from 'lucide-react';
 import { THEME } from '../constants/index';
-import { getElementBySign } from '../utils/affiliateLogic'; // Added this util
+import { getElementBySign } from '../utils/affiliateLogic'; 
 import { Logo, StatusHeader, BottomNav } from '../components/UIComponents';
 import CelestialBackground from '../components/CelestialBackground';
 import { getMoonPhase, calculatePowerLevel, getPlanetaryTransits } from '../utils/lunarLogic';
+
+// 🔮 NEW: DYNAMIC COSMIC WEATHER MATRIX
+const getDynamicWeatherMessage = (phase, element) => {
+  const weatherMatrix = {
+    'Fire': {
+      'New Moon': "The darkness feeds your inner spark. Set bold, passionate intentions, but don't rush the flame.",
+      'Waxing Crescent': "Your energy is catching. Channel this building momentum into one focused, creative project.",
+      'First Quarter': "Friction creates heat. Push through today's obstacles with your natural willpower.",
+      'Waxing Gibbous': "The flame is steady. Refine your actions and keep your impatience in check.",
+      'Full Moon': "Your fire is fully illuminated. Shine brightly, but be careful not to scorch those around you.",
+      'Waning Gibbous': "Share your warmth. Guide others with the wisdom you've gained this cycle.",
+      'Last Quarter': "Burn away what no longer serves you. Active release is your superpower right now.",
+      'Waning Crescent': "Even embers need to rest. Let the fire die down and prepare for a fresh spark."
+    },
+    'Earth': {
+      'New Moon': "The soil is fresh and dark. Plant the seeds of your intentions deep within the material world.",
+      'Waxing Crescent': "Tend to your garden. Consistent, practical steps will build the momentum you need.",
+      'First Quarter': "Roots face resistance as they grow. Stand firm in your boundaries and trust your foundation.",
+      'Waxing Gibbous': "Growth is visible. Prune away inefficiencies and organize your physical space.",
+      'Full Moon': "The harvest is here. Celebrate the tangible, physical results of your hard work.",
+      'Waning Gibbous': "Share your harvest. Your grounded nature is a stabilizing force for your community today.",
+      'Last Quarter': "Compost the old. Break down stubborn habits so they can fertilize the next cycle.",
+      'Waning Crescent': "Return to the earth. Rest, ground yourself in nature, and prepare the soil for tomorrow."
+    },
+    'Air': {
+      'New Moon': "The sky is clear. Breathe in fresh perspectives and set intentions that expand your mind.",
+      'Waxing Crescent': "A breeze is stirring. Gather information, spark conversations, and let your ideas gain momentum.",
+      'First Quarter': "Crosswinds may cause turbulence. Don't overthink the obstacles; stay focused on the horizon.",
+      'Waxing Gibbous': "The wind is steady. Edit your thoughts, refine your communication, and prepare to be heard.",
+      'Full Moon': "Your ideas are illuminated. Speak your truth, but ensure your words carry weight, not just noise.",
+      'Waning Gibbous': "Scatter your seeds to the wind. Share your knowledge and network with your community.",
+      'Last Quarter': "Exhale the old. Release mental clutter, self-doubt, and anxious thought patterns.",
+      'Waning Crescent': "The air grows still. Quiet your mind, meditate, and enjoy the mental silence before the next cycle."
+    },
+    'Water': {
+      'New Moon': "The waters are dark and deep. Trust your profound intuition as you set your emotional intentions.",
+      'Waxing Crescent': "The tide is coming in. Let your feelings flow into your creative and spiritual practices.",
+      'First Quarter': "Currents may clash. Protect your emotional boundaries while navigating today's friction.",
+      'Waxing Gibbous': "The waves are swelling. Refine your emotional responses and trust where the current is taking you.",
+      'Full Moon': "High tide. Your intuition is at its absolute peak. Feel everything, but stay anchored.",
+      'Waning Gibbous': "The waters begin to recede. Nurture others, but ensure your own cup remains full.",
+      'Last Quarter': "Let it wash away. Release emotional grudges and forgive yourself for past missteps.",
+      'Waning Crescent': "Still waters. Retreat into your shell, seek emotional rest, and dream deeply."
+    }
+  };
+
+  const defaultMessage = `The ${phase} energy is interacting with your ${element} nature. Stay balanced.`;
+  return weatherMatrix[element]?.[phase] || defaultMessage;
+};
 
 const Planner = ({
   user, currentTime, hemisphere, toggleHemisphere, selectedCalendarDay, setSelectedCalendarDay, setView, isOnline, onBack
 }) => {
 
-  // 🔮 ELEMENT LOGIC (Fixes the crash)
+  // 🔮 ELEMENT LOGIC 
   const sign = user?.sign || "Seeker";
   const element = getElementBySign(sign);
 
@@ -127,12 +176,17 @@ const Planner = ({
   let tides = null;
   let phaseQuote = "";
   let selectedMoon = null;
+  
   if (selectedCalendarDay) {
     tides = getTideTimes(selectedCalendarDay);
     const thisDate = new Date(year, currentTime.getMonth(), selectedCalendarDay);
     selectedMoon = getMoonPhase(thisDate);
     phaseQuote = PHASE_QUOTES[selectedMoon.label] || "Connect with the lunar energy today.";
   }
+
+  // 🔮 DETERMINE THE DISPLAY PHASE FOR THE COSMIC WEATHER
+  const displayPhase = selectedMoon?.label || currentMoon.label;
+  const weatherMessage = getDynamicWeatherMessage(displayPhase, element);
 
   return (
     <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden font-sans animate-fade-in pb-40 text-white bg-[#020617]">
@@ -182,8 +236,12 @@ const Planner = ({
           <div className="flex items-center gap-3 mb-6 px-2">
             <Sparkles size={14} className="text-amber-200/40" />
             <div className="flex flex-col">
-              <h3 className="text-[10px] font-black tracking-[0.3em] uppercase text-white">Cosmic Weather</h3>
-              <span className="text-[8px] text-amber-200/60 tracking-widest uppercase font-bold">Elemental Alignment for {sign}</span>
+              {/* ✨ NEW: ADDED BADGE HERE */}
+              <div className="flex items-center gap-2">
+                <h3 className="text-[10px] font-black tracking-[0.3em] uppercase text-white">Cosmic Weather</h3>
+                <span className="px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 text-[7px] font-black tracking-widest animate-pulse border border-amber-400/40">NEW</span>
+              </div>
+              <span className="text-[8px] text-amber-200/60 tracking-widest uppercase font-bold mt-0.5">Elemental Alignment for {sign}</span>
             </div>
           </div>
 
@@ -221,9 +279,12 @@ const Planner = ({
                     </div>
                     <span className="text-xs font-black uppercase tracking-widest text-white">{element} Stability</span>
                   </div>
+                  
+                  {/* ✨ THE DYNAMIC MESSAGE IMPLEMENTATION ✨ */}
                   <p className="text-sm md:text-md text-amber-50/90 font-serif leading-relaxed italic">
-                    "The {selectedMoon?.label || 'Current Phase'} is pulling at your roots. Today is for grounding and silence. Avoid unnecessary echoes."
+                    "{weatherMessage}"
                   </p>
+                  
                 </div>
 
                 <div className="flex gap-4 mt-4 pt-4 border-t border-white/5">
