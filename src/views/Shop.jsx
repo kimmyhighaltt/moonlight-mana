@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // UPDATED: Added useEffect
+import React, { useState, useEffect } from 'react';
 import {
   Anchor,
   Wind,
@@ -10,9 +10,9 @@ import {
   BookOpen
 } from 'lucide-react';
 import { getElementBySign, getShopRecommendations } from '../utils/affiliateLogic';
-import { SACRED_TOOLS } from '../constants/index.jsx';
+import { SACRED_TOOLS } from '../constants/index'; // FIX: Removed .jsx to prevent resolution errors
 
-const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductId prop
+const Shop = ({ user, initialProductId }) => {
   const [activeTab, setActiveTab] = useState('personal');
   const [expandedId, setExpandedId] = useState(null);
 
@@ -57,33 +57,6 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
     e.stopPropagation();
     setExpandedId(expandedId === id ? null : id);
   };
-  // Add this right above your categories object!
-  const ascensionCollection = [
-    {
-      id: 'art-1',
-      title: 'The Pink Bloom',
-      category: 'Museum Grade Print',
-      price: '$45.00',
-      img: '/images/pink-bloom.jpg',
-      fullReview: "The first piece of the Ascension Triptych. This museum-grade Giclée print serves as a physical anchor for your daily space, reminding you of the breakthrough after the void."
-    },
-    {
-      id: 'art-2',
-      title: 'The Orange Beacons',
-      category: 'Museum Grade Print',
-      price: '$45.00',
-      img: '/images/orange-beacons.jpg',
-      fullReview: "The second piece of the Ascension Triptych. A warm, tactile reminder that your energy is returning and your Mana is restoring."
-    },
-    {
-      id: 'art-3',
-      title: 'The Light',
-      category: 'Museum Grade Print',
-      price: '$45.00',
-      img: '/images/the-light.jpg',
-      fullReview: "The final piece of the Ascension Triptych. The ultimate physical anchor representing clarity, flow, and the integration of your shadow work."
-    },
-  ];
 
   const categories = {
     personal: {
@@ -104,10 +77,10 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
         }
       ]
     },
-    //art: {
-    //  label: 'Fine Art',
-    //  items: ascensionCollection
-  //  },
+    art: {
+      label: 'Fine Art',
+      items: SACRED_TOOLS.filter(t => t.category === 'Original Art')
+    },
     shielding: {
       label: 'Shielding',
       items: SACRED_TOOLS.filter(t => t.category === 'Energy Shielding' || t.category === 'Energy Cleansing')
@@ -124,16 +97,19 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
 
   const renderCard = (item) => {
     const isExpanded = expandedId === item.id;
+    
+    // FIX: Safely pull the image whether it's the old 'img' string or the new 'images' array
+    const displayImage = item.img || (item.images && item.images[0]);
 
     return (
-      <div key={item.id} id={`tool-${item.id}`} className="flex flex-col gap-2"> {/* Added ID for scrolling */}
+      <div key={item.id} id={`tool-${item.id}`} className="flex flex-col gap-2">
         <div
           className="bg-white/5 border border-white/10 rounded-3xl p-5 hover:bg-white/10 transition-all group flex flex-col md:flex-row gap-5 items-start relative shadow-lg"
         >
           {/* Image/Icon Block */}
           <div className="w-full md:w-28 h-48 md:h-28 bg-black/40 rounded-2xl flex items-center justify-center text-amber-200 shrink-0 border border-white/5 overflow-hidden">
-            {item.img ? (
-              <img src={item.img} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+            {displayImage ? (
+              <img src={displayImage} alt={item.title || item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
             ) : (
               item.icon || <Sparkles size={24} />
             )}
@@ -167,15 +143,27 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
             )}
 
             <div className="flex items-center justify-between mt-auto pt-2">
-              <span className="text-white font-mono text-sm font-bold">{item.price}</span>
-              <a
-                href={item.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-amber-200 text-[10px] font-black uppercase tracking-widest bg-amber-200/10 px-4 py-2 rounded-xl hover:bg-amber-200 hover:text-slate-900 transition-all"
-              >
-                View <ExternalLink size={12} />
-              </a>
+              {/* FIX: Show priceRange if it exists (for art), otherwise standard price */}
+              <span className="text-white font-mono text-sm font-bold">{item.priceRange || item.price}</span>
+              
+              {item.link ? (
+                <a
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl transition-all ${
+                    item.isArtwork 
+                      ? 'bg-amber-200 text-slate-900 hover:bg-amber-300' 
+                      : 'bg-amber-200/10 text-amber-200 hover:bg-amber-200 hover:text-slate-900'
+                  }`}
+                >
+                  {item.isArtwork ? 'Select Size' : 'View'} <ExternalLink size={12} />
+                </a>
+              ) : (
+                <button className="flex items-center gap-2 text-slate-900 text-[10px] font-black uppercase tracking-widest bg-amber-200 px-4 py-2 rounded-xl hover:bg-amber-300 transition-all">
+                  Select Size
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -190,7 +178,8 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
                 <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-200">The Alchemist's Log</h4>
               </div>
               <div className="text-white/70 text-sm leading-relaxed font-light mb-4">
-                {item.fullReview || "I'm currently documenting my experience with this tool. A full tenacity report on its frequency and ritual impact is coming soon..."}
+                {/* FIX: Use item.description for the art items */}
+                {item.fullReview || item.description || "I'm currently documenting my experience with this tool. A full tenacity report on its frequency and ritual impact is coming soon..."}
               </div>
               <button
                 onClick={(e) => toggleExpand(e, item.id)}
@@ -237,7 +226,7 @@ const Shop = ({ user, initialProductId }) => { // UPDATED: Added initialProductI
 
       <section className="px-2">
         <div className="grid grid-cols-1 gap-6">
-          {categories[activeTab].items.map(renderCard)}
+          {categories[activeTab]?.items?.map(renderCard)}
         </div>
       </section>
 

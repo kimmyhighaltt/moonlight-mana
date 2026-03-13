@@ -1009,7 +1009,53 @@ export const SACRED_TOOLS = [
     </div>
   </div>
 )
-  }
+  },
+  // --- ✨ MOONLIGHT MANA ORIGINAL FINE ART COLLECTION ✨ ---
+  {
+    id: 'art-golden-light',
+    name: 'Golden Light Petals - Fine Art Print',
+    category: 'Original Art',
+    price: 45.00, // Entry A4 price
+    priceRange: '$45 - $85',
+    link: 'https://buy.stripe.com/test_bJebJ11TseCaaIod8x5gc00',
+    description: 'A radiant exploration of warm, golden light washing over delicate pink petals. Printed on museum-grade Hahnemühle German Etching paper to perfectly preserve the chalky, organic texture of the original pastel artwork.',
+    images: [
+      '/images/golden-hero.jpg',
+      '/images/golden-angle.jpg'
+    ],
+    sizes: ['Altar (A4 / 8x10")', 'Gallery (A3 / 12x16")', 'Statement (A2 / 18x24")'],
+    isArtwork: true
+  },
+  {
+    id: 'art-cosmic-lily',
+    name: 'The Cosmic Lily - Fine Art Print',
+    category: 'Original Art',
+    price: 45.00, 
+    priceRange: '$45 - $85',
+    link: 'https://buy.stripe.com/test_bJebJ169I79I2bSecB5gc01',
+    description: 'An ethereal pink star-lily glowing from the inside out, surrounded by soft celestial orbs. Museum-grade print on textured fine art paper to capture the profound depth of the original piece.',
+    images: [
+      '/images/lily-hero.jpg', 
+      '/images/lily-angle.jpg'
+    ],
+    sizes: ['Altar (A4 / 8x10")', 'Gallery (A3 / 12x16")', 'Statement (A2 / 18x24")'],
+    isArtwork: true
+  },
+  {
+    id: 'art-enchanted-garden',
+    name: 'Enchanted Garden - Fine Art Print',
+    category: 'Original Art',
+    price: 45.00, 
+    priceRange: '$45 - $85',
+    link: 'https://buy.stripe.com/test_eVq14n41Acu217O2tT5gc02',
+    description: 'Deep, moody teals and purples contrast with bioluminescent orange flora. This grounded yet highly mystical piece is printed on 310gsm Hahnemühle paper, looking identical to the original canvas.',
+    images: [
+      '/images/garden-hero.jpg', 
+      '/images/garden-angle.jpg'
+    ],
+    sizes: ['Altar (A4 / 8x10")', 'Gallery (A3 / 12x16")', 'Statement (A2 / 18x24")'],
+    isArtwork: true
+  },
 ];
 export const WHAKATAUKI = [
   { 
