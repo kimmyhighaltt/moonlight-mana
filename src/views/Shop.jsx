@@ -287,7 +287,7 @@ const Shop = ({ user, initialProductId }) => {
               </div>
 
               {/* Right Side: High-End Details & Checkout */}
-              <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+              <div className="w-full md:w-1/2 p-8 md:p-12 pb-16 flex flex-col justify-center">
                 <span className="text-[10px] uppercase tracking-widest text-amber-200/60 font-black mb-3">{viewingItem.category}</span>
                 <h3 className="text-3xl md:text-4xl font-serif text-white mb-6 leading-tight">{viewingItem.title || viewingItem.name}</h3>
                 
@@ -298,7 +298,7 @@ const Shop = ({ user, initialProductId }) => {
                 </p>
 
                 {/* Modal Action Area */}
-                <div className="mt-auto bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-4">
+                <div className="mt-auto bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-4 mb-6 md:mb-0">
                   <div className="flex items-center justify-between">
                     <span className="text-white font-mono text-xl font-bold">{displayPrice}</span>
                     
