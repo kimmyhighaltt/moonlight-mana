@@ -49,6 +49,10 @@ const Dashboard = ({
   const [isMoonModalOpen, setIsMoonModalOpen] = useState(false);
   const [daysUntilNewMoon, setDaysUntilNewMoon] = useState(0);
 
+  // ✨ MARKETING MODE SWITCH ✨
+  // Set to false for clean UI videos, true for normal app behavior
+  const showLunarEvents = false;
+
   useEffect(() => {
     if (autoOpenProductId) {
       const tool = SACRED_TOOLS.find(t => t.id === autoOpenProductId);
@@ -81,16 +85,18 @@ const Dashboard = ({
 
       <div className="fixed inset-0 z-0 bg-gradient-to-b from-indigo-900/10 via-slate-900/0 to-slate-900/20 pointer-events-none mix-blend-screen" />
       {/* ✨ NEW MOON URGENCY BANNER - PLACED AT THE VERY TOP ✨ */}
-      <div
-        onClick={() => setShowShop(true)}
-        className="relative z-20 w-full bg-amber-900/30 border-b border-amber-200/20 px-4 py-3 flex items-center justify-center gap-3 overflow-hidden cursor-pointer hover:bg-amber-900/40 transition-colors"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-200/5 to-transparent animate-pulse"></div>
-        <Moon size={14} className="text-amber-200 relative z-10" />
-        <p className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-amber-100 relative z-10 text-center">
-          The March 18th New Moon Approaches. <span className="text-amber-400 ml-1">Tap to prepare your altar.</span>
-        </p>
-      </div>
+      {showLunarEvents && (
+        <div
+          onClick={() => setShowShop(true)}
+          className="relative z-20 w-full bg-amber-900/30 border-b border-amber-200/20 px-4 py-3 flex items-center justify-center gap-3 overflow-hidden cursor-pointer hover:bg-amber-900/40 transition-colors"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-200/5 to-transparent animate-pulse"></div>
+          <Moon size={14} className="text-amber-200 relative z-10" />
+          <p className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-amber-100 relative z-10 text-center">
+            The March 18th New Moon Approaches. <span className="text-amber-400 ml-1">Tap to prepare your altar.</span>
+          </p>
+        </div>
+      )}
 
       {showShop && (
         <ShopModal
@@ -164,16 +170,18 @@ const Dashboard = ({
           Start Daily Check-in
         </button>
 
-        {/* --- THE UPCOMING PORTAL COUNTDOWN --- */}
-        <div className="relative z-10 mt-8 flex mb-20 md:mb-12 flex-col items-center animate-in fade-in duration-1000 delay-300">
-          <div className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity cursor-default">
-            <span className="h-px w-10 bg-gradient-to-r from-transparent to-amber-200/50"></span>
-            <p className="text-[10px] md:text-[11px] font-bold tracking-[0.3em] uppercase text-amber-100/90 drop-shadow-md">
-              🌑 Portal Opens: {daysUntilNewMoon === 0 ? "Today" : `${daysUntilNewMoon} Days`}
-            </p>
-            <span className="h-px w-10 bg-gradient-to-l from-transparent to-amber-200/50"></span>
+      {/* --- THE UPCOMING PORTAL COUNTDOWN --- */}
+        {showLunarEvents && (
+          <div className="relative z-10 mt-8 flex mb-20 md:mb-12 flex-col items-center animate-in fade-in duration-1000 delay-300">
+            <div className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity cursor-default">
+              <span className="h-px w-10 bg-gradient-to-r from-transparent to-amber-200/50"></span>
+              <p className="text-[10px] md:text-[11px] font-bold tracking-[0.3em] uppercase text-amber-100/90 drop-shadow-md">
+                🌑 Portal Opens: {daysUntilNewMoon === 0 ? "Today" : `${daysUntilNewMoon} Days`}
+              </p>
+              <span className="h-px w-10 bg-gradient-to-l from-transparent to-amber-200/50"></span>
+            </div>
           </div>
-        </div>
+        )}
 
       </main>
 
