@@ -1063,6 +1063,24 @@ export const SACRED_TOOLS = [
     ],
     isArtwork: true
   },
+  {
+    id: 'art-the-unbecoming',
+    name: 'The Unbecoming - Fine Art Print',
+    category: 'Original Art',
+    price: '$45.00', 
+    description: 'A haunting exploration of identity in flux. This charcoal and soft-pastel rendering captures the "unbecoming"—where the past dissolves into the ethereal blue of the future. The blurred strokes evoke spiritual static, representing our surrender when aligning with our true cosmic North. Printed on 310gsm Hahnemühle German Etching paper.',
+    images: [
+      '/images/unbecoming-hero.jpg', 
+      '/images/unbecoming-angle.jpg'
+    ],
+    // ✨ Remember to swap these placeholder links with your actual Stripe Payment Links
+    variants: [
+      { name: 'Altar (A4)', price: '$45.00', link: 'https://buy.stripe.com/4gM28t3GB2CA00pbhgcEw0f' }, 
+      { name: 'Gallery (A3)', price: '$65.00', link: 'https://buy.stripe.com/cNicN7gtna52dRf998cEw0g' }, 
+      { name: 'Statement (A2)', price: '$85.00', link: 'https://buy.stripe.com/28EcN7fpja524gFadccEw0h' } 
+    ],
+    isArtwork: true
+  },
 ];
 export const WHAKATAUKI = [
   { 
