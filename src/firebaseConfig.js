@@ -7,7 +7,7 @@ import { getFirestore } from "firebase/firestore";
 
 // 3. Your specific Moonlight Mana Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCdqHrj85O3wzfzBRFs1DVXwLzYRKOWdhI",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "moonlight-mana.firebaseapp.com",
   projectId: "moonlight-mana",
   storageBucket: "moonlight-mana.firebasestorage.app",
