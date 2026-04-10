@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Anchor,
   Wind,
   ExternalLink,
   Sparkles,
   Flame,
   Droplets,
+  Anchor,
   Moon,
   BookOpen,
-  X // ✨ ADDED: X icon for our new modal
+  X 
 } from 'lucide-react';
-import { getElementBySign, getShopRecommendations } from '../utils/affiliateLogic';
+// 🛑 REMOVED: import { getElementBySign, getShopRecommendations } from '../utils/affiliateLogic';
 import { SACRED_TOOLS } from '../constants/index';
 
-const Shop = ({ user, initialProductId }) => {
-  const [activeTab, setActiveTab] = useState('personal');
+const Shop = ({ initialProductId }) => {
+  const [activeTab, setActiveTab] = useState('featured'); // ✨ Changed default tab
   const [expandedId, setExpandedId] = useState(null);
-  
   const [selectedVariants, setSelectedVariants] = useState({});
-  // ✨ NEW: State to track which item is currently being viewed in the massive Gallery Modal
   const [viewingItem, setViewingItem] = useState(null);
 
   // --- START AUTO-OPEN LOGIC ---
@@ -41,59 +39,33 @@ const Shop = ({ user, initialProductId }) => {
   }, [initialProductId]);
   // --- END AUTO-OPEN LOGIC ---
 
-  const sign = user?.sign || "Seeker";
-  const element = getElementBySign(sign);
-  const personalizedTools = getShopRecommendations(element);
-
-  const getElementIcon = () => {
-    switch (element) {
-      case 'Fire': return <Flame size={20} />;
-      case 'Water': return <Droplets size={20} />;
-      case 'Air': return <Wind size={20} />;
-      case 'Earth': default: return <Anchor size={20} />;
-    }
-  };
-
   const toggleExpand = (e, id) => {
     e.preventDefault();
     e.stopPropagation();
     setExpandedId(expandedId === id ? null : id);
   };
 
+  // ✨ NEW: Restructured categories to exclusively feature Moonlight Mana equity
   const categories = {
-    personal: {
-      label: `Your ${element} Tools`,
+    featured: {
+      label: `Featured Release`,
       isSpecial: true,
-      items: [
-        {
-          ...personalizedTools.crystal,
-          id: `pers-crystal-${sign}`,
-          category: `${element} Crystal`,
-          icon: getElementIcon()
-        },
-        {
-          ...personalizedTools.tea,
-          id: `pers-tea-${sign}`,
-          category: `${element} Ritual Tea`,
-          icon: getElementIcon()
-        }
-      ]
+      // Targetting your newest art piece or primary digital workbook
+      items: SACRED_TOOLS.filter(t => t.isFeatured) 
     },
     art: {
-      label: 'Fine Art',
+      label: 'Original Art',
       items: SACRED_TOOLS.filter(t => t.category === 'Original Art')
     },
-    shielding: {
-      label: 'Shielding',
-      items: SACRED_TOOLS.filter(t => t.category === 'Energy Shielding' || t.category === 'Energy Cleansing')
-    },
-    altar: {
-      label: 'The Altar',
-      items: SACRED_TOOLS.filter(t => t.category === 'Sacred Altar')
+    digital: {
+      label: 'Digital Grimoire',
+      // Replaces physical tools with aesthetic printable pages/templates
+      items: SACRED_TOOLS.filter(t => t.category === 'Digital Download') 
     },
     shadow: {
       label: 'Shadow Work',
-      items: SACRED_TOOLS.filter(t => t.category === 'Shadow Work' || t.category === 'Sunday Reset')
+      // Exclusive PDF guides or in-app unlocks
+      items: SACRED_TOOLS.filter(t => t.category === 'Shadow Work Guides') 
     }
   };
 
@@ -112,7 +84,6 @@ const Shop = ({ user, initialProductId }) => {
         <div
           className={`bg-white/5 border border-white/10 rounded-3xl p-5 hover:bg-white/10 transition-all group flex flex-col ${item.isArtwork ? '' : 'md:flex-row'} gap-5 items-start relative shadow-lg`}
         >
-          {/* ✨ UI FIX: Added cursor-pointer, group-hover overlay, and onClick handler to trigger the Modal */}
           <div 
             onClick={() => setViewingItem(item)}
             className={`bg-black/40 rounded-2xl flex items-center justify-center text-amber-200 shrink-0 border border-white/5 overflow-hidden relative cursor-pointer group/img ${item.isArtwork ? 'w-full h-72 md:h-96' : 'w-full md:w-28 h-48 md:h-28'}`}
@@ -120,7 +91,6 @@ const Shop = ({ user, initialProductId }) => {
             {displayImage ? (
               <>
                 <img src={displayImage} alt={item.title || item.name} className={`w-full h-full object-cover transition-transform duration-700 ${item.isArtwork ? 'group-hover/img:scale-105' : 'group-hover/img:scale-110'}`} />
-                {/* Magical Hover Button */}
                 <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/30 transition-colors duration-300 flex items-center justify-center">
                    <div className="opacity-0 group-hover/img:opacity-100 transform translate-y-4 group-hover/img:translate-y-0 transition-all duration-300 bg-black/60 backdrop-blur-md text-amber-200 text-[10px] font-black tracking-widest uppercase px-5 py-2.5 rounded-full border border-amber-200/30 flex items-center gap-2">
                      <Sparkles size={12} /> View Gallery
@@ -144,7 +114,7 @@ const Shop = ({ user, initialProductId }) => {
                     }`}
                 >
                   <BookOpen size={10} />
-                  <span className="text-[8px] font-black uppercase tracking-widest">Review</span>
+                  <span className="text-[8px] font-black uppercase tracking-widest">Details</span>
                 </button>
               </div>
             </div>
@@ -188,7 +158,7 @@ const Shop = ({ user, initialProductId }) => {
                       : 'bg-amber-200/10 text-amber-200 hover:bg-amber-200 hover:text-slate-900'
                   }`}
                 >
-                  {item.isArtwork ? 'Checkout' : 'View'} <ExternalLink size={14} />
+                  {item.isArtwork ? 'Secure Piece' : 'Download'} <ExternalLink size={14} />
                 </a>
               )}
             </div>
@@ -202,16 +172,16 @@ const Shop = ({ user, initialProductId }) => {
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px w-4 bg-amber-200/50"></div>
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-200">The Alchemist's Log</h4>
+                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-200">The Grimoire Notes</h4>
               </div>
               <div className="text-white/70 text-sm leading-relaxed font-light mb-4">
-                {item.fullReview || item.description || "I'm currently documenting my experience with this tool. A full tenacity report on its frequency and ritual impact is coming soon..."}
+                {item.fullReview || item.description || "In-depth details regarding this artifact..."}
               </div>
               <button
                 onClick={(e) => toggleExpand(e, item.id)}
                 className="text-[9px] font-black uppercase tracking-widest text-amber-200/40 hover:text-amber-200"
               >
-                Close Log
+                Close Notes
               </button>
             </div>
           </div>
@@ -223,8 +193,8 @@ const Shop = ({ user, initialProductId }) => {
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-700 pb-32">
       <header className="px-2 mb-2 text-center md:text-left">
-        <h1 className="text-3xl md:text-4xl font-serif text-white mb-2">The Apothecary</h1>
-        <p className="text-white/50 text-xs uppercase tracking-widest font-bold">Curated Ritual Tools & Expert Reviews</p>
+        <h1 className="text-3xl md:text-4xl font-serif text-white mb-2">The Sanctuary Shop</h1>
+        <p className="text-white/50 text-xs uppercase tracking-widest font-bold">Original Art & Digital Grimoires</p>
       </header>
 
       {/* Tab Nav */}
@@ -258,7 +228,6 @@ const Shop = ({ user, initialProductId }) => {
 
       {/* ✨ OUR GORGEOUS NEW FULL-SCREEN GALLERY MODAL ✨ */}
       {viewingItem && (() => {
-        // We recalculate the selected variant specifically for the modal view so the dropdown works perfectly inside it!
         const selectedVariantIndex = selectedVariants[viewingItem.id] || 0;
         const currentVariant = viewingItem.variants ? viewingItem.variants[selectedVariantIndex] : null;
         const displayPrice = currentVariant ? currentVariant.price : (viewingItem.priceRange || viewingItem.price);
@@ -281,12 +250,10 @@ const Shop = ({ user, initialProductId }) => {
                 <X size={20} />
               </button>
 
-              {/* Left Side: Massive Edge-to-Edge Image */}
               <div className="w-full md:w-1/2 min-h-[40vh] md:min-h-[60vh] bg-black/50 relative">
                 <img src={displayImage} className="absolute inset-0 w-full h-full object-cover" alt={viewingItem.name} />
               </div>
 
-              {/* Right Side: High-End Details & Checkout */}
               <div className="w-full md:w-1/2 p-8 md:p-12 pb-16 flex flex-col justify-center">
                 <span className="text-[10px] uppercase tracking-widest text-amber-200/60 font-black mb-3">{viewingItem.category}</span>
                 <h3 className="text-3xl md:text-4xl font-serif text-white mb-6 leading-tight">{viewingItem.title || viewingItem.name}</h3>
@@ -297,7 +264,6 @@ const Shop = ({ user, initialProductId }) => {
                   {viewingItem.description || viewingItem.fullReview || "A curated piece to elevate your ritual space."}
                 </p>
 
-                {/* Modal Action Area */}
                 <div className="mt-auto bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-4 mb-6 md:mb-0">
                   <div className="flex items-center justify-between">
                     <span className="text-white font-mono text-xl font-bold">{displayPrice}</span>
@@ -326,7 +292,7 @@ const Shop = ({ user, initialProductId }) => {
                           : 'bg-amber-200/10 text-amber-200 hover:bg-amber-200 hover:text-slate-900'
                       }`}
                     >
-                      {viewingItem.isArtwork ? 'Secure This Piece' : 'View Shop'} <ExternalLink size={14} />
+                      {viewingItem.isArtwork ? 'Secure This Piece' : 'Download Now'} <ExternalLink size={14} />
                     </a>
                   )}
                 </div>

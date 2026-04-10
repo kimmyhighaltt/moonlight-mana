@@ -5,15 +5,15 @@ import CelestialBackground from '../components/CelestialBackground';
 import ShareButton from '../components/ShareButton';
 import { getMoonPhase } from '../utils/lunarLogic';
 import { MAJOR_ARCANA, getMinorArcanaMeaning } from '../utils/tarotLogic';
-import { getRecommendationForCard, getRitualAdvice } from '../utils/affiliateLogic';
-import RecommendedTool from '../components/RecommendedTool';
+// 🛑 REMOVED: import { getRecommendationForCard, getRitualAdvice } from '../utils/affiliateLogic';
+// 🛑 REMOVED: import RecommendedTool from '../components/RecommendedTool';
 
 const Reflection = ({
   currentTime, hemisphere, isFlipped, selectedCard, handleCardPull,
   rituals, checkedItems, toggleCheck, newRitualInput, setNewRitualInput,
   addRitual, reflection, setReflection, setView, isOnline,
-  onBack, userProfile,
-  onNavigateToProduct
+  onBack, userProfile
+  // 🛑 REMOVED: onNavigateToProduct prop
 }) => {
 
   const [isGuided, setIsGuided] = useState(true);
@@ -64,21 +64,16 @@ const Reflection = ({
     }
   };
 
-  // --- ✨ Updated Wisdom Logic (Restored Affiliate Injection) ---
+  // --- ✨ Updated Wisdom Logic (Pure Intuition) ---
   const handleChannelWisdom = () => {
     setAiState('loading');
 
     // 1. Get Base Wisdom
     let wisdom = MAJOR_ARCANA[selectedCard.name] || getMinorArcanaMeaning(selectedCard.name);
-
-    // 2. Fetch Affiliate Product Data
-    const tool = getRecommendationForCard(selectedCard.name);
-    const ritualAdvice = getRitualAdvice(tool);
-
     const greeting = userProfile ? `${userProfile.name}, ` : "";
 
-    // 3. Construct Full Message including the Product mention
-    const fullMessage = `${greeting}${selectedCard.name} has appeared. ${wisdom} To deepen this alignment, I recommend using the ${tool.name}. ${ritualAdvice}`;
+    // 2. Construct Full Message (No more physical product recommendations!)
+    const fullMessage = `${greeting}${selectedCard.name} has appeared. ${wisdom}`;
 
     setTimeout(() => {
       setAiState('streaming');
@@ -94,11 +89,7 @@ const Reflection = ({
     }, 1500);
   };
 
-  const PROMPTS = {
-    firstImpressions: { guidedLabel: "Gut Reaction", placeholder: "How does the image make you feel?" },
-    theMessage: { guidedLabel: "Core Meaning", placeholder: "Interpret the wisdom..." },
-    actionStep: { guidedLabel: "Sacred Action", placeholder: "How will you honor this today?" }
-  };
+  // ... (PROMPTS object remains the same)
 
   return (
     <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden animate-fade-in pb-32 text-white bg-[#020617]">
@@ -166,12 +157,9 @@ const Reflection = ({
                     {aiState === 'loading' ? <div className="flex justify-center py-4"><Loader2 className="animate-spin text-amber-200" size={20} /></div> : <p className="text-sm font-serif italic text-white/90 leading-relaxed">"{streamedText}"</p>}
                   </div>
                   {aiState === 'complete' && (
-                    <div className="flex flex-col items-center gap-6 animate-fade-in">
+                    <div className="flex flex-col items-center gap-6 animate-fade-in mt-4">
+                      {/* ✨ CLEANED: Only the Share button remains here */}
                       <ShareButton targetRef={cardRef} fileName={`reflection-${selectedCard.name}.png`} />
-                      <RecommendedTool
-                        cardName={selectedCard.name}
-                        onNavigate={onNavigateToProduct} // <--- ADD THIS PROP HERE
-                      />
                     </div>
                   )}
                 </>
@@ -201,13 +189,13 @@ const Reflection = ({
           </div>
         </div>
       </div>
-{/* REFLECTION SECTION */}
+
+      {/* REFLECTION SECTION */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 mb-20 w-full">
         {/* Toggle Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 border-b border-white/5 pb-6 gap-6">
           <h2 className="text-3xl font-serif text-amber-50">Deep Reflection</h2>
           
-          {/* New Clean Toggle */}
           <div className="flex gap-2 bg-white/5 p-1.5 rounded-full border border-white/10 shadow-inner">
             <button 
               onClick={() => setIsGuided(true)} 
@@ -225,7 +213,7 @@ const Reflection = ({
         </div>
 
         {isGuided ? (
-          /* JOURNAL MODE: One beautifully open, breathable text box */
+          /* JOURNAL MODE */
           <div className="bg-slate-950/60 backdrop-blur-md rounded-[40px] border border-white/10 p-4 focus-within:border-amber-200/30 transition-all shadow-2xl">
             <textarea 
               value={reflection.theMessage} 
@@ -235,7 +223,7 @@ const Reflection = ({
             />
           </div>
         ) : (
-          /* VOICE MODE: Clean, focused microphone UI */
+          /* VOICE MODE */
           <div className="relative group flex flex-col items-center justify-center min-h-[300px] bg-slate-950/60 backdrop-blur-xl rounded-[40px] border border-amber-200/10 shadow-2xl p-10">
             <button 
               onClick={toggleVoiceReflection} 
