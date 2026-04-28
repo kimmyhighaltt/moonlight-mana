@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Globe, Moon, ShoppingBag, ExternalLink, Flame, X, ChevronRight
+  Globe, Moon, ShoppingBag, ExternalLink, Flame, X, ChevronRight, Lock
 } from 'lucide-react';
 import { THEME, SACRED_TOOLS } from '../constants/index';
 import { StatusHeader, BottomNav } from '../components/UIComponents';
 import CelestialBackground from '../components/CelestialBackground';
 import Shop from './Shop';
 import LunarInsightModal from '../components/NewMoonModal';
+// ✨ IMPORT YOUR NEW COMPONENT HERE (Adjust path if needed) ✨
+import CompassWaitlistModal from '../components/CompassWaitlistModal'; 
 
 const ShopModal = ({ onClose, user, autoOpenId }) => {
   return (
@@ -47,6 +49,7 @@ const Dashboard = ({
 }) => {
   const [showShop, setShowShop] = useState(false);
   const [isMoonModalOpen, setIsMoonModalOpen] = useState(false);
+  const [isCompassModalOpen, setIsCompassModalOpen] = useState(false); // ✨ NEW STATE
   const [daysUntilNewMoon, setDaysUntilNewMoon] = useState(0);
 
   // ✨ MARKETING MODE SWITCH ✨
@@ -62,7 +65,7 @@ const Dashboard = ({
     }
   }, [autoOpenProductId]);
 
-  // NEW: Calculate days until the March 18th New Moon Portal
+  // Calculate days until the March 18th New Moon Portal
   useEffect(() => {
     const targetDate = new Date('2026-03-18T00:00:00');
     const today = new Date();
@@ -76,14 +79,13 @@ const Dashboard = ({
     if (clearAutoOpen) clearAutoOpen();
   };
 
-  const carouselItems = [...SACRED_TOOLS, ...SACRED_TOOLS];
-
   return (
     <div className="min-h-screen w-full flex flex-col relative overflow-x-hidden animate-slide-up pb-24 md:pb-0 text-white">
 
       <CelestialBackground />
 
       <div className="fixed inset-0 z-0 bg-gradient-to-b from-indigo-900/10 via-slate-900/0 to-slate-900/20 pointer-events-none mix-blend-screen" />
+      
       {/* ✨ NEW MOON URGENCY BANNER - PLACED AT THE VERY TOP ✨ */}
       {showLunarEvents && (
         <div
@@ -105,14 +107,6 @@ const Dashboard = ({
           autoOpenId={autoOpenProductId}
         />
       )}
-      {showShop && (
-        <ShopModal
-          user={userProfile}
-          onClose={handleCloseShop}
-          autoOpenId={autoOpenProductId}
-        />
-      )}
-
 
       {/* --- HEADER ROW --- */}
       <div className="relative z-10 w-full flex justify-between items-center p-6 pt-12 md:p-8">
@@ -170,7 +164,18 @@ const Dashboard = ({
           Start Daily Check-in
         </button>
 
-      {/* --- THE UPCOMING PORTAL COUNTDOWN --- */}
+        {/* ✨ NEW: The subtle locked door trigger button ✨ */}
+        <button
+          onClick={() => setIsCompassModalOpen(true)}
+          className="relative z-10 mt-6 flex items-center gap-2 px-6 py-3 rounded-full bg-black/20 border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all group"
+        >
+          <Lock size={12} className="text-white/40 group-hover:text-amber-200/70 transition-colors" />
+          <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 group-hover:text-white/90 transition-colors">
+            The North Node Compass
+          </span>
+        </button>
+
+        {/* --- THE UPCOMING PORTAL COUNTDOWN --- */}
         {showLunarEvents && (
           <div className="relative z-10 mt-8 flex mb-20 md:mb-12 flex-col items-center animate-in fade-in duration-1000 delay-300">
             <div className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity cursor-default">
@@ -185,12 +190,6 @@ const Dashboard = ({
 
       </main>
 
-      {/* --- CAROUSEL (Shop) --- */}
-      {/*<section className="relative z-10 w-full mt-12 md:mt-8 overflow-hidden pb-10">
-            </div>
-        </div>
-      </section>*/}
-
       <BottomNav view="dashboard" setView={setView} />
 
       <LunarInsightModal
@@ -202,6 +201,11 @@ const Dashboard = ({
           setView('reflection');
         }}
       />
+
+      {/* ✨ NEW: Render the waitlist modal when state is true ✨ */}
+      {isCompassModalOpen && (
+        <CompassWaitlistModal onClose={() => setIsCompassModalOpen(false)} />
+      )}
 
       <style>{`
         .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
