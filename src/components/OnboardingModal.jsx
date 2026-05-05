@@ -2,11 +2,16 @@ import React, { useState, useMemo } from 'react';
 import { Sparkles, ArrowRight, Loader2, Moon } from 'lucide-react';
 
 const OnboardingModal = ({ onComplete, isLoading = false }) => {
+  // --- 1. State Management ---
   const [name, setName] = useState('');
   const [dob, setDob] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDone, setIsDone] = useState(false);
 
-  // 🌌 GENERATE THE STARS
+  // --- 2. Computed Variables (Defined after state) ---
+  const activeLoading = isSubmitting || isLoading;
+
+  // --- 3. Star Field Logic ---
   const stars = useMemo(() => {
     return [...Array(100)].map((_, i) => ({
       id: i,
@@ -19,48 +24,52 @@ const OnboardingModal = ({ onComplete, isLoading = false }) => {
     }));
   }, []);
 
+  // --- 4. Action Handlers ---
   const handleSubmit = (e) => {
     e.preventDefault();
     if (name && dob && !isSubmitting) {
       setIsSubmitting(true);
+      
+      // Notify parent (App.jsx) to start cloud sync
       onComplete({ name, dob, isGuest: false });
+
+      // Keep THIS screen visible for the intentional ritual duration
+      setTimeout(() => {
+        setIsDone(true); 
+      }, 2500); 
     }
   };
 
   const handleGuestEntry = () => {
     if (!isSubmitting) {
         setIsSubmitting(true);
+        
         onComplete({ name: 'Seeker', dob: null, isGuest: true }); 
+
+        setTimeout(() => {
+          setIsDone(true);
+        }, 1500);
     }
   };
 
-  const activeLoading = isSubmitting || isLoading;
+  // --- 5. The Magic Trick ---
+  // If the ritual is done, we disappear to reveal the dashboard behind us
+  if (isDone) return null;
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center animate-in fade-in duration-700 bg-black overflow-hidden">
       
-      {/* 🌌 V11: RESPONSIVE NEBULA (Tamed for Mobile) */}
+      {/* 🌌 NEBULA BACKGROUND */}
       <div className="absolute inset-0 z-0">
-        
-        {/* Layer 1: The Void Base */}
         <div className="absolute inset-0 bg-[#020617]" />
         
-        {/* Layer 2: THE GLOWING NEBULA CLOUDS */}
-        {/* KEY CHANGE: Using 'w-[300px] md:w-[700px]' to shrink them on mobile */}
-        
-        {/* Top Left: Hot Pink/Magenta */}
+        {/* Glowing Nebula Clouds */}
         <div className="absolute top-[-10%] left-[-10%] w-[300px] h-[300px] md:w-[700px] md:h-[700px] bg-fuchsia-600/30 rounded-full blur-[80px] md:blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '6s' }} />
-        
-        {/* Bottom Right: Golden Amber */}
         <div className="absolute bottom-[-10%] right-[-10%] w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-amber-500/30 rounded-full blur-[60px] md:blur-[100px] mix-blend-screen" />
-        
-        {/* Top Right: Electric Violet */}
         <div className="absolute top-[10%] right-[-20%] w-[250px] h-[250px] md:w-[600px] md:h-[600px] bg-violet-600/30 rounded-full blur-[80px] md:blur-[120px] mix-blend-screen" />
-        
-        {/* Bottom Left: Deep Cyan */}
         <div className="absolute bottom-[-20%] left-[-10%] w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-cyan-500/20 rounded-full blur-[60px] md:blur-[100px] mix-blend-screen" />
 
-        {/* Layer 3: The Stars */}
+        {/* The Stars */}
         {stars.map((star) => (
             <div
                 key={star.id}
@@ -82,7 +91,6 @@ const OnboardingModal = ({ onComplete, isLoading = false }) => {
       {/* THE MODAL CARD */}
       <div className="w-full max-w-md bg-slate-950/40 border border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden z-10 backdrop-blur-xl ring-1 ring-white/10 mx-4">
         
-        {/* Inner Card Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-amber-500/5 to-transparent pointer-events-none" />
 
         <div className="relative z-10 text-center">
@@ -102,7 +110,7 @@ const OnboardingModal = ({ onComplete, isLoading = false }) => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1 text-left opacity-transition duration-300" style={{ opacity: activeLoading ? 0.5 : 1 }}>
-              <label className="text-[10px] uppercase tracking-widest text-amber-200/90 font-bold ml-1 text-shadow">Your Name</label>
+              <label className="text-[10px] uppercase tracking-widest text-amber-200/90 font-bold ml-1">Your Name</label>
               <input 
                 type="text" 
                 value={name}
@@ -115,7 +123,7 @@ const OnboardingModal = ({ onComplete, isLoading = false }) => {
             </div>
 
             <div className="space-y-1 text-left opacity-transition duration-300" style={{ opacity: activeLoading ? 0.5 : 1 }}>
-              <label className="text-[10px] uppercase tracking-widest text-amber-200/90 font-bold ml-1 text-shadow">Date of Birth</label>
+              <label className="text-[10px] uppercase tracking-widest text-amber-200/90 font-bold ml-1">Date of Birth</label>
               <input 
                 type="date" 
                 value={dob}

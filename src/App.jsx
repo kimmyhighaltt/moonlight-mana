@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+  // Add 'collection' and 'addDoc' to your firestore imports at the top if they aren't there
+  import { doc, setDoc, collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
+// 👇 ADDED THIS IMPORT
+import { db, auth } from './firebase';
 
 // --- Components ---
 import OnboardingModal from './components/OnboardingModal';
@@ -14,6 +18,8 @@ import Tracker from './views/Tracker';
 import Vault from './views/Vault';
 import Planner from './views/Planner';
 import Apothecary from './views/Apothecary';
+import Login from './components/Login';
+
 
 // --- Logic & Data ---
 import { getZodiacSign, getLifePathNumber } from './utils/cosmicLogic';
@@ -88,8 +94,7 @@ const App = () => {
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     const splashTimer = setTimeout(() => {
-      // By removing the value check, we bypass the text-heavy intro entirely.
-      if (!userProfile) setView('onboarding');
+      if (!userProfile) setView('login');
       else setView('dashboard');
     }, 1200);
 
@@ -103,7 +108,7 @@ const App = () => {
       window.removeEventListener('online', handleConn);
       window.removeEventListener('offline', handleConn);
     };
-  }, [hasSeenValue, userProfile]);
+  }, []);
 
   // ⚡ STREAK CALCULATION
   useEffect(() => {
@@ -132,21 +137,63 @@ const App = () => {
     if (userProfile) checkStreak();
   }, [userProfile]);
 
+  useEffect(() => {
+  let unsubscribe;
+
+  if (userProfile && auth.currentUser) {
+    const entriesRef = collection(db, 'users', auth.currentUser.uid, 'vault');
+    const q = query(entriesRef, orderBy('timestamp', 'desc'));
+
+    // 🎧 Listen for real-time updates from the cloud
+    unsubscribe = onSnapshot(q, (snapshot) => {
+      const cloudEntries = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setJournalEntries(cloudEntries);
+    });
+  }
+
+  return () => unsubscribe && unsubscribe();
+}, [userProfile]); // Runs whenever the user logs in
+
   // =========================================
   // 4. ACTION HANDLERS
   // =========================================
+
+  const handleOnboardingComplete = async (data) => {
+    const profile = {
+      ...data,
+      sign: getZodiacSign(data.dob),
+      lifePath: getLifePathNumber(data.dob),
+      setupComplete: true,
+      joinedAt: new Date().toISOString()
+    };
+
+    try {
+      if (auth.currentUser) {
+        const userRef = doc(db, 'users', auth.currentUser.uid);
+        await setDoc(userRef, profile, { merge: true });
+        console.log("Soul Profile synced to the cloud.");
+      }
+
+      setUserProfile(profile);
+      localStorage.setItem('moonlight_user', JSON.stringify(profile));
+
+      setTimeout(() => {
+        setView('dashboard');
+      }, 800);
+
+    } catch (error) {
+      console.error("Error saving cosmic profile:", error);
+      setView('dashboard');
+    }
+  };
 
   const handleValueComplete = () => {
     localStorage.setItem('moonlight_mana_welcome', 'true');
     setHasSeenValue(true);
     setView(userProfile ? 'dashboard' : 'onboarding');
-  };
-
-  const handleOnboardingComplete = (data) => {
-    const profile = { ...data, sign: getZodiacSign(data.dob), lifePath: getLifePathNumber(data.dob) };
-    setUserProfile(profile);
-    localStorage.setItem('moonlight_user', JSON.stringify(profile));
-    setView('dashboard');
   };
 
   const toggleHemisphere = () => setHemisphere(prev => prev === 'Southern' ? 'Northern' : 'Southern');
@@ -172,39 +219,55 @@ const App = () => {
   const toggleCheck = (id) => setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   const handleDeleteEntry = (id) => setJournalEntries(prev => prev.filter(e => e.id !== id));
 
-  const handleLogMana = () => {
+
+  const handleLogMana = async () => {
     setIsLogging(true);
-    setTimeout(() => {
-      const averageMana = Math.round((pillars.mind + pillars.body + pillars.heart + pillars.soul) / 4);
-      let entryDateObj = new Date(currentTime);
 
-      const newEntry = {
-        id: Date.now(),
-        date: entryDateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase(),
-        time: entryDateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-        moon: moonData.label,
-        card: selectedCard.name,
-        img: selectedCard.img,
-        mana: averageMana,
-        message: reflection.theMessage || `A session focusing on ${selectedCard.name}.`,
-        pillars: { ...pillars },
-        trend: averageMana > 65 ? 'up' : 'down',
-        tags: { ...activeTags }
-      };
+    const averageMana = Math.round((pillars.mind + pillars.body + pillars.heart + pillars.soul) / 4);
+    let entryDateObj = new Date(currentTime);
 
+    const newEntry = {
+      userId: auth.currentUser.uid, // 🔑 Link the entry to the user
+      date: entryDateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase(),
+      time: entryDateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date().toISOString(), // For chronological sorting
+      moon: moonData.label,
+      card: selectedCard.name,
+      img: selectedCard.img,
+      mana: averageMana,
+      message: reflection.theMessage || `A session focusing on ${selectedCard.name}.`,
+      pillars: { ...pillars },
+      trend: averageMana > 65 ? 'up' : 'down',
+      tags: { ...activeTags }
+    };
+
+    try {
+      // ☁️ Save to Firebase
+      if (auth.currentUser) {
+        const entriesRef = collection(db, 'users', auth.currentUser.uid, 'vault');
+        await addDoc(entriesRef, newEntry);
+        console.log("Reflection safely stored in the cloud.");
+      }
+
+      // 📱 Keep local state updated for speed
       setJournalEntries([newEntry, ...journalEntries]);
       setIsLogging(false);
       setView('vault');
-    }, 1800);
+    } catch (error) {
+      console.error("The vault failed to open:", error);
+      setIsLogging(false);
+    }
+  };
+
+  const handleNavigateToProduct = (productId) => {
+    setSelectedProductId(productId);
+    setView('dashboard');
   };
 
   // =========================================
   // 5. RENDER LOGIC
   // =========================================
-  const handleNavigateToProduct = (productId) => {
-    setSelectedProductId(productId);
-    setView('dashboard');
-  };
+
   return (
     <div className="relative min-h-screen w-full bg-[#020617] overflow-x-hidden">
       <CelestialBackground />
@@ -214,11 +277,29 @@ const App = () => {
 
         {view === 'value' && <ValuePage onContinue={handleValueComplete} />}
 
-        {(!userProfile || view === 'onboarding') && view !== 'splash' && view !== 'value' && (
-          <OnboardingModal onComplete={handleOnboardingComplete} />
+        {/* In App.jsx return block */}
+        {view === 'onboarding' && (
+          <div className="relative z-[100]">
+            <OnboardingModal
+              onComplete={handleOnboardingComplete}
+              // Add a prop to tell the modal if the app is still "busy" saving
+              isLoading={isLogging}
+            />
+          </div>
         )}
 
-        {userProfile && (
+        {view === 'login' && (
+          <Login
+            onLoginSuccess={(user) => {
+              console.log("Welcome to the Sanctuary:", user.email);
+              const tempProfile = { name: user.displayName || 'Seeker', email: user.email };
+              setUserProfile(tempProfile);
+              setView('onboarding');
+            }}
+          />
+        )}
+
+        {(userProfile || view === 'onboarding') && (
           <>
             {view === 'dashboard' && (
               <Dashboard
@@ -230,7 +311,6 @@ const App = () => {
                 userProfile={userProfile}
                 streak={streak}
                 currentTime={currentTime}
-                // ADD THESE TWO PROPS
                 autoOpenProductId={selectedProductId}
                 clearAutoOpen={() => setSelectedProductId(null)}
               />
@@ -256,7 +336,6 @@ const App = () => {
                 isOnline={isOnline}
                 onBack={() => setView('dashboard')}
                 userProfile={userProfile}
-                // ADD THIS LINE BELOW
                 onNavigateToProduct={handleNavigateToProduct}
               />
             )}
@@ -281,16 +360,14 @@ const App = () => {
                 setView={setView}
                 isOnline={isOnline}
                 onBack={() => setView('dashboard')}
-                // ADD THESE TWO PROPS
                 autoOpenProductId={selectedProductId}
                 clearAutoOpen={() => setSelectedProductId(null)}
               />
             )}
-            {/* ADD THIS NEW APOTHECARY BLOCK HERE */}
             {view === 'apothecary' && (
-              <Apothecary 
-                setView={setView} 
-                isOnline={isOnline} 
+              <Apothecary
+                setView={setView}
+                isOnline={isOnline}
                 userProfile={userProfile}
               />
             )}
