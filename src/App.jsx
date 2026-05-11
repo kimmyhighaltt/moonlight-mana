@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-  // Add 'collection' and 'addDoc' to your firestore imports at the top if they aren't there
-  import { doc, setDoc, collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
+// Add 'collection' and 'addDoc' to your firestore imports at the top if they aren't there
+import { doc, setDoc, collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
 // 👇 ADDED THIS IMPORT
 import { db, auth } from './firebase';
 
@@ -43,7 +43,16 @@ const App = () => {
 
   const [userProfile, setUserProfile] = useState(() => {
     const saved = localStorage.getItem('moonlight_user');
-    return saved ? JSON.parse(saved) : null;
+
+    // 1. First, we turn the string from localStorage back into an object
+    const parsed = saved ? JSON.parse(saved) : null;
+
+    // 2. NOW we can check if it exists and force Pro mode
+    if (parsed) {
+      parsed.isPro = true;
+    }
+
+    return parsed;
   });
 
   const [journalEntries, setJournalEntries] = useState(() => {
@@ -69,6 +78,7 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterHighMana, setFilterHighMana] = useState(false);
   const [selectedCalendarDay, setSelectedCalendarDay] = useState(null);
+  const [initializing, setInitializing] = useState(true);
 
   // =========================================
   // 2. COMPUTED DATA
@@ -93,10 +103,22 @@ const App = () => {
   // System: Timer & Online Status
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    const splashTimer = setTimeout(() => {
-      if (!userProfile) setView('login');
-      else setView('dashboard');
-    }, 1200);
+
+    // 🎧 Listen for the actual Auth state
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        setView('login');
+      } else {
+        // Only go to dashboard if setup is actually finished
+        const saved = JSON.parse(localStorage.getItem('moonlight_user'));
+        if (saved?.setupComplete) {
+          setView('dashboard');
+        } else {
+          setView('onboarding');
+        }
+      }
+      setInitializing(false); // Stop the splash screen
+    });
 
     const handleConn = () => setIsOnline(navigator.onLine);
     window.addEventListener('online', handleConn);
@@ -104,7 +126,7 @@ const App = () => {
 
     return () => {
       clearInterval(timer);
-      clearTimeout(splashTimer);
+      unsubscribe();
       window.removeEventListener('online', handleConn);
       window.removeEventListener('offline', handleConn);
     };
@@ -138,24 +160,24 @@ const App = () => {
   }, [userProfile]);
 
   useEffect(() => {
-  let unsubscribe;
+    let unsubscribe;
 
-  if (userProfile && auth.currentUser) {
-    const entriesRef = collection(db, 'users', auth.currentUser.uid, 'vault');
-    const q = query(entriesRef, orderBy('timestamp', 'desc'));
+    if (userProfile && auth.currentUser) {
+      const entriesRef = collection(db, 'users', auth.currentUser.uid, 'vault');
+      const q = query(entriesRef, orderBy('timestamp', 'desc'));
 
-    // 🎧 Listen for real-time updates from the cloud
-    unsubscribe = onSnapshot(q, (snapshot) => {
-      const cloudEntries = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setJournalEntries(cloudEntries);
-    });
-  }
+      // 🎧 Listen for real-time updates from the cloud
+      unsubscribe = onSnapshot(q, (snapshot) => {
+        const cloudEntries = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setJournalEntries(cloudEntries);
+      });
+    }
 
-  return () => unsubscribe && unsubscribe();
-}, [userProfile]); // Runs whenever the user logs in
+    return () => unsubscribe && unsubscribe();
+  }, [userProfile]); // Runs whenever the user logs in
 
   // =========================================
   // 4. ACTION HANDLERS
@@ -163,12 +185,14 @@ const App = () => {
 
   const handleOnboardingComplete = async (data) => {
     const profile = {
+      ...userProfile, // 👈 Keep existing data (like email and isPro)
       ...data,
       sign: getZodiacSign(data.dob),
       lifePath: getLifePathNumber(data.dob),
       setupComplete: true,
       joinedAt: new Date().toISOString()
     };
+    // ... rest of the function
 
     try {
       if (auth.currentUser) {
@@ -272,105 +296,113 @@ const App = () => {
     <div className="relative min-h-screen w-full bg-[#020617] overflow-x-hidden">
       <CelestialBackground />
 
+
       <div className="relative z-10 w-full h-full">
-        {view === 'splash' && <Splash />}
-
-        {view === 'value' && <ValuePage onContinue={handleValueComplete} />}
-
-        {/* In App.jsx return block */}
-        {view === 'onboarding' && (
-          <div className="relative z-[100]">
-            <OnboardingModal
-              onComplete={handleOnboardingComplete}
-              // Add a prop to tell the modal if the app is still "busy" saving
-              isLoading={isLogging}
-            />
-          </div>
-        )}
-
-        {view === 'login' && (
-          <Login
-            onLoginSuccess={(user) => {
-              console.log("Welcome to the Sanctuary:", user.email);
-              const tempProfile = { name: user.displayName || 'Seeker', email: user.email };
-              setUserProfile(tempProfile);
-              setView('onboarding');
-            }}
-          />
-        )}
-
-        {(userProfile || view === 'onboarding') && (
+        {/* ✨ FIX: If initializing, stay on splash regardless of 'view' state */}
+        {initializing ? <Splash /> : (
           <>
-            {view === 'dashboard' && (
-              <Dashboard
-                hemisphere={hemisphere}
-                toggleHemisphere={toggleHemisphere}
-                setView={setView}
-                isOnline={isOnline}
-                moonData={moonData}
-                userProfile={userProfile}
-                streak={streak}
-                currentTime={currentTime}
-                autoOpenProductId={selectedProductId}
-                clearAutoOpen={() => setSelectedProductId(null)}
+            {view === 'splash' && <Splash />}
+            {view === 'value' && <ValuePage onContinue={handleValueComplete} />}
+            {/* In App.jsx return block */}
+            {view === 'onboarding' && (
+              <div className="relative z-[100]">
+                <OnboardingModal
+                  onComplete={handleOnboardingComplete}
+                  // Add a prop to tell the modal if the app is still "busy" saving
+                  isLoading={isLogging}
+                />
+              </div>
+            )}
+
+
+            {view === 'login' && (
+              <Login
+                onLoginSuccess={(user) => {
+                  console.log("Welcome to the Sanctuary:", user.email);
+                  const tempProfile = { name: user.displayName || 'Seeker', email: user.email };
+                  setUserProfile(tempProfile);
+                  setView('onboarding');
+                }}
               />
             )}
-            {view === 'reflection' && (
-              <Reflection
-                currentTime={currentTime}
-                hemisphere={hemisphere}
-                isFlipped={isFlipped}
-                selectedCard={selectedCard}
-                handleCardPull={handleCardPull}
-                rituals={rituals}
-                checkedItems={checkedItems}
-                toggleCheck={toggleCheck}
-                pillars={pillars}
-                setPillars={setPillars}
-                newRitualInput={newRitualInput}
-                setNewRitualInput={setNewRitualInput}
-                addRitual={addRitual}
-                reflection={reflection}
-                setReflection={setReflection}
-                setView={setView}
-                isOnline={isOnline}
-                onBack={() => setView('dashboard')}
-                userProfile={userProfile}
-                onNavigateToProduct={handleNavigateToProduct}
-              />
+
+
+            {(userProfile || view === 'onboarding') && (
+              <>
+                {view === 'dashboard' && (
+                  <Dashboard
+                    hemisphere={hemisphere}
+                    toggleHemisphere={toggleHemisphere}
+                    setView={setView}
+                    isOnline={isOnline}
+                    moonData={moonData}
+                    userProfile={userProfile}
+                    streak={streak}
+                    currentTime={currentTime}
+                    autoOpenProductId={selectedProductId}
+                    clearAutoOpen={() => setSelectedProductId(null)}
+                  />
+                )}
+                {view === 'reflection' && (
+                  <Reflection
+                    currentTime={currentTime}
+                    hemisphere={hemisphere}
+                    isFlipped={isFlipped}
+                    selectedCard={selectedCard}
+                    handleCardPull={handleCardPull}
+                    rituals={rituals}
+                    checkedItems={checkedItems}
+                    toggleCheck={toggleCheck}
+                    pillars={pillars}
+                    setPillars={setPillars}
+                    newRitualInput={newRitualInput}
+                    setNewRitualInput={setNewRitualInput}
+                    addRitual={addRitual}
+                    reflection={reflection}
+                    setReflection={setReflection}
+                    setView={setView}
+                    isOnline={isOnline}
+                    onBack={() => setView('dashboard')}
+                    userProfile={userProfile}
+                    onNavigateToProduct={handleNavigateToProduct}
+                  />
+                )}
+                {view === 'tracker' && (
+                  <Tracker
+                    isLogging={isLogging} currentTime={currentTime} pillars={pillars}
+                    setPillars={setPillars} activeTags={activeTags} setActiveTags={setActiveTags}
+                    handleLogMana={handleLogMana} isOnline={isOnline} setView={setView}
+                    onBack={() => setView('reflection')}
+                  />
+                )}
+                {view === 'vault' && (
+                  <Vault currentTime={currentTime} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterHighMana={filterHighMana} setFilterHighMana={setFilterHighMana} filteredEntries={filteredEntries} setView={setView} isOnline={isOnline} onDelete={handleDeleteEntry} onBack={() => setView('dashboard')} />
+                )}
+                {view === 'planner' && (
+                  <Planner
+                    currentTime={currentTime}
+                    hemisphere={hemisphere}
+                    toggleHemisphere={toggleHemisphere}
+                    selectedCalendarDay={selectedCalendarDay}
+                    setSelectedCalendarDay={setSelectedCalendarDay}
+                    setView={setView}
+                    isOnline={isOnline}
+                    onBack={() => setView('dashboard')}
+                    autoOpenProductId={selectedProductId}
+                    clearAutoOpen={() => setSelectedProductId(null)}
+                  />
+                )}
+                {view === 'apothecary' && (
+                  <Apothecary
+                    setView={setView}
+                    isOnline={isOnline}
+                    userProfile={userProfile}
+                  />
+                )}
+              </>
             )}
-            {view === 'tracker' && (
-              <Tracker
-                isLogging={isLogging} currentTime={currentTime} pillars={pillars}
-                setPillars={setPillars} activeTags={activeTags} setActiveTags={setActiveTags}
-                handleLogMana={handleLogMana} isOnline={isOnline} setView={setView}
-                onBack={() => setView('reflection')}
-              />
-            )}
-            {view === 'vault' && (
-              <Vault currentTime={currentTime} searchTerm={searchTerm} setSearchTerm={setSearchTerm} filterHighMana={filterHighMana} setFilterHighMana={setFilterHighMana} filteredEntries={filteredEntries} setView={setView} isOnline={isOnline} onDelete={handleDeleteEntry} onBack={() => setView('dashboard')} />
-            )}
-            {view === 'planner' && (
-              <Planner
-                currentTime={currentTime}
-                hemisphere={hemisphere}
-                toggleHemisphere={toggleHemisphere}
-                selectedCalendarDay={selectedCalendarDay}
-                setSelectedCalendarDay={setSelectedCalendarDay}
-                setView={setView}
-                isOnline={isOnline}
-                onBack={() => setView('dashboard')}
-                autoOpenProductId={selectedProductId}
-                clearAutoOpen={() => setSelectedProductId(null)}
-              />
-            )}
-            {view === 'apothecary' && (
-              <Apothecary
-                setView={setView}
-                isOnline={isOnline}
-                userProfile={userProfile}
-              />
-            )}
+
+
           </>
         )}
       </div>

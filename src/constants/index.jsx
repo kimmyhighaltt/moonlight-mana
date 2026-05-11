@@ -248,8 +248,8 @@ export const WHAKATAUKI = [
 // --- PWA SERVICE WORKER REGISTRATION ---
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('Moonlight Mana: Service Worker Active', reg.scope))
-      .catch(err => console.log('Moonlight Mana: Service Worker Setup Error', err));
+   // navigator.serviceWorker.register('/service-worker.js')
+    //  .then(reg => console.log('Moonlight Mana: Service Worker Active', reg.scope))
+   //   .catch(err => console.log('Moonlight Mana: Service Worker Setup Error', err));
   });
 }
