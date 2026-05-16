@@ -72,8 +72,10 @@ const Dashboard = ({
     const sign = userProfile?.sign || 'Sagittarius';
     const lp = userProfile?.lifePath || 1;
     const isPro = userProfile?.isPro || false;
-    return getInsightData(sign, lp, currentMana, isPro, moonData);
-  }, [userProfile, currentMana, moonData]);
+    const todaysCard = journalEntries[0]?.drawnCard || null;
+    return getInsightData(sign, lp, currentMana, isPro, moonData, todaysCard);
+  }, [userProfile, currentMana, moonData, journalEntries]);
+  
 
   // 🔓 HANDLE BETA UNLOCK
  const handleSecretUnlock = async () => {
@@ -129,6 +131,7 @@ const Dashboard = ({
     setShowShop(false);
     if (clearAutoOpen) clearAutoOpen();
   };
+  
 
   return (
     <div className="h-screen w-full flex flex-col relative overflow-hidden bg-slate-950 text-white">

@@ -56,25 +56,30 @@ export const INSIGHT_LIBRARY = {
   }
 };
 
-// 4. THE MASTER GETTER FUNCTION
-export const getInsightData = (sign, lp, currentMana, isPro = false, moonData = null) => {
+// ... Keep your existing ARCHETYPE_MAP, LP_THEMES, SIGN_THEMES, and INSIGHT_LIBRARY ...
+
+// 4. THE MASTER GETTER FUNCTION (Version 2.0 Synthesis)
+export const getInsightData = (sign, lp, currentMana, isPro = false, moonData = null, pulledCard = null) => {
   const isLowEnergy = currentMana < 40;
   const dayIndex = new Date().getDate();
   
   const lpData = LP_THEMES[lp] || { drive: "growth", action: "align with your purpose", low: "fatigue" };
   const signData = SIGN_THEMES[sign] || { style: "unique", focus: "balance", element: "Spirit" };
   const archetype = ARCHETYPE_MAP[sign]?.[lp] || "Celestial Seeker";
-  const dailyCard = TAROT_DECK[dayIndex % TAROT_DECK.length];
+  
+// 👇 Tell the app: If they pulled a card, use it. If not, generate one.
+  const cardIndex = (dayIndex + Math.floor(currentMana / 10)) % TAROT_DECK.length;
+  const dailyCard = pulledCard ? pulledCard : TAROT_DECK[cardIndex];
 
   const manual = INSIGHT_LIBRARY[sign]?.[`LP${lp}`]?.dailyinsights || [];
   let baseResult;
 
-  // A. Check for manual overrides first
+  // A. Check for manual overrides first (Handles the basic Free tier UI)
   if (manual.length > 0) {
     const dailyData = manual[dayIndex % manual.length] || manual[0];
     baseResult = isLowEnergy ? { ...dailyData.lowEnergy } : { ...dailyData.highEnergy };
   } else {
-    // B. Generate dynamic content
+    // B. Generate fallback content if no manual entry exists
     if (isLowEnergy) {
       baseResult = {
         archetype: `Reflective ${sign}`,
@@ -92,26 +97,38 @@ export const getInsightData = (sign, lp, currentMana, isPro = false, moonData = 
     }
   }
 
-  // C. THE DYNAMIC PRO SYNTHESIS
+  // C. THE DYNAMIC PRO SYNTHESIS (The Version 2.0 Override)
   if (isPro) {
     baseResult.synthesisCard = dailyCard;
     
-    // Shadow Warning
-    baseResult.shadowWarning = `As a ${baseResult.archetype}, your biggest hurdle today is ${lpData.low}. Your ${signData.style} nature might lead you to over-commit.`;
+    // 👇 OVERRIDE the static deepInsight with live Synthesis
+    let dynamicInsight = "";
+    if (currentMana < 40) {
+      dynamicInsight = `Your Life Path ${lp} drive for ${lpData.drive} is currently intersecting with ${dailyCard.name}. At a low ${currentMana}% Mana, this is a sign of conservation, not action. Let the energy of this card clear the static rather than forcing output.`;
+    } else if (currentMana > 75) {
+      dynamicInsight = `With your Mana surging at ${currentMana}%, ${dailyCard.name} acts as a powerful catalyst. Channel this high-frequency energy directly into your Life Path ${lp} mission. It is safe to ${lpData.action} today.`;
+    } else {
+      dynamicInsight = `The ${lp} energy thrives on alignment. Today, ${dailyCard.name} requires you to weigh your drive for ${lpData.drive} against your current ${currentMana}% capacity. Use this frequency to ${lpData.action}, but let the card dictate the pacing.`;
+    }
+    
+    baseResult.deepInsight = dynamicInsight;
+
+    // Shadow Warning Override
+    baseResult.shadowWarning = `As a ${archetype}, your biggest hurdle today is ${lpData.low}. Your ${signData.style} nature might lead you to over-commit at ${currentMana}% capacity.`;
 
     // Somatic Action
     const somaticMap = { Fire: "solar plexus", Earth: "feet/ground", Air: "throat/chest", Water: "lower belly" };
     baseResult.somaticAction = `To ground your ${signData.element} energy, place your hands on your ${somaticMap[signData.element] || 'heart'} and hold for 33 seconds.`;
 
-    // Lunar Sync (Uses real-time data from Dashboard)
+    // Lunar Sync
     if (moonData) {
       const moonIntent = moonData.percentage > 50 ? 'expanding' : 'releasing';
-      baseResult.lunarSync = `Under this ${moonData.label} Moon, the ${dailyCard.name} is a somatic anchor for ${moonIntent} your ${lpData.drive}.`;
+      baseResult.lunarSync = `Under this ${moonData.label} Moon, ${dailyCard.name} is a somatic anchor for ${moonIntent} your ${lpData.drive}.`;
     } else {
       baseResult.lunarSync = `The frequency of ${dailyCard.name} is acting as your somatic anchor today.`;
     }
   } else {
-    // Safety Fallbacks to ensure Dashboard UI doesn't crash
+    // Safety Fallbacks to ensure Free UI doesn't crash
     baseResult.shadowWarning = "";
     baseResult.somaticAction = "";
     baseResult.lunarSync = "";
