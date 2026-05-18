@@ -117,10 +117,17 @@ export const getInsightData = (sign, lp, currentMana, isPro = false, moonData = 
     baseResult.shadowWarning = `As a ${archetype}, your biggest hurdle today is ${lpData.low}. Your ${signData.style} nature might lead you to over-commit at ${currentMana}% capacity.`;
 
     // Somatic Action
+   // Somatic Action Override
     const somaticMap = { Fire: "solar plexus", Earth: "feet/ground", Air: "throat/chest", Water: "lower belly" };
-    baseResult.somaticAction = `To ground your ${signData.element} energy, place your hands on your ${somaticMap[signData.element] || 'heart'} and hold for 33 seconds.`;
+    const anchorPoint = somaticMap[signData.element] || 'heart';
 
-    // Lunar Sync
+    if (currentMana < 40) {
+      baseResult.somaticAction = `Your ${signData.element} system is running on empty. Place your hands on your ${anchorPoint} for 33 seconds to pull energy inward and recharge.`;
+    } else if (currentMana > 75) {
+      baseResult.somaticAction = `Your ${signData.element} energy is surging today. Ground this static by holding your ${anchorPoint} for 33 seconds so you don't burn out.`;
+    } else {
+      baseResult.somaticAction = `To physically anchor the frequency of ${dailyCard.name}, place your hands on your ${anchorPoint} and hold for 33 seconds to regulate your baseline.`;
+    }
     if (moonData) {
       const moonIntent = moonData.percentage > 50 ? 'expanding' : 'releasing';
       baseResult.lunarSync = `Under this ${moonData.label} Moon, ${dailyCard.name} is a somatic anchor for ${moonIntent} your ${lpData.drive}.`;
