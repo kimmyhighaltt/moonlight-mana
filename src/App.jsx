@@ -341,6 +341,7 @@ const App = () => {
                     currentTime={currentTime}
                     autoOpenProductId={selectedProductId}
                     clearAutoOpen={() => setSelectedProductId(null)}
+                    journalEntries={journalEntries}
                   />
                 )}
                 {view === 'reflection' && (
