@@ -97,45 +97,97 @@ export const getInsightData = (sign, lp, currentMana, isPro = false, moonData = 
     }
   }
 
-  // C. THE DYNAMIC PRO SYNTHESIS (The Version 2.0 Override)
+ // C. THE DYNAMIC PRO SYNTHESIS (Version 3.0: Predictive Engine)
   if (isPro) {
     baseResult.synthesisCard = dailyCard;
     
-    // 👇 OVERRIDE the static deepInsight with live Synthesis
+    // --- 1. ELEMENTAL DIGNITY (The Visual Equation & Layman Translation) ---
+    const cardNameStr = dailyCard.name.toLowerCase();
+    let cardElement = "Spirit"; 
+    if (cardNameStr.includes("wand")) cardElement = "Fire";
+    if (cardNameStr.includes("cup")) cardElement = "Water";
+    if (cardNameStr.includes("sword")) cardElement = "Air";
+    if (cardNameStr.includes("pentacle") || cardNameStr.includes("coin")) cardElement = "Earth";
+
+    const emojis = { Fire: "🔥", Water: "💧", Earth: "🌿", Air: "💨", Spirit: "✨" };
+    const userEmoji = emojis[signData.element] || "✨";
+    const cardEmoji = emojis[cardElement] || "✨";
+    
+    let eqResult = "Synergy";
+    let eqIcon = "⚖️";
+    let eqTranslation = ""; // 👇 The new layman explanation
+
+    if ((signData.element === "Fire" && cardElement === "Water") || (signData.element === "Water" && cardElement === "Fire")) {
+      eqResult = "Volatility"; eqIcon = "⚡";
+      eqTranslation = "Your natural energy and today's frequency are clashing. Expect sudden shifts in mood or motivation.";
+    } else if ((signData.element === "Earth" && cardElement === "Air") || (signData.element === "Air" && cardElement === "Earth")) {
+      eqResult = "Friction"; eqIcon = "🏜️";
+      eqTranslation = "Your practical nature is grinding against today's overthinking energy. Take things one step at a time.";
+    } else if ((signData.element === "Fire" && cardElement === "Air") || (signData.element === "Air" && cardElement === "Fire")) {
+      eqResult = "Amplification"; eqIcon = "🌪️";
+      eqTranslation = "Today's energy acts as wind to your fire. You will feel highly stimulated, but beware of burning out.";
+    } else if ((signData.element === "Earth" && cardElement === "Water") || (signData.element === "Water" && cardElement === "Earth")) {
+      eqResult = "Deep Growth"; eqIcon = "🌱";
+      eqTranslation = "A beautiful alignment. Today's emotional energy feeds your need for stability, perfect for building something lasting.";
+    } else if (signData.element === cardElement) {
+      eqResult = "Pure Resonance"; eqIcon = "🔮";
+      eqTranslation = "You are completely in your element today. Trust your gut instincts unconditionally.";
+    }
+
+    baseResult.elementalEquation = `${userEmoji} + ${cardEmoji} = ${eqIcon} ${eqResult}`;
+    baseResult.elementalTranslation = eqTranslation; // Pass it to the UI
+
+    // ... (Keep the rest of the dynamicInsight, shadowWarning, and somaticAction the same) ...
+
+    // --- 2. THE FULL REVELATION (Simplified and Punchy) ---
     let dynamicInsight = "";
     if (currentMana < 40) {
-      dynamicInsight = `Your Life Path ${lp} drive for ${lpData.drive} is currently intersecting with ${dailyCard.name}. At a low ${currentMana}% Mana, this is a sign of conservation, not action. Let the energy of this card clear the static rather than forcing output.`;
+      dynamicInsight = `At a depleted ${currentMana}% Mana, this ${dailyCard.name} frequency isn't a call to action; it's an eviction notice for your mental static. Your Life Path ${lp} drive must be suspended. The Oracle requires absolute conservation today.`;
     } else if (currentMana > 75) {
-      dynamicInsight = `With your Mana surging at ${currentMana}%, ${dailyCard.name} acts as a powerful catalyst. Channel this high-frequency energy directly into your Life Path ${lp} mission. It is safe to ${lpData.action} today.`;
+      dynamicInsight = `With your Mana surging at ${currentMana}%, the veil is thin. ${dailyCard.name} is a massive catalyst for your Life Path ${lp} mission. Stop hesitating. It is safe to execute and claim your authority today.`;
     } else {
-      dynamicInsight = `The ${lp} energy thrives on alignment. Today, ${dailyCard.name} requires you to weigh your drive for ${lpData.drive} against your current ${currentMana}% capacity. Use this frequency to ${lpData.action}, but let the card dictate the pacing.`;
+      dynamicInsight = `The Life Path ${lp} energy demands alignment. Today, you must weigh your drive against your fluctuating ${currentMana}% capacity. Let the frequency of ${dailyCard.name} dictate your pacing, not external pressure.`;
     }
-    
     baseResult.deepInsight = dynamicInsight;
 
-    // Shadow Warning Override
-    baseResult.shadowWarning = `As a ${archetype}, your biggest hurdle today is ${lpData.low}. Your ${signData.style} nature might lead you to over-commit at ${currentMana}% capacity.`;
+    // ... (Keep the Shadow Warning and Somatic Anchor code exactly as they were in the previous step) ...
 
-    // Somatic Action
-   // Somatic Action Override
-    const somaticMap = { Fire: "solar plexus", Earth: "feet/ground", Air: "throat/chest", Water: "lower belly" };
-    const anchorPoint = somaticMap[signData.element] || 'heart';
-
-    if (currentMana < 40) {
-      baseResult.somaticAction = `Your ${signData.element} system is running on empty. Place your hands on your ${anchorPoint} for 33 seconds to pull energy inward and recharge.`;
-    } else if (currentMana > 75) {
-      baseResult.somaticAction = `Your ${signData.element} energy is surging today. Ground this static by holding your ${anchorPoint} for 33 seconds so you don't burn out.`;
+    // --- 3. THE SHADOW WARNING (With Time Prediction) ---
+    // Predicts vulnerability time based on Mana level
+    const dangerTime = currentMana > 70 ? "late evening" : currentMana < 40 ? "mid-morning" : "the mid-afternoon slump";
+    
+    if (currentMana < 50) {
+      baseResult.shadowWarning = `Vulnerability Alert: Because your Mana is low, your ${signData.style} nature will be highly susceptible to ${lpData.low} during ${dangerTime}. Set a hard boundary before this window hits. Do not make permanent decisions in a temporary state of exhaustion.`;
     } else {
-      baseResult.somaticAction = `To physically anchor the frequency of ${dailyCard.name}, place your hands on your ${anchorPoint} and hold for 33 seconds to regulate your baseline.`;
+      baseResult.shadowWarning = `Ego Trap: With high Mana, your ${archetype} energy can become overwhelming. Watch out for ${lpData.low} masking itself as productivity around ${dangerTime}. Ensure you are leading, not dominating.`;
     }
+
+    // --- 4. THE SOMATIC ANCHOR (Bio-Hacking the Frequency) ---
+    let somaticDirective = "";
+    if (cardElement === "Air" || cardNameStr.includes("tower")) {
+      somaticDirective = `Mental static is peaking. Do not meditate—your mind will spiral. Instead, do 33 seconds of aggressive physical shaking (hands and arms) to physically discharge the nervous system.`;
+    } else if (cardElement === "Water" || cardNameStr.includes("moon")) {
+      somaticDirective = `Emotional saturation detected. Drink a full glass of cold water right now, visualizing the temperature resetting your vagus nerve and clearing your ${signData.element} energy.`;
+    } else if (cardElement === "Fire" || cardNameStr.includes("sun")) {
+      somaticDirective = `Your somatic system needs grounding from excess adrenaline. Place your bare feet flat on the floor, press down hard, and take 3 sharp exhales to anchor this high-velocity frequency.`;
+    } else {
+      somaticDirective = `To physically anchor the ${dailyCard.name}, place your hands firmly over your closed eyes for 33 seconds. Block out the external visual static and recalibrate your internal compass.`;
+    }
+    
+    if (moonData && moonData.percentage > 85) {
+      somaticDirective += ` The intense ${moonData.label} is amplifying this physical tension. Move slowly today.`;
+    }
+    baseResult.somaticAction = somaticDirective;
+
+    // --- 5. LUNAR SYNC ---
     if (moonData) {
       const moonIntent = moonData.percentage > 50 ? 'expanding' : 'releasing';
-      baseResult.lunarSync = `Under this ${moonData.label} Moon, ${dailyCard.name} is a somatic anchor for ${moonIntent} your ${lpData.drive}.`;
+      baseResult.lunarSync = `The ${moonData.label} is actively ${moonIntent} the psychic weight around your ${lpData.drive} sector.`;
     } else {
-      baseResult.lunarSync = `The frequency of ${dailyCard.name} is acting as your somatic anchor today.`;
+      baseResult.lunarSync = `Aligning your ${signData.element} signature with the current celestial transit.`;
     }
   } else {
-    // Safety Fallbacks to ensure Free UI doesn't crash
+    // Safety Fallbacks
     baseResult.shadowWarning = "";
     baseResult.somaticAction = "";
     baseResult.lunarSync = "";

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Globe, Moon, ShoppingBag, ExternalLink, Flame, X,
-  ChevronRight, ChevronLeft, Lock, Sparkles, Compass, ShieldAlert, Zap
+  ChevronRight, ChevronLeft, Lock, Sparkles, Compass, ShieldAlert, Zap, Info // 👈 Add Info here
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { THEME, SACRED_TOOLS } from '../constants/index';
@@ -39,6 +39,62 @@ const ShopModal = ({ onClose, user, autoOpenId }) => {
     </div>
   );
 };
+const CompassLegendModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      // 1. CHANGED: 'items-end' to 'items-center' and added 'p-4' for screen edge padding
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-300"
+      onClick={onClose}
+    >
+      <div
+        // 2. CHANGED: Made it fully rounded on mobile, added max-height, and changed animation to zoom
+        className="w-full max-w-md bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-[32px] p-6 shadow-2xl animate-in zoom-in-95 duration-400 relative max-h-[85vh] overflow-y-auto custom-scrollbar"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 bg-black/20 rounded-full hover:bg-white/10 transition-colors border border-white/5 z-10"
+        >
+          <X size={20} className="text-white/70" />
+        </button>
+
+        <h3 className="text-2xl font-serif text-white mb-6 text-center mt-2">The Compass Key</h3>
+        
+        {/* ... Keep the rest of your legend items exactly the same ... */}
+
+        <div className="space-y-5">
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-1"><Info size={14} className="text-white/70" /></div>
+            <div><h4 className="text-[10px] font-black uppercase tracking-widest text-white/80 mb-1">The Equation</h4><p className="text-xs text-white/50 leading-relaxed">Instantly shows if your natural energy is clashing or flowing with the day's frequency.</p></div>
+          </div>
+
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 mt-1"><Sparkles size={14} className="text-amber-200" /></div>
+            <div><h4 className="text-[10px] font-black uppercase tracking-widest text-amber-200 mb-1">Full Revelation</h4><p className="text-xs text-white/50 leading-relaxed">Your strategic overview for the day. Read this first to set your intentions and pacing.</p></div>
+          </div>
+
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0 mt-1"><ShieldAlert size={14} className="text-orange-400" /></div>
+            <div><h4 className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">Shadow Potential</h4><p className="text-xs text-white/50 leading-relaxed">Your daily warning label. Learn how you are most likely to self-sabotage based on your current battery level.</p></div>
+          </div>
+
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 mt-1"><Zap size={14} className="text-blue-400" /></div>
+            <div><h4 className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1">Somatic Alignment</h4><p className="text-xs text-white/50 leading-relaxed">Your physical reset button. Do this 33-second action whenever the mental static gets too loud today.</p></div>
+          </div>
+
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0 mt-1"><Moon size={14} className="text-indigo-400" /></div>
+            <div><h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-1">Lunar Sync</h4><p className="text-xs text-white/50 leading-relaxed">The background cosmic weather currently affecting your life path.</p></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
 
 const Dashboard = ({
   hemisphere,
@@ -58,6 +114,8 @@ const Dashboard = ({
   const [activeTab, setActiveTab] = useState('moon');
   const [hasSwiped, setHasSwiped] = useState(false);
   const [hasClickedMoon, setHasClickedMoon] = useState(false);
+  const [showEqInfo, setShowEqInfo] = useState(false);
+  const [isLegendOpen, setIsLegendOpen] = useState(false);
 
   // 🔑 BETA CODE STATE
   const [unlockCode, setUnlockCode] = useState('');
@@ -75,47 +133,47 @@ const Dashboard = ({
     const todaysCard = journalEntries[0]?.drawnCard || null;
     return getInsightData(sign, lp, currentMana, isPro, moonData, todaysCard);
   }, [userProfile, currentMana, moonData, journalEntries]);
-  
+
 
   // 🔓 HANDLE BETA UNLOCK
- const handleSecretUnlock = async () => {
-  if (unlockCode.toUpperCase() === SECRET_BETA_CODE) {
-    setIsUnlocking(true);
-    try {
-      if (auth.currentUser) {
-        const userRef = doc(db, 'users', auth.currentUser.uid);
-        const updatedData = { 
-          isPro: true, 
-          betaMember: true,
-          unlockedAt: new Date().toISOString() 
-        };
+  const handleSecretUnlock = async () => {
+    if (unlockCode.toUpperCase() === SECRET_BETA_CODE) {
+      setIsUnlocking(true);
+      try {
+        if (auth.currentUser) {
+          const userRef = doc(db, 'users', auth.currentUser.uid);
+          const updatedData = {
+            isPro: true,
+            betaMember: true,
+            unlockedAt: new Date().toISOString()
+          };
 
-        // 1. Update Firestore
-        await setDoc(userRef, updatedData, { merge: true });
+          // 1. Update Firestore
+          await setDoc(userRef, updatedData, { merge: true });
 
-        // 2. THE FIX: Force the local profile to update immediately
-        // If your parent component passes a 'setUserProfile' function, use it here.
-        // Otherwise, we can trigger a small local state or a quick window reload.
-        
-        confetti({
-          particleCount: 150,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#FDE68A', '#FBBF24', '#FFFFFF']
-        });
+          // 2. THE FIX: Force the local profile to update immediately
+          // If your parent component passes a 'setUserProfile' function, use it here.
+          // Otherwise, we can trigger a small local state or a quick window reload.
 
-        // Optional: Give them 2 seconds of confetti before showing the content
-        setTimeout(() => {
-          window.location.reload(); // The simplest way to ensure all "Pro" logic resets
-        }, 2000);
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#FDE68A', '#FBBF24', '#FFFFFF']
+          });
+
+          // Optional: Give them 2 seconds of confetti before showing the content
+          setTimeout(() => {
+            window.location.reload(); // The simplest way to ensure all "Pro" logic resets
+          }, 2000);
+        }
+      } catch (err) {
+        console.error("Portal error:", err);
+      } finally {
+        setIsUnlocking(false);
       }
-    } catch (err) {
-      console.error("Portal error:", err);
-    } finally {
-      setIsUnlocking(false);
     }
-  }
-};
+  };
 
   const handleToggle = () => {
     setHasSwiped(true);
@@ -131,7 +189,7 @@ const Dashboard = ({
     setShowShop(false);
     if (clearAutoOpen) clearAutoOpen();
   };
-  
+
 
   return (
     <div className="h-screen w-full flex flex-col relative overflow-hidden bg-slate-950 text-white">
@@ -213,7 +271,6 @@ const Dashboard = ({
               </div>
             ) : (
               <div className="flex flex-col items-center text-center animate-in fade-in slide-in-from-right-8 duration-700 relative w-full h-full">
-
                 {/* --- MANA BAR --- */}
                 <div className="absolute top-0 left-0 right-0">
                   <div className="flex justify-between items-center mb-1 px-1">
@@ -228,6 +285,13 @@ const Dashboard = ({
                 <div className="w-14 h-14 bg-amber-500/10 rounded-full flex items-center justify-center mb-4 border border-amber-200/20 mt-8">
                   <Compass className="text-amber-200 animate-pulse" size={28} />
                 </div>
+                {/* 👇 THE NEW FLOATING INFO BUTTON */}
+                <button
+                  onClick={() => setIsLegendOpen(true)}
+                  className="absolute top-6 right-0 p-2 rounded-full bg-white/5 border border-white/10 text-white/40 hover:text-white/90 hover:bg-white/10 transition-all duration-300 z-30"
+                >
+                  <Info size={14} />
+                </button>
 
                 <p className="text-[9px] uppercase tracking-[0.4em] text-amber-100/50 font-bold mb-1">The {guidance.archetype}</p>
                 <h3 className="text-xl font-serif italic text-white mb-4 px-4 leading-snug">"{guidance.message}"</h3>
@@ -264,9 +328,38 @@ const Dashboard = ({
                     <div className="w-full space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                       <div className="relative group w-full flex flex-col items-center">
                         {guidance.synthesisCard && (
-                          <div className="relative z-10 flex flex-col items-center">
-                            <img src={guidance.synthesisCard.img} alt={guidance.synthesisCard.name} className="w-24 h-36 md:w-28 md:h-40 object-cover rounded-xl border border-amber-200/30 shadow-2xl mb-3" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-200">{guidance.synthesisCard.name}</span>
+                          <div className="relative z-10 flex flex-col items-center w-full px-4 mb-6">
+                            <img src={guidance.synthesisCard.img} alt={guidance.synthesisCard.name} className="w-24 h-36 md:w-28 md:h-40 object-cover rounded-xl border border-amber-200/30 shadow-2xl mb-4" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-200 mb-6">{guidance.synthesisCard.name}</span>
+
+                            {/* --- The Visual Equation Tier --- */}
+                            <div className="flex flex-col items-center w-full">
+                              <div className="flex items-center gap-3">
+                                {/* The Equation Pill (Given more breathing room) */}
+                                <div className="px-5 py-2.5 bg-white/5 border border-white/10 rounded-full flex items-center justify-center shadow-lg">
+                                  <span className="text-sm tracking-widest text-white/90 font-mono font-bold">
+                                    {guidance.elementalEquation}
+                                  </span>
+                                </div>
+
+                                {/* The Info Toggle Button */}
+                                <button
+                                  onClick={() => setShowEqInfo(!showEqInfo)}
+                                  className={`p-2.5 rounded-full border transition-all duration-300 ${showEqInfo ? 'bg-amber-200/10 border-amber-200/30 text-amber-200' : 'bg-white/5 border-white/10 text-white/40 hover:text-white/80'}`}
+                                >
+                                  <Info size={14} />
+                                </button>
+                              </div>
+
+                              {/* --- The Hidden Layman's Translation (Smooth Reveal) --- */}
+                              {showEqInfo && (
+                                <div className="mt-4 p-4 bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-2xl w-full max-w-[280px] animate-in fade-in zoom-in-95 duration-300 shadow-xl">
+                                  <p className="text-[11px] text-white/70 italic text-center leading-relaxed">
+                                    {guidance.elementalTranslation}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         )}
                       </div>
@@ -310,6 +403,7 @@ const Dashboard = ({
       <BottomNav view="dashboard" setView={setView} />
       <LunarInsightModal isOpen={isMoonModalOpen} onClose={() => setIsMoonModalOpen(false)} userProfile={userProfile} onNavigateToLog={() => { setIsMoonModalOpen(false); setView('reflection'); }} />
       {isCompassModalOpen && <CompassWaitlistModal onClose={() => setIsCompassModalOpen(false)} />}
+      <CompassLegendModal isOpen={isLegendOpen} onClose={() => setIsLegendOpen(false)} />
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
