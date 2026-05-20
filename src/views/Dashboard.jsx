@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Globe, Moon, ShoppingBag, ExternalLink, Flame, X,
-  ChevronRight, ChevronLeft, Lock, Sparkles, Compass, ShieldAlert, Zap, Info // 👈 Add Info here
+  ChevronRight, ChevronLeft, Lock, Sparkles, Compass, ShieldAlert, Zap, Info, CheckCircle2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { THEME, SACRED_TOOLS } from '../constants/index';
@@ -61,7 +61,7 @@ const CompassLegendModal = ({ isOpen, onClose }) => {
         </button>
 
         <h3 className="text-2xl font-serif text-white mb-6 text-center mt-2">The Compass Key</h3>
-        
+
         {/* ... Keep the rest of your legend items exactly the same ... */}
 
         <div className="space-y-5">
@@ -96,6 +96,122 @@ const CompassLegendModal = ({ isOpen, onClose }) => {
   );
 };
 
+const AnchorModal = ({ isOpen, onClose }) => {
+  const [step, setStep] = useState('select'); // 'select', 'breathe', 'complete'
+  const [activeElement, setActiveElement] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(33);
+
+  // Reset state when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setStep('select');
+      setActiveElement(null);
+      setTimeLeft(33);
+    }
+  }, [isOpen]);
+
+  // The 33-second timer logic
+  useEffect(() => {
+    let timer;
+    if (step === 'breathe' && timeLeft > 0) {
+      timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+    } else if (timeLeft === 0 && step === 'breathe') {
+      setStep('complete');
+    }
+    return () => clearInterval(timer);
+  }, [step, timeLeft]);
+
+  if (!isOpen) return null;
+
+  const elements = [
+    { id: 'fire', icon: '🔥', label: 'Burning', sub: 'Frustrated, Angry, Overwhelmed', color: 'bg-orange-500', shadow: 'shadow-orange-500/50', action: 'Inhale deeply. Exhale sharply for 6 seconds.' },
+    { id: 'air', icon: '💨', label: 'Spiraling', sub: 'Anxious, Overthinking, Panicked', color: 'bg-indigo-400', shadow: 'shadow-indigo-400/50', action: 'Box breath. Inhale 4, hold 4, exhale 4, hold 4.' },
+    { id: 'water', icon: '💧', label: 'Drowning', sub: 'Sad, Heavy, Hopeless', color: 'bg-blue-500', shadow: 'shadow-blue-500/50', action: 'Double inhale through the nose. Long sigh out the mouth.' },
+    { id: 'earth', icon: '🌿', label: 'Frozen', sub: 'Stuck, Numb, Paralyzed', color: 'bg-emerald-500', shadow: 'shadow-emerald-500/50', action: 'Notice 3 things you can see. Flex and release your hands.' },
+  ];
+
+  const handleSelect = (el) => {
+    setActiveElement(el);
+    setStep('breathe');
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/95 backdrop-blur-3xl p-6 animate-in fade-in duration-500">
+      
+      {/* --- STEP 1: ELEMENTAL DIAGNOSIS --- */}
+      {step === 'select' && (
+        <div className="w-full max-w-sm flex flex-col items-center animate-in slide-in-from-bottom-8 duration-700">
+          <button onClick={onClose} className="absolute top-8 right-8 p-3 bg-white/5 rounded-full text-white/40 hover:text-white transition-colors">
+            <X size={24} />
+          </button>
+          
+          <h2 className="text-3xl font-serif text-white mb-2 text-center">Where is the static?</h2>
+          <p className="text-[11px] font-black uppercase tracking-[0.3em] text-white/40 mb-10 text-center">Identify the frequency</p>
+          
+          <div className="flex flex-col gap-4 w-full">
+            {elements.map((el) => (
+              <button 
+                key={el.id} 
+                onClick={() => handleSelect(el)}
+                className="flex items-center gap-4 p-5 rounded-[24px] bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-left group"
+              >
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl bg-black/40 border border-white/5 group-hover:scale-110 transition-transform`}>
+                  {el.icon}
+                </div>
+                <div>
+                  <h3 className="text-lg font-serif text-white">{el.label}</h3>
+                  <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{el.sub}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* --- STEP 2: THE VOID (33 SECOND INTERRUPT) --- */}
+      {step === 'breathe' && activeElement && (
+        <div className="flex flex-col items-center justify-center animate-in zoom-in-95 duration-1000">
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-16 text-center animate-pulse">
+            Grounding {activeElement.label} Static
+          </p>
+
+          <div className="relative flex items-center justify-center w-64 h-64 mb-16">
+            {/* The Breathing Circle */}
+            <div className={`absolute w-full h-full rounded-full ${activeElement.color} opacity-20 blur-3xl animate-pulse duration-1000`} />
+            <div className={`w-32 h-32 rounded-full border border-white/20 bg-black/50 flex items-center justify-center z-10 shadow-[0_0_50px_rgba(255,255,255,0.1)] transition-transform duration-[4000ms] ${timeLeft % 8 < 4 ? 'scale-150' : 'scale-100'}`}>
+               <span className="text-4xl font-light text-white">{timeLeft}</span>
+            </div>
+          </div>
+
+          <p className="text-lg font-serif italic text-white/90 text-center max-w-[280px] leading-relaxed">
+            "{activeElement.action}"
+          </p>
+        </div>
+      )}
+
+      {/* --- STEP 3: INTEGRATION --- */}
+      {step === 'complete' && (
+        <div className="flex flex-col items-center justify-center animate-in fade-in zoom-in duration-700">
+          <div className="w-20 h-20 rounded-full bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(99,102,241,0.2)]">
+             <CheckCircle2 size={32} className="text-indigo-300" />
+          </div>
+          <h2 className="text-3xl font-serif text-white mb-4">Static Grounded.</h2>
+          <p className="text-sm text-white/50 text-center mb-10 max-w-[250px] leading-relaxed">
+            Your nervous system has been reset. You may return to the Sanctuary.
+          </p>
+          <button 
+            onClick={onClose}
+            className="px-10 py-4 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest text-white hover:bg-white/20 transition-all"
+          >
+            Return
+          </button>
+        </div>
+      )}
+
+    </div>
+  );
+};
+
 const Dashboard = ({
   hemisphere,
   toggleHemisphere,
@@ -116,6 +232,7 @@ const Dashboard = ({
   const [hasClickedMoon, setHasClickedMoon] = useState(false);
   const [showEqInfo, setShowEqInfo] = useState(false);
   const [isLegendOpen, setIsLegendOpen] = useState(false);
+  const [isAnchorOpen, setIsAnchorOpen] = useState(false);
 
   // 🔑 BETA CODE STATE
   const [unlockCode, setUnlockCode] = useState('');
@@ -126,14 +243,32 @@ const Dashboard = ({
     return journalEntries[0]?.mana || 60;
   }, [journalEntries]);
 
-  const guidance = useMemo(() => {
+ const guidance = useMemo(() => {
     const sign = userProfile?.sign || 'Sagittarius';
     const lp = userProfile?.lifePath || 1;
     const isPro = userProfile?.isPro || false;
-    const todaysCard = journalEntries[0]?.drawnCard || null;
+
+    // 1. Get today's local date (Year-Month-Day)
+    const now = new Date();
+    const localToday = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    
+    const latestEntry = journalEntries?.[0];
+
+    // 2. STRENGTHENED CHECK: 
+    // We check the 'date' field, OR if the 'createdAt' timestamp contains our local date string
+    const hasLoggedToday = latestEntry && (
+      latestEntry.date === localToday || 
+      (latestEntry.createdAt && latestEntry.createdAt.includes(localToday))
+    );
+
+    // 3. Sync the card
+    const todaysCard = hasLoggedToday ? latestEntry.drawnCard : null;
+
+    // DEBUG LOG: Open your browser console (F12) to see if this is hitting!
+    console.log("Compass Sync Check:", { localToday, entryDate: latestEntry?.date, matched: hasLoggedToday });
+
     return getInsightData(sign, lp, currentMana, isPro, moonData, todaysCard);
   }, [userProfile, currentMana, moonData, journalEntries]);
-
 
   // 🔓 HANDLE BETA UNLOCK
   const handleSecretUnlock = async () => {
@@ -219,14 +354,27 @@ const Dashboard = ({
       {/* --- SCROLLABLE CONTENT AREA --- */}
       <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 pb-32">
 
-        <header className="flex flex-col items-center mt-4 md:mt-10 px-4 text-center md:mb-12">
+     <header className="flex flex-col items-center mt-4 md:mt-10 px-4 text-center md:mb-12">
           <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-90 mb-2 text-amber-200">
             {userProfile ? `${userProfile.sign} Sun • Life Path ${userProfile.lifePath}` : "Daily Ritual System"}
           </p>
           <h1 className="text-4xl md:text-6xl font-serif tracking-tight mb-2 text-white">
             {userProfile ? `Rise, ${userProfile.name}.` : "Moonlight Mana"}
           </h1>
-          <p className="text-[10px] text-white/70 font-bold tracking-[0.2em] uppercase">The veil is thin today</p>
+          <p className="text-[10px] text-white/70 font-bold tracking-[0.2em] uppercase">
+            The veil is thin today
+          </p>
+          
+          {/* 👇 THE NEW CENTERED ANCHOR BUTTON (Now with mb-8 for spacing) */}
+          <button 
+            onClick={() => setIsAnchorOpen(true)} 
+            className="mt-5 mb-8 flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.15)] backdrop-blur-xl hover:bg-indigo-500/20 hover:border-indigo-400/50 transition-all duration-300 group cursor-pointer"
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse shadow-[0_0_8px_rgba(129,140,248,0.8)]" />
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-indigo-100 group-hover:text-white transition-colors">
+              Anchor Your Energy
+            </span>
+          </button>
         </header>
 
         <main className="flex flex-col items-center w-full max-w-2xl mx-auto px-6">
@@ -268,6 +416,8 @@ const Dashboard = ({
                   <h2 className="text-5xl md:text-6xl font-light tracking-tight mb-2 text-white">{moonData.percentage}%</h2>
                   <p className="text-[10px] tracking-[0.4em] uppercase opacity-80 font-black text-amber-100">{moonData.label}</p>
                 </div>
+
+
               </div>
             ) : (
               <div className="flex flex-col items-center text-center animate-in fade-in slide-in-from-right-8 duration-700 relative w-full h-full">
@@ -399,11 +549,14 @@ const Dashboard = ({
           </button>
         </main>
       </div>
+      
 
       <BottomNav view="dashboard" setView={setView} />
       <LunarInsightModal isOpen={isMoonModalOpen} onClose={() => setIsMoonModalOpen(false)} userProfile={userProfile} onNavigateToLog={() => { setIsMoonModalOpen(false); setView('reflection'); }} />
       {isCompassModalOpen && <CompassWaitlistModal onClose={() => setIsCompassModalOpen(false)} />}
       <CompassLegendModal isOpen={isLegendOpen} onClose={() => setIsLegendOpen(false)} />
+
+        <AnchorModal isOpen={isAnchorOpen} onClose={() => setIsAnchorOpen(false)} />
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }

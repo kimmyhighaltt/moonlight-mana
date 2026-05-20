@@ -243,21 +243,32 @@ const App = () => {
   const toggleCheck = (id) => setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   const handleDeleteEntry = (id) => setJournalEntries(prev => prev.filter(e => e.id !== id));
 
-
-  const handleLogMana = async () => {
+const handleLogMana = async () => {
     setIsLogging(true);
 
     const averageMana = Math.round((pillars.mind + pillars.body + pillars.heart + pillars.soul) / 4);
     let entryDateObj = new Date(currentTime);
+    
+    // Create the standardized date string (YYYY-MM-DD) for the Compass to read
+    const localDateString = `${entryDateObj.getFullYear()}-${String(entryDateObj.getMonth() + 1).padStart(2, '0')}-${String(entryDateObj.getDate()).padStart(2, '0')}`;
+    const isoString = new Date().toISOString();
 
     const newEntry = {
-      userId: auth.currentUser.uid, // 🔑 Link the entry to the user
-      date: entryDateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase(),
+      userId: auth.currentUser.uid, 
+      
+      // 👇 THE DATE FIXES
+      date: localDateString, // e.g., "2026-05-20" (For the Compass)
+      displayDate: entryDateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase(), // e.g., "MAY 20" (For the Vault UI)
       time: entryDateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      timestamp: new Date().toISOString(), // For chronological sorting
+      timestamp: isoString, 
+      createdAt: isoString, // Added because the Compass checks for this
       moon: moonData.label,
-      card: selectedCard.name,
-      img: selectedCard.img,
+      
+      // 👇 THE CARD FIXES
+      drawnCard: selectedCard, // The Compass needs the full object here!
+      card: selectedCard.name, // Kept so your Vault search still works
+      img: selectedCard.img,   // Kept so your Vault images still load
+      
       mana: averageMana,
       message: reflection.theMessage || `A session focusing on ${selectedCard.name}.`,
       pillars: { ...pillars },
