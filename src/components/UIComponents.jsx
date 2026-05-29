@@ -4,8 +4,9 @@ import {
 } from 'lucide-react';
 import { THEME } from '../constants/index';
 
-export const Logo = ({ size = "text-xl", subtitle = "DAILY TAROT REFLECTION", showStars = true, color = THEME.primary }) => (
-  <div className="flex flex-col items-center select-none text-center relative z-10 animate-fade-in py-4">
+export const Logo = ({ size = "text-xl", subtitle = "DAILY TAROT REFLECTION", showStars = true, color = THEME.primary, className = "" }) => (
+  // Removed hardcoded animation class; now it strictly obeys the parent layout
+  <div className={`flex flex-col items-center select-none text-center relative z-10 py-4 ${className}`}>
     {showStars && (
       <div className="flex gap-4 mb-[-8px] opacity-80">
         <Star size={10} fill={color} color={color} />
@@ -19,7 +20,6 @@ export const Logo = ({ size = "text-xl", subtitle = "DAILY TAROT REFLECTION", sh
     {subtitle && <span className="text-[10px] tracking-[0.3em] uppercase opacity-80 font-bold -mt-1" style={{ color: color }}>{subtitle}</span>}
   </div>
 );
-
 export const GraphGrid = () => (
   <div className="fixed inset-0 pointer-events-none z-0 opacity-40" 
        style={{ backgroundImage: `linear-gradient(to right, ${THEME.gridColor} 1px, transparent 1px), linear-gradient(to bottom, ${THEME.gridColor} 1px, transparent 1px)`, backgroundSize: '25px 25px' }} />

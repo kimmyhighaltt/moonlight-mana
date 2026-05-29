@@ -100,26 +100,36 @@ const App = () => {
     localStorage.setItem('moonlight_vault', JSON.stringify(journalEntries));
   }, [journalEntries]);
 
+  
   // System: Timer & Online Status
   useEffect(() => {
+    // 1. Keep your existing clock timer
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
 
-    // 🎧 Listen for the actual Auth state
+    // 2. ⏱️ Steiner Tracking: Note exactly when the component mounted
+    const startTime = Date.now(); 
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) {
-        setView('login');
-      } else {
-        // Only go to dashboard if setup is actually finished
+      // Determine where the user SHOULD go after the splash
+      let targetView = 'login';
+      if (user) {
         const saved = JSON.parse(localStorage.getItem('moonlight_user'));
-        if (saved?.setupComplete) {
-          setView('dashboard');
-        } else {
-          setView('onboarding');
-        }
+        targetView = saved?.setupComplete ? 'dashboard' : 'onboarding';
       }
-      setInitializing(false); // Stop the splash screen
+
+      // 🧘 THE SACRED DELAY CALCULATION
+      // We want a minimum of 6000ms (one full breathing cycle)
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, 6000 - elapsedTime);
+
+      // We wait for the remaining time before switching views
+      setTimeout(() => {
+        setView(targetView);
+        setInitializing(false); // This finally removes the Splash screen
+      }, remainingTime);
     });
 
+    // Keep your connection listeners
     const handleConn = () => setIsOnline(navigator.onLine);
     window.addEventListener('online', handleConn);
     window.addEventListener('offline', handleConn);

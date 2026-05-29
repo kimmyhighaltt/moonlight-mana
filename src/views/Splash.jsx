@@ -2,37 +2,47 @@ import React from 'react';
 import { Logo } from '../components/UIComponents';
 import CelestialBackground from '../components/CelestialBackground';
 
-const Splash = () => {
+const Splash = ({ onEnter }) => {
   return (
-    /* h-screen and w-screen ensure the flexbox has the full space to center the content */
-    <div className="relative h-screen w-screen overflow-hidden bg-[#020617]">
-      
-      {/* 🌌 THE UNIVERSE BASE */}
+    <div 
+      className="relative h-screen w-screen overflow-hidden bg-[#020617] cursor-pointer"
+      onClick={onEnter} 
+    >
       <CelestialBackground />
 
-      {/* 🕯️ THE LOGO CONTAINER - Forced to absolute center */}
-      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
-        <div className="animate-fade-in px-4 text-center">
-          <div className="animate-pulse-slow">
-            <Logo size="text-6xl" subtitle="EMBRACE THE FLOW" />
-          </div>
+      {/* Changed to flex container so the clickable helper sits naturally below the logo */}
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
+        <div className="animate-cosmic-rhythm px-4 text-center pointer-events-none">
+          <Logo size="text-6xl" subtitle="EMBRACE THE FLOW" />
         </div>
+        
+        <p className="absolute bottom-16 text-slate-400/60 text-[10px] tracking-[0.3em] uppercase font-light animate-pulse-slow">
+          Tap to center
+        </p>
       </div>
 
       <style>{`
-        .animate-fade-in {
-          animation: fadeIn 1.2s ease-out forwards;
+        /* 🧘 UNIFIED MOTION: Smooth entry + infinite deep breathing cycle combined */
+        .animate-cosmic-rhythm {
+          animation: cosmicArrival 1500ms ease-out forwards, cosmicPulse 6000ms ease-in-out infinite 1500ms;
         }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+
+        @keyframes cosmicArrival {
+          from { opacity: 0; transform: translateY(12px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
         }
+
+        @keyframes cosmicPulse {
+          0%, 100% { opacity: 0.90; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.02); }
+        }
+
         .animate-pulse-slow {
-          animation: pulse-slow 4s ease-in-out infinite;
+          animation: simplePulse 3s ease-in-out infinite alternate;
         }
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.85; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.03); }
+        @keyframes simplePulse {
+          from { opacity: 0.2; }
+          to { opacity: 0.6; }
         }
       `}</style>
     </div>
