@@ -28,6 +28,9 @@ const Reflection = ({
   const ds = displayTime.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
   const ts = displayTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
+  const currentHour = displayTime.getHours();
+  const isEvening = currentHour >= 18; // Triggers after 6:00 PM
+
   // --- 🎙️ Voice-to-Text Logic ---
   const toggleVoiceReflection = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -191,20 +194,30 @@ const Reflection = ({
       </div>
 
       {/* REFLECTION SECTION */}
+      {/* REFLECTION SECTION (Version 2.0: Steiner Rückschau & Tripartite) */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 mb-20 w-full">
+
         {/* Toggle Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 border-b border-white/5 pb-6 gap-6">
-          <h2 className="text-3xl font-serif text-amber-50">Deep Reflection</h2>
-          
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b border-white/5 pb-6 gap-6">
+          <div className="flex flex-col gap-2">
+            {/* Dynamically shifts based on Morning vs Evening */}
+            <h2 className="text-3xl font-serif text-amber-50">
+              {isEvening ? "Evening Rückschau" : "Morning Incarnation"}
+            </h2>
+            <p className="text-[10px] font-black tracking-[0.2em] uppercase opacity-40 text-amber-100">
+              {isEvening ? "Review your day in reverse" : "Set your daily frequency"}
+            </p>
+          </div>
+
           <div className="flex gap-2 bg-white/5 p-1.5 rounded-full border border-white/10 shadow-inner">
-            <button 
-              onClick={() => setIsGuided(true)} 
+            <button
+              onClick={() => setIsGuided(true)}
               className={`px-8 py-3 rounded-full text-[10px] font-black tracking-[0.2em] transition-all ${isGuided ? 'bg-amber-200 text-slate-900 shadow-lg' : 'text-white/50 hover:text-white'}`}
             >
               JOURNAL
             </button>
-            <button 
-              onClick={() => setIsGuided(false)} 
+            <button
+              onClick={() => setIsGuided(false)}
               className={`px-8 py-3 rounded-full text-[10px] font-black tracking-[0.2em] transition-all ${!isGuided ? 'bg-amber-200 text-slate-900 shadow-lg' : 'text-white/50 hover:text-white'}`}
             >
               VOICE NOTE
@@ -212,26 +225,42 @@ const Reflection = ({
           </div>
         </div>
 
+        {/* TRIPARTITE HELPER (Head, Heart, Hands) */}
+        <div className="grid grid-cols-3 divide-x divide-white/10 mb-6 bg-white/5 py-3 rounded-2xl border border-white/5 shadow-inner text-center">
+          <div className="flex flex-col">
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-200/60">Head</span>
+            <span className="text-[8px] uppercase tracking-widest text-white/40">Clarity</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-200/60">Heart</span>
+            <span className="text-[8px] uppercase tracking-widest text-white/40">Weight</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-200/60">Hands</span>
+            <span className="text-[8px] uppercase tracking-widest text-white/40">Will</span>
+          </div>
+        </div>
+
         {isGuided ? (
           /* JOURNAL MODE */
           <div className="bg-slate-950/60 backdrop-blur-md rounded-[40px] border border-white/10 p-4 focus-within:border-amber-200/30 transition-all shadow-2xl">
-            <textarea 
-              value={reflection.theMessage} 
-              onChange={(e) => setReflection({ ...reflection, theMessage: e.target.value })} 
-              className="w-full p-8 bg-transparent border-none text-xl font-serif italic text-white min-h-[300px] resize-none focus:outline-none leading-relaxed" 
-              placeholder="What is coming through for you today?..." 
+            <textarea
+              value={reflection.theMessage}
+              onChange={(e) => setReflection({ ...reflection, theMessage: e.target.value })}
+              className="w-full p-8 bg-transparent border-none text-xl font-serif italic text-white min-h-[300px] resize-none focus:outline-none leading-relaxed"
+              placeholder={isEvening ? "What static are you releasing before sleep?..." : "What is coming through for you today?..."}
             />
           </div>
         ) : (
           /* VOICE MODE */
           <div className="relative group flex flex-col items-center justify-center min-h-[300px] bg-slate-950/60 backdrop-blur-xl rounded-[40px] border border-amber-200/10 shadow-2xl p-10">
-            <button 
-              onClick={toggleVoiceReflection} 
+            <button
+              onClick={toggleVoiceReflection}
               className={`mb-8 flex items-center justify-center w-24 h-24 rounded-full border shadow-2xl transition-all ${isRecording ? 'bg-rose-600 border-rose-400 animate-pulse text-white' : 'bg-amber-200/10 border-amber-200/20 text-amber-200 hover:bg-amber-200/20'}`}
             >
               {isRecording ? <Mic size={40} /> : <MicOff size={40} className="opacity-60" />}
             </button>
-            
+
             {isRecording ? (
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-2.5 h-2.5 bg-rose-500 rounded-full animate-bounce" />
@@ -241,17 +270,16 @@ const Reflection = ({
               <span className="text-[10px] text-amber-200/60 font-black tracking-[0.2em] uppercase mb-6">Tap to speak your reflection</span>
             )}
 
-            <textarea 
-              value={reflection.theMessage} 
-              onChange={(e) => setReflection({ ...reflection, theMessage: e.target.value })} 
-              className="w-full bg-transparent border-none text-xl font-serif italic text-white/90 resize-none focus:outline-none text-center leading-relaxed mt-4" 
-              placeholder={isRecording ? "Listening..." : "Your transcribed wisdom will appear here..."}
+            <textarea
+              value={reflection.theMessage}
+              onChange={(e) => setReflection({ ...reflection, theMessage: e.target.value })}
+              className="w-full bg-transparent border-none text-xl font-serif italic text-white/90 resize-none focus:outline-none text-center leading-relaxed mt-4"
+              placeholder={isRecording ? "Listening..." : (isEvening ? "Speak to release the day's static..." : "Speak your morning intentions...")}
               rows={4}
             />
           </div>
         )}
       </section>
-
       <div className="relative z-10 flex justify-center mb-10">
         <button onClick={() => setView('tracker')} className="px-20 py-7 rounded-full font-black uppercase tracking-widest text-[12px] bg-gradient-to-r from-amber-200 to-amber-100 text-slate-900 shadow-xl hover:scale-105 transition-transform">
           Anchor Your Energy

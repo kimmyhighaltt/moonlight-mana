@@ -78,21 +78,27 @@ export const getInsightData = (sign, lp, currentMana, isPro = false, moonData = 
   if (manual.length > 0) {
     const dailyData = manual[dayIndex % manual.length] || manual[0];
     baseResult = isLowEnergy ? { ...dailyData.lowEnergy } : { ...dailyData.highEnergy };
-  } else {
-    // B. Generate fallback content if no manual entry exists
+ } else {
+    // B. Generate fallback content if no manual entry exists (Version 4.0: Organic Synthesis)
     if (isLowEnergy) {
       baseResult = {
         archetype: `Reflective ${sign}`,
-        message: `The ${signData.style} energy of your sun is calling for a pause.`,
-        direction: `Focus on ${signData.focus} through quiet observation.`,
-        deepInsight: `Low mana is a time for restorative silence.`
+        message: `The ${signData.style} currents of your ${sign} Sun are asking for an exhale. The world can wait while you steady your foundations.`,
+        direction: `Gently anchor your focus around your ${signData.focus} sector through quiet, non-judgmental observation.`,
+        deepInsight: `Low Mana is not a failure of will—it is the winter phase of your internal ecosystem. Rest without explaining yourself.`
       };
     } else {
+      // Create organic transitions based on Element types
+      const elementActionVerb = 
+        signData.element === "Fire" ? "blazing a trail toward" :
+        signData.element === "Water" ? "deeply channeling into" :
+        signData.element === "Air" ? "carving out space for" : "steadily anchoring down";
+
       baseResult = {
         archetype: archetype,
-        message: `Your ${signData.element} energy is peaking. Use this ${signData.style} momentum to ${lpData.action}.`,
-        direction: `Initiate a ritual centered on your ${signData.focus}.`,
-        deepInsight: `As a ${archetype}, your highest alignment occurs when your personality serves your Life Path ${lp} mission.`
+        message: `Your natural ${signData.element} signature is fully online today. Trust this ${signData.style} momentum as it clears the path ahead.`,
+        direction: `Take alignment into your own hands: ${elementActionVerb} your Life Path ${lp} drive to ${lpData.action}.`,
+        deepInsight: `As the ${archetype}, your internal clarity peaks the exact moment your personal boundaries align perfectly with your broader life mission.`
       };
     }
   }
@@ -134,34 +140,53 @@ export const getInsightData = (sign, lp, currentMana, isPro = false, moonData = 
       eqTranslation = "You are completely in your element today. Trust your gut instincts unconditionally.";
     }
 
+    // --- 1.5 TAROT ESSENCE PARSER (Steiner Lens) ---
+    // This turns a flat card name into a living, rhythmic quality.
+    let cardRankVibe = "a deep, karmic tide"; // Default for Major Arcana
+    if (cardNameStr.includes("ace")) cardRankVibe = "a raw seed of pure potential";
+    else if (cardNameStr.includes("page")) cardRankVibe = "a youthful, exploratory spark";
+    else if (cardNameStr.includes("knight")) cardRankVibe = "a swift, forward-moving current";
+    else if (cardNameStr.includes("queen")) cardRankVibe = "a deeply internalized mastery";
+    else if (cardNameStr.includes("king")) cardRankVibe = "an externalized, commanding authority";
+    else if (cardNameStr.match(/\b(two|three|four|five|six|seven|eight|nine|ten)\b/)) {
+      cardRankVibe = "an unfolding, earthly rhythm";
+    }
+
+    let elementVibe = "of cosmic weight";
+    if (cardElement === "Fire") elementVibe = "of active Will";
+    if (cardElement === "Water") elementVibe = "of fluid Intuition";
+    if (cardElement === "Air") elementVibe = "of cutting Intellect";
+    if (cardElement === "Earth") elementVibe = "of physical Incarnation";
+
+    const cardSteinerVibe = `${cardRankVibe} ${elementVibe}`; 
+    // Example Output: "a youthful, exploratory spark of active Will"
+
     baseResult.elementalEquation = `${userEmoji} + ${cardEmoji} = ${eqIcon} ${eqResult}`;
     baseResult.elementalTranslation = eqTranslation; // Pass it to the UI
 
     // ... (Keep the rest of the dynamicInsight, shadowWarning, and somaticAction the same) ...
 
-// --- 2. THE FULL REVELATION (Version 3.5: Steiner Rhythmic Sync) ---
+// --- 2. THE FULL REVELATION (Version 3.7: The Living Oracle) ---
     let dynamicInsight = "";
     const isMoonWaning = moonData ? moonData.percentage < 50 : false;
     const moonAction = isMoonWaning ? "releasing" : "building";
 
     if (currentMana < 40) {
-      // Steiner Logic: Validate the void. If the moon is waning, rest is mandatory.
       const lunarPermission = isMoonWaning 
-        ? `The Moon is ${moonAction}, and so are you. This is the natural order—rest today is not a luxury, it is a rhythmic requirement.` 
-        : `The Moon is ${moonAction}, but your internal mana is low. Beware the pressure to grow when your soil is dry. Protect your spark.`;
+        ? `The sky is exhaling right now, and so are you. There is no need to push—today, your only job is to exist in the quiet.` 
+        : `Even though the Moon is building, your battery is in the red. Don't let the 'noise' of the world trick you into moving before you're ready.`;
       
-      dynamicInsight = `At a depleted ${currentMana}% Mana, this ${dailyCard.name} frequency is an eviction notice for your mental static. ${lunarPermission} The Oracle requires absolute conservation today.`;
+      dynamicInsight = `With your Mana at ${currentMana}%, the ${dailyCard.name} arrives as ${cardSteinerVibe}. Rather than acting on it, let this frequency act as a protective shield. ${lunarPermission} Permission to go dark today is granted.`;
 
     } else if (currentMana > 75) {
-      // Steiner Logic: High mana + Waxing moon = Maximum Incarnation (action).
       const lunarPush = !isMoonWaning 
-        ? "The moon is surging with you." 
-        : "The moon is emptying, but your internal light is surging. Lead the way.";
+        ? "The whole cosmos is currently backing your play." 
+        : "The Moon is thinning out, but your internal fire is blazing. You have enough light to lead others today.";
       
-      dynamicInsight = `With your Mana surging at ${currentMana}%, the veil is thin. ${lunarPush} ${dailyCard.name} is a massive catalyst for your Life Path ${lp} mission. It is safe to execute and claim your authority.`;
+      dynamicInsight = `You are radiant at ${currentMana}% Mana. The ${dailyCard.name} brings ${cardSteinerVibe} directly into your sphere. This is a massive green light for your Life Path ${lp} mission. Stop waiting for a 'perfect' moment—you are the moment.`;
 
     } else {
-      dynamicInsight = `The Life Path ${lp} energy demands alignment. Today, you must weigh your drive against your fluctuating ${currentMana}% capacity. Let the frequency of ${dailyCard.name} and the ${moonData?.label || 'Lunar rhythm'} dictate your pacing, not external pressure.`;
+      dynamicInsight = `At ${currentMana}% Mana, you are walking the 'Middle Path.' The ${dailyCard.name} offers you ${cardSteinerVibe}. Let this frequency act as a gentle hand on your shoulder, guiding your pace. The ${moonData?.label || 'rhythm'} asks you to be intentional, not just busy.`;
     }
     
     baseResult.deepInsight = dynamicInsight;

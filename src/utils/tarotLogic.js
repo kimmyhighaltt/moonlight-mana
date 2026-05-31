@@ -1,60 +1,63 @@
 // src/utils/tarotLogic.js
 
 export const MAJOR_ARCANA = {
-  "The Fool": "New beginnings call to you. A leap of faith is required now—trust that the universe will catch you.",
-  "The Magician": "You have all the tools you need. Manifestation is not about asking, but realizing your own power.",
-  "The High Priestess": "Look inward. The answers you seek are not in the world, but in the silence of your intuition.",
-  "The Empress": "Abundance is flowing. Connect with nature and your own creativity to unlock this energy.",
-  "The Emperor": "Structure and discipline are your allies today. Stand firm in your authority.",
-  "The Hierophant": "Tradition holds wisdom. Seek a mentor or spiritual system to guide your next steps.",
-  "The Lovers": "A choice must be made. Align your decisions with your true values, not just your desires.",
-  "The Chariot": "Victory comes through willpower. Do not let the opposing forces tear you apart; hold the reins tight.",
-  "Strength": "True strength is gentle. You do not need to force the outcome, simply endure with compassion.",
-  "The Hermit": "Withdraw to find your light. Solitude is not loneliness; it is a sanctuary for truth.",
-  "Wheel of Fortune": "The cycles turn. What is down will go up. Surrender to the rhythm of change.",
-  "Justice": "Truth will out. Act with integrity, for every action now carries a heavy weight of consequence.",
-  "The Hanged Man": "Pause and surrender. You must see the world from a new angle to untie this knot.",
-  "Death": "Transformation is inevitable. Let go of the old skin so the new self can breathe.",
-  "Temperance": "Balance is key. Blend the opposites in your life to find the golden middle path.",
-  "The Devil": "Break your chains. You are only trapped by the illusions you have agreed to believe.",
-  "The Tower": "Let it fall. The foundation was shaky; the destruction is clearing space for truth.",
-  "The Star": "Hope returns. You are being guided by a distant but steady light. Have faith.",
-  "The Moon": "Illusions abound. Trust your instincts, not your eyes. Things are not what they seem.",
-  "The Sun": "Joy and clarity! The shadows disperse. Bask in the warmth of your success and vitality.",
-  "Judgement": "A call to awakening. Rise up and claim your higher purpose; the past is forgiven.",
-  "The World": "Completion. A cycle ends, and you stand whole. Prepare for a new level of existence."
+  "The Fool": "The soul stands at the threshold of incarnation. Trust the spiritual void and step forward without the weight of past karma.",
+  "The Magician": "Your Will is the conduit between the cosmos and the earth. Manifestation is the act of anchoring astral truth into physical form.",
+  "The High Priestess": "The veil is thin. The wisdom you seek resides entirely within the silent, receptive pole of your inner temple.",
+  "The Empress": "The ultimate frequency of earthly incarnation. Connect deeply with the natural rhythms of life to nurture your creative force.",
+  "The Emperor": "The energetic architecture of order. Erect strong boundaries so that your spiritual light has a physical container to inhabit.",
+  "The Hierophant": "Seek the esoteric thread hidden within tradition. True spiritual authority requires an initiation through discipline.",
+  "The Lovers": "The soul faces the tension of duality. True union is not just connection, but the conscious alignment of the lower will with the higher self.",
+  "The Chariot": "The ego is being tested. Mastery is found not in suppressing opposing forces, but in steering them toward your true north.",
+  "Strength": "The taming of the astral body. You must conquer your lower animal impulses not with force, but with the radiant grace of the heart.",
+  "The Hermit": "The inward retreat into the Sentient Soul. Withdraw the senses from the physical world so the inner light can illuminate your path.",
+  "Wheel of Fortune": "The inescapable rhythm of cosmic law. Do not fight the turning cycle; find your absolute center where the axis is still.",
+  "Justice": "Karmic equilibrium. Every thought and action is being weighed on the scales of your spiritual evolution. Proceed with radical honesty.",
+  "The Hanged Man": "A sacred pause for ego-reversal. The physical world must be turned upside down so the spiritual world can be clearly seen.",
+  "Death": "The necessary excarnation of an old form. Willingly compost the past so your soul can take on its next, higher shape.",
+  "Temperance": "The alchemical blending of the astral and etheric bodies. You are synthesizing opposing extremes into a harmonious Middle Path.",
+  "The Devil": "The confrontation with Ahrimanic density. Recognize where the material world and rigid thinking have bound your spiritual freedom.",
+  "The Tower": "A divine dismantling. The false ego-structures must be shattered by cosmic lightning to make room for pure, unmediated truth.",
+  "The Star": "The etheric waters are renewed. You are directly tapped into the cosmic stream, offering profound hope and celestial healing.",
+  "The Moon": "The descent into the subconscious shadow. Navigate this hallucinatory astral landscape using only the compass of your deepest intuition.",
+  "The Sun": "The pure, radiating force of the Ego. All shadows are burned away by the conscious realization of your own divine sovereignty.",
+  "Judgement": "The call of the higher self. You are awakening to a new biographical epoch. Absolve the past and rise to your new frequency.",
+  "The World": "The complete incarnation of the soul's current mission. A cycle closes in total synthesis. Prepare the vessel for a new octave of existence."
 };
 
 export const getMinorArcanaMeaning = (cardName) => {
+  // Steiner mapped the elements to the four bodies/temperaments
   const suits = {
-    'Wands': 'passion, creativity, and action',
-    'Cups': 'emotions, relationships, and intuition',
-    'Swords': 'intellect, truth, and decisive thought',
-    'Pentacles': 'career, wealth, and physical health'
+    'Wands': 'Active Will and spiritual fire', // Choleric / Ego
+    'Cups': 'astral fluidity and the rhythmic heart', // Phlegmatic / Astral
+    'Swords': 'intellectual clarity and the nerve-sense system', // Sanguine / Mental
+    'Pentacles': 'physical incarnation and earthly foundations' // Melancholic / Etheric
   };
 
+  // Re-framing ranks as phases of spiritual and karmic development
   const ranks = {
-    'Ace': 'a powerful new beginning',
-    'Two': 'partnership and balance',
-    'Three': 'collaboration and growth',
-    'Four': 'stability and foundations',
-    'Five': 'change and challenge',
-    'Six': 'harmony and restoration',
-    'Seven': 'reflection and assessment',
-    'Eight': 'movement and progress',
-    'Nine': 'fulfillment and nearing completion',
-    'Ten': 'absolute completion and endings',
-    'Page': 'a message of youthful curiosity',
-    'Knight': 'fast-paced action and pursuit',
-    'Queen': 'mastery and nurturing energy',
-    'King': 'authority and control'
+    'Ace': 'a pure, unmanifested seed of',
+    'Two': 'a polarizing tension within',
+    'Three': 'the dynamic expansion of',
+    'Four': 'a rigid, earthly crystallization of',
+    'Five': 'a necessary friction and breaking point for',
+    'Six': 'a harmonious restoration of',
+    'Seven': 'an inward, esoteric evaluation of',
+    'Eight': 'a rapid, rhythmic acceleration in',
+    'Nine': 'the solitary maturation of',
+    'Ten': 'the ultimate karmic saturation of',
+    'Page': 'a youthful, curious initiation into',
+    'Knight': 'a swift, concentrated projection of',
+    'Queen': 'an internalized, resonant mastery over',
+    'King': 'a commanding, outward sovereignty over'
   };
 
   let foundSuit = Object.keys(suits).find(s => cardName.includes(s));
   let foundRank = Object.keys(ranks).find(r => cardName.includes(r));
 
   if (foundSuit && foundRank) {
-    return `This card brings ${ranks[foundRank]} in the realm of ${suits[foundSuit]}.`;
+    return `This frequency signals ${ranks[foundRank]} ${suits[foundSuit]}.`;
   }
-  return "A unique energy surrounds you. Trust your intuition to decode it.";
+  
+  return "A unique cosmic signature surrounds you. Trust your internal rhythm to decode it.";
 };
