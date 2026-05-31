@@ -139,19 +139,32 @@ export const getInsightData = (sign, lp, currentMana, isPro = false, moonData = 
 
     // ... (Keep the rest of the dynamicInsight, shadowWarning, and somaticAction the same) ...
 
-    // --- 2. THE FULL REVELATION (Simplified and Punchy) ---
+// --- 2. THE FULL REVELATION (Version 3.5: Steiner Rhythmic Sync) ---
     let dynamicInsight = "";
+    const isMoonWaning = moonData ? moonData.percentage < 50 : false;
+    const moonAction = isMoonWaning ? "releasing" : "building";
+
     if (currentMana < 40) {
-      dynamicInsight = `At a depleted ${currentMana}% Mana, this ${dailyCard.name} frequency isn't a call to action; it's an eviction notice for your mental static. Your Life Path ${lp} drive must be suspended. The Oracle requires absolute conservation today.`;
+      // Steiner Logic: Validate the void. If the moon is waning, rest is mandatory.
+      const lunarPermission = isMoonWaning 
+        ? `The Moon is ${moonAction}, and so are you. This is the natural order—rest today is not a luxury, it is a rhythmic requirement.` 
+        : `The Moon is ${moonAction}, but your internal mana is low. Beware the pressure to grow when your soil is dry. Protect your spark.`;
+      
+      dynamicInsight = `At a depleted ${currentMana}% Mana, this ${dailyCard.name} frequency is an eviction notice for your mental static. ${lunarPermission} The Oracle requires absolute conservation today.`;
+
     } else if (currentMana > 75) {
-      dynamicInsight = `With your Mana surging at ${currentMana}%, the veil is thin. ${dailyCard.name} is a massive catalyst for your Life Path ${lp} mission. Stop hesitating. It is safe to execute and claim your authority today.`;
+      // Steiner Logic: High mana + Waxing moon = Maximum Incarnation (action).
+      const lunarPush = !isMoonWaning 
+        ? "The moon is surging with you." 
+        : "The moon is emptying, but your internal light is surging. Lead the way.";
+      
+      dynamicInsight = `With your Mana surging at ${currentMana}%, the veil is thin. ${lunarPush} ${dailyCard.name} is a massive catalyst for your Life Path ${lp} mission. It is safe to execute and claim your authority.`;
+
     } else {
-      dynamicInsight = `The Life Path ${lp} energy demands alignment. Today, you must weigh your drive against your fluctuating ${currentMana}% capacity. Let the frequency of ${dailyCard.name} dictate your pacing, not external pressure.`;
+      dynamicInsight = `The Life Path ${lp} energy demands alignment. Today, you must weigh your drive against your fluctuating ${currentMana}% capacity. Let the frequency of ${dailyCard.name} and the ${moonData?.label || 'Lunar rhythm'} dictate your pacing, not external pressure.`;
     }
+    
     baseResult.deepInsight = dynamicInsight;
-
-    // ... (Keep the Shadow Warning and Somatic Anchor code exactly as they were in the previous step) ...
-
     // --- 3. THE SHADOW WARNING (With Time Prediction) ---
     // Predicts vulnerability time based on Mana level
     const dangerTime = currentMana > 70 ? "late evening" : currentMana < 40 ? "mid-morning" : "the mid-afternoon slump";

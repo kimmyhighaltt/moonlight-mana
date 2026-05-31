@@ -135,7 +135,7 @@ const AnchorModal = ({ isOpen, onClose, onComplete }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/95 backdrop-blur-3xl p-6 animate-in fade-in duration-500">
-      
+
       {/* --- STEP 1: ELEMENTAL DIAGNOSIS --- */}
       {step === 'select' && (
         <div className="w-full max-w-sm flex flex-col items-center animate-in slide-in-from-bottom-8 duration-700">
@@ -228,6 +228,7 @@ const Dashboard = ({
   const [showEqInfo, setShowEqInfo] = useState(false);
   const [isLegendOpen, setIsLegendOpen] = useState(false);
   const [isAnchorOpen, setIsAnchorOpen] = useState(false);
+  const [expandedSection, setExpandedSection] = useState(null); // 'shadow' or 'somatic'
 
   // 🔑 BETA CODE STATE
   const [unlockCode, setUnlockCode] = useState('');
@@ -338,10 +339,10 @@ const Dashboard = ({
       {/* 👇 Swap your old background glow div for this dynamic one 👇 */}
       <div
         className={`fixed inset-0 z-0 transition-colors duration-1000 pointer-events-none ${lastGrounded === 'Burning' ? 'bg-orange-500/5' :
-            lastGrounded === 'Spiraling' ? 'bg-indigo-500/5' :
-              lastGrounded === 'Drowning' ? 'bg-blue-500/5' :
-                lastGrounded === 'Frozen' ? 'bg-emerald-500/5' :
-                  activeTab === 'compass' ? 'bg-amber-500/5' : 'bg-transparent'
+          lastGrounded === 'Spiraling' ? 'bg-indigo-500/5' :
+            lastGrounded === 'Drowning' ? 'bg-blue-500/5' :
+              lastGrounded === 'Frozen' ? 'bg-emerald-500/5' :
+                activeTab === 'compass' ? 'bg-amber-500/5' : 'bg-transparent'
           }`}
       />
 
@@ -540,14 +541,45 @@ const Dashboard = ({
                         <p className="text-[14px] text-white/90 font-serif italic leading-relaxed">"{guidance.deepInsight}"</p>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="p-4 bg-slate-900/40 backdrop-blur-md border border-orange-500/20 rounded-3xl text-left flex gap-3 items-start">
-                          <ShieldAlert size={18} className="text-orange-500 shrink-0 mt-1" />
-                          <div><span className="text-[8px] font-black uppercase tracking-widest text-orange-400 block mb-1">Shadow Potential</span><p className="text-[11px] text-white/60">{guidance.shadowWarning}</p></div>
+                      <div className="grid grid-cols-1 gap-3 w-full">
+                        {/* --- Shadow Potential Toggle --- */}
+                        <div className={`transition-all duration-500 overflow-hidden rounded-3xl border ${expandedSection === 'shadow' ? 'bg-orange-500/10 border-orange-500/30' : 'bg-white/5 border-white/5'}`}>
+                          <button
+                            onClick={() => setExpandedSection(expandedSection === 'shadow' ? null : 'shadow')}
+                            className="w-full p-4 flex items-center justify-between text-left"
+                          >
+                            <div className="flex items-center gap-3">
+                              <ShieldAlert size={18} className="text-orange-500" />
+                              <span className="text-[10px] font-black uppercase tracking-widest text-orange-400">Shadow Potential</span>
+                            </div>
+                            <ChevronRight size={16} className={`text-orange-500 transition-transform ${expandedSection === 'shadow' ? 'rotate-90' : ''}`} />
+                          </button>
+
+                          {expandedSection === 'shadow' && (
+                            <div className="px-4 pb-5 animate-in slide-in-from-top-2 duration-300">
+                              <p className="text-[11px] text-white/70 leading-relaxed">{guidance.shadowWarning}</p>
+                            </div>
+                          )}
                         </div>
-                        <div className="p-4 bg-slate-900/40 backdrop-blur-md border border-blue-500/20 rounded-3xl text-left flex gap-3 items-start">
-                          <Zap size={18} className="text-blue-400 shrink-0 mt-1" />
-                          <div><span className="text-[8px] font-black uppercase tracking-widest text-blue-400 block mb-1">Somatic Alignment</span><p className="text-[11px] text-white/60">{guidance.somaticAction}</p></div>
+
+                        {/* --- Somatic Alignment Toggle --- */}
+                        <div className={`transition-all duration-500 overflow-hidden rounded-3xl border ${expandedSection === 'somatic' ? 'bg-blue-500/10 border-blue-500/30' : 'bg-white/5 border-white/5'}`}>
+                          <button
+                            onClick={() => setExpandedSection(expandedSection === 'somatic' ? null : 'somatic')}
+                            className="w-full p-4 flex items-center justify-between text-left"
+                          >
+                            <div className="flex items-center gap-3">
+                              <Zap size={18} className="text-blue-400" />
+                              <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Somatic Alignment</span>
+                            </div>
+                            <ChevronRight size={16} className={`text-blue-400 transition-transform ${expandedSection === 'somatic' ? 'rotate-90' : ''}`} />
+                          </button>
+
+                          {expandedSection === 'somatic' && (
+                            <div className="px-4 pb-5 animate-in slide-in-from-top-2 duration-300">
+                              <p className="text-[11px] text-white/70 leading-relaxed">{guidance.somaticAction}</p>
+                            </div>
+                          )}
                         </div>
                       </div>
 
