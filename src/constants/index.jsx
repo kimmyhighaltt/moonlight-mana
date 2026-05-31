@@ -13,25 +13,25 @@ export const PILLAR_INFO = {
     label: 'Hinengaro', 
     sub: 'Mind', 
     color: '#60A5FA',
-    question: 'Is your mind clear or cluttered today?' 
+    question: 'How clear is your internal compass right now?' 
   },
   body: { 
     label: 'Tinana', 
     sub: 'Body', 
     color: '#34D399',
-    question: 'How is your physical energy level?' 
+    question: 'How much physical drive do you have to execute?' 
   },
   heart: { 
     label: 'Whatumanawa', 
     sub: 'Heart', 
     color: '#F472B6', 
-    question: 'How are you feeling emotionally?' 
+    question: 'How heavy is your emotional frequency?' 
   },
   soul: { 
     label: 'Wairua', 
     sub: 'Spirit', 
     color: '#A78BFA',
-    question: 'Do you feel connected to your purpose?' 
+    question: 'How deeply are you anchored to your core mission?' 
   },
 };
 
@@ -53,28 +53,28 @@ const getMinorCardImage = (suit, rank) => {
 };
 
 const MAJOR_ARCANA_DATA = [
-  { id: 0, name: 'The Fool', message: 'New beginnings, innocence, spontaneity.', img: 'https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg' },
-  { id: 1, name: 'The Magician', message: 'Manifestation, resourcefulness, power.', img: 'https://upload.wikimedia.org/wikipedia/commons/d/de/RWS_Tarot_01_Magician.jpg' },
-  { id: 2, name: 'The High Priestess', message: 'Intuition, sacred knowledge, divine feminine.', img: 'https://upload.wikimedia.org/wikipedia/commons/8/88/RWS_Tarot_02_High_Priestess.jpg' },
-  { id: 3, name: 'The Empress', message: 'Femininity, beauty, nature, nurturing.', img: 'https://upload.wikimedia.org/wikipedia/commons/d/d2/RWS_Tarot_03_Empress.jpg' },
-  { id: 4, name: 'The Emperor', message: 'Authority, structure, control, fatherhood.', img: 'https://upload.wikimedia.org/wikipedia/commons/c/c3/RWS_Tarot_04_Emperor.jpg' },
-  { id: 5, name: 'The Hierophant', message: 'Spiritual wisdom, religious beliefs, conformity.', img: 'https://upload.wikimedia.org/wikipedia/commons/8/8d/RWS_Tarot_05_Hierophant.jpg' },
-  { id: 6, name: 'The Lovers', message: 'Love, harmony, relationships, values alignment.', img: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/TheLovers.jpg' },
-  { id: 7, name: 'The Chariot', message: 'Control, willpower, success, action.', img: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/RWS_Tarot_07_Chariot.jpg' },
-  { id: 8, name: 'Strength', message: 'Courage, persuasion, influence, compassion.', img: 'https://upload.wikimedia.org/wikipedia/commons/f/f5/RWS_Tarot_08_Strength.jpg' },
-  { id: 9, name: 'The Hermit', message: 'Soul-searching, introspection, being alone.', img: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/RWS_Tarot_09_Hermit.jpg' },
-  { id: 10, name: 'Wheel of Fortune', message: 'Good luck, karma, life cycles, destiny.', img: 'https://upload.wikimedia.org/wikipedia/commons/3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg' },
-  { id: 11, name: 'Justice', message: 'Justice, fairness, truth, cause and effect.', img: 'https://upload.wikimedia.org/wikipedia/commons/e/e0/RWS_Tarot_11_Justice.jpg' },
-  { id: 12, name: 'The Hanged Man', message: 'Pause, surrender, letting go, new perspectives.', img: 'https://upload.wikimedia.org/wikipedia/commons/2/2b/RWS_Tarot_12_Hanged_Man.jpg' },
-  { id: 13, name: 'Death', message: 'Endings, change, transformation, transition.', img: 'https://upload.wikimedia.org/wikipedia/commons/d/d7/RWS_Tarot_13_Death.jpg' },
-  { id: 14, name: 'Temperance', message: 'Balance, moderation, patience, purpose.', img: 'https://upload.wikimedia.org/wikipedia/commons/f/f8/RWS_Tarot_14_Temperance.jpg' },
-  { id: 15, name: 'The Devil', message: 'Shadow self, attachment, addiction, restriction.', img: 'https://upload.wikimedia.org/wikipedia/commons/5/55/RWS_Tarot_15_Devil.jpg' },
-  { id: 16, name: 'The Tower', message: 'Sudden change, upheaval, chaos, revelation.', img: 'https://upload.wikimedia.org/wikipedia/commons/5/53/RWS_Tarot_16_Tower.jpg' },
-  { id: 17, name: 'The Star', message: 'Hope, faith, purpose, renewal, spirituality.', img: 'https://upload.wikimedia.org/wikipedia/commons/d/db/RWS_Tarot_17_Star.jpg' },
-  { id: 18, name: 'The Moon', message: 'Illusion, fear, anxiety, subconscious, intuition.', img: 'https://upload.wikimedia.org/wikipedia/commons/7/7f/RWS_Tarot_18_Moon.jpg' },
-  { id: 19, name: 'The Sun', message: 'Positivity, fun, warmth, success, vitality.', img: 'https://upload.wikimedia.org/wikipedia/commons/1/17/RWS_Tarot_19_Sun.jpg' },
-  { id: 20, name: 'Judgement', message: 'Judgement, rebirth, inner calling, absolution.', img: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/RWS_Tarot_20_Judgement.jpg' },
-  { id: 21, name: 'The World', message: 'Completion, integration, accomplishment, travel.', img: 'https://upload.wikimedia.org/wikipedia/commons/f/ff/RWS_Tarot_21_World.jpg' },
+  { id: 0, name: 'The Fool', img: 'https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg' },
+  { id: 1, name: 'The Magician', img: 'https://upload.wikimedia.org/wikipedia/commons/d/de/RWS_Tarot_01_Magician.jpg' },
+  { id: 2, name: 'The High Priestess', img: 'https://upload.wikimedia.org/wikipedia/commons/8/88/RWS_Tarot_02_High_Priestess.jpg' },
+  { id: 3, name: 'The Empress', img: 'https://upload.wikimedia.org/wikipedia/commons/d/d2/RWS_Tarot_03_Empress.jpg' },
+  { id: 4, name: 'The Emperor', img: 'https://upload.wikimedia.org/wikipedia/commons/c/c3/RWS_Tarot_04_Emperor.jpg' },
+  { id: 5, name: 'The Hierophant', img: 'https://upload.wikimedia.org/wikipedia/commons/8/8d/RWS_Tarot_05_Hierophant.jpg' },
+  { id: 6, name: 'The Lovers', img: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/TheLovers.jpg' },
+  { id: 7, name: 'The Chariot', img: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/RWS_Tarot_07_Chariot.jpg' },
+  { id: 8, name: 'Strength', img: 'https://upload.wikimedia.org/wikipedia/commons/f/f5/RWS_Tarot_08_Strength.jpg' },
+  { id: 9, name: 'The Hermit', img: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/RWS_Tarot_09_Hermit.jpg' },
+  { id: 10, name: 'Wheel of Fortune', img: 'https://upload.wikimedia.org/wikipedia/commons/3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg' },
+  { id: 11, name: 'Justice', img: 'https://upload.wikimedia.org/wikipedia/commons/e/e0/RWS_Tarot_11_Justice.jpg' },
+  { id: 12, name: 'The Hanged Man', img: 'https://upload.wikimedia.org/wikipedia/commons/2/2b/RWS_Tarot_12_Hanged_Man.jpg' },
+  { id: 13, name: 'Death', img: 'https://upload.wikimedia.org/wikipedia/commons/d/d7/RWS_Tarot_13_Death.jpg' },
+  { id: 14, name: 'Temperance', img: 'https://upload.wikimedia.org/wikipedia/commons/f/f8/RWS_Tarot_14_Temperance.jpg' },
+  { id: 15, name: 'The Devil', img: 'https://upload.wikimedia.org/wikipedia/commons/5/55/RWS_Tarot_15_Devil.jpg' },
+  { id: 16, name: 'The Tower', img: 'https://upload.wikimedia.org/wikipedia/commons/5/53/RWS_Tarot_16_Tower.jpg' },
+  { id: 17, name: 'The Star', img: 'https://upload.wikimedia.org/wikipedia/commons/d/db/RWS_Tarot_17_Star.jpg' },
+  { id: 18, name: 'The Moon', img: 'https://upload.wikimedia.org/wikipedia/commons/7/7f/RWS_Tarot_18_Moon.jpg' },
+  { id: 19, name: 'The Sun', img: 'https://upload.wikimedia.org/wikipedia/commons/1/17/RWS_Tarot_19_Sun.jpg' },
+  { id: 20, name: 'Judgement', img: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/RWS_Tarot_20_Judgement.jpg' },
+  { id: 21, name: 'The World', img: 'https://upload.wikimedia.org/wikipedia/commons/f/ff/RWS_Tarot_21_World.jpg' },
 ];
 
 const SUITS = ['Wands', 'Cups', 'Swords', 'Pentacles'];
@@ -89,7 +89,6 @@ SUITS.forEach(suit => {
       id: idCounter++,
       name: `${rank} of ${suit}`,
       img: getMinorCardImage(suit, rank),
-      message: `The energy of the ${rank} in the realm of ${suit}.`,
       suit: suit,
       rank: rank
     });
@@ -134,7 +133,7 @@ export const SACRED_TOOLS = [
     id: 'art-the-unbecoming',
     name: 'The Unbecoming - Fine Art Print',
     category: 'Original Art',
-    isFeatured: true, // ✨ This forces it to the front "Featured Release" tab!
+    isFeatured: true, 
     price: '$45.00', 
     description: 'A haunting exploration of identity in flux. This charcoal and soft-pastel rendering captures the "unbecoming"—where the past dissolves into the ethereal blue of the future. The blurred strokes evoke spiritual static, representing our surrender when aligning with our true cosmic North. Printed on 310gsm Hahnemühle German Etching paper.',
     images: [
@@ -206,8 +205,8 @@ export const SACRED_TOOLS = [
     category: 'Digital Download',
     name: 'The Ultimate Digital Tarot Journal',
     price: 'FREE',
-    link: 'https://drive.google.com/file/d/1RuzkY7lE7wte1osb_JI5xm9h2d5RIWCv/view?usp=drive_link', // 🔗 PASTE YOUR PAYHIP LINK HERE
-    img: '/images/tarot-journal.png', // Ensure you have a square mockup image saved here
+    link: 'https://drive.google.com/file/d/1RuzkY7lE7wte1osb_JI5xm9h2d5RIWCv/view?usp=drive_link',
+    img: '/images/tarot-journal.png',
     ritualAdvice: 'Download this to your tablet to keep a seamless, searchable log of your daily pulls.',
     fullReview: 'A beautifully designed entry-level digital journal for the modern mystic. Perfect for tracking your daily cards, recognizing patterns in your pulls, and keeping your shadow work organized and accessible across your devices.',
     isArtwork: false
@@ -217,8 +216,8 @@ export const SACRED_TOOLS = [
     category: 'Digital Download',
     name: 'Ultimate 7-in-1 Maramataka & Hauora Lunar Journal',
     price: '$9.00',
-    link: 'https://buy.stripe.com/3cI5kFa4Z7WU00p3OOcEw0k', // 🔗 PASTE YOUR PAYHIP LINK HERE
-    img: '/images/lunar-journal.jpg', // Ensure you have a square mockup image saved here
+    link: 'https://buy.stripe.com/3cI5kFa4Z7WU00p3OOcEw0k', 
+    img: '/images/lunar-journal.jpg',
     ritualAdvice: 'Use this comprehensive planner during your Sunday Reset to align your week with the lunar cycles.',
     fullReview: 'Stop fighting the current. This 7-in-1 digital planner merges the traditional Māori lunar calendar (Maramataka) with holistic wellness (Hauora) tracking. It is a complete system designed to help you map your energy levels to the moon phases, ensuring you know exactly when to push forward and when to rest.',
     isArtwork: false
@@ -228,8 +227,8 @@ export const SACRED_TOOLS = [
     category: 'Digital Download',
     name: '7-in-1 Mood + Tarot Daily Reflection Bundle',
     price: '$9.00',
-    link: 'https://buy.stripe.com/dRm6oJa4Zeli8wV1GGcEw0j', // 🔗 PASTE YOUR PAYHIP LINK HERE
-    img: '/images/mood-bundle.jpg', // Ensure you have a square mockup image saved here
+    link: 'https://buy.stripe.com/dRm6oJa4Zeli8wV1GGcEw0j', 
+    img: '/images/mood-bundle.jpg', 
     ritualAdvice: 'Print these pages for your physical grimoire to track the direct correlation between your mood and your tarot pulls.',
     fullReview: 'A massive bundle designed for the deep feeler. This 7-in-1 toolkit bridges the gap between divination and mental health. By tracking your daily mood alongside your tarot reflections, you will quickly identify energetic drains and spiritual blockages. Includes printable templates and digital-friendly layouts.',
     isArtwork: false
